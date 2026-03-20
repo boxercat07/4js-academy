@@ -16,50 +16,57 @@ router.post('/register', async (req, res) => {
 // POST /api/login
 router.post('/login', async (req, res) => {
     try {
-        const { email, password } = req.body;
-
-        if (!email || !password) {
-            return res.status(400).json({ error: 'Email and password are required.' });
-        }
-
+        console.log(`[AUTH] Attempting login for: ${email}`);
+        
         const user = await prisma.user.findUnique({ where: { email }, include: { tracks: true } });
         if (!user) {
+            console.log(`[AUTH] User not found: ${email}`);
             return res.status(401).json({ error: 'Invalid email or password.' });
         }
+        console.log(`[AUTH] User found: ${user.id}`);
 
         const isMatch = await bcrypt.compare(password, user.passwordHash);
         if (!isMatch) {
+            console.log(`[AUTH] Password mismatch for: ${email}`);
             return res.status(401).json({ error: 'Invalid email or password.' });
         }
+        console.log(`[AUTH] Password match`);
 
         // Create token
-        const token = jwt.sign(
-            { id: user.id, email: user.email, role: user.role, firstName: user.firstName, lastName: user.lastName },
-            JWT_SECRET,
-            { expiresIn: '24h' }
-        );
+        try {
+            const token = jwt.sign(
+                { id: user.id, email: user.email, role: user.role, firstName: user.firstName, lastName: user.lastName },
+                JWT_SECRET,
+                { expiresIn: '24h' }
+            );
+            console.log(`[AUTH] Token signed`);
 
-        // Set HttpOnly cookie
-        res.cookie('token', token, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            maxAge: 24 * 60 * 60 * 1000 // 24 hours
-        });
+            // Set HttpOnly cookie
+            res.cookie('token', token, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === 'production',
+                maxAge: 24 * 60 * 60 * 1000 // 24 hours
+            });
+            console.log(`[AUTH] Cookie set`);
 
-        res.json({
-            message: 'Login successful',
-            user: {
-                id: user.id,
-                email: user.email,
-                role: user.role,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                department: user.department,
-                tracks: user.tracks.map(t => ({ id: t.id, name: t.name }))
-            }
-        });
+            res.json({
+                message: 'Login successful',
+                user: {
+                    id: user.id,
+                    email: user.email,
+                    role: user.role,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    department: user.department,
+                    tracks: user.tracks.map(t => ({ id: t.id, name: t.name }))
+                }
+            });
+        } catch (jwtError) {
+            console.error('[AUTH] JWT Signing error:', jwtError);
+            throw jwtError;
+        }
     } catch (error) {
-        console.error('Login error:', error);
+        console.error('[AUTH] Catch-all Login error:', error);
         res.status(500).json({ error: 'Internal server error during login.' });
     }
 });
