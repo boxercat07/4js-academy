@@ -205,3 +205,66 @@ a {
 /* Table Controls Visibility */
 .ql-table-controls { display: none !important; }
 .ql-editor .ql-table-controls { display: flex !important; }
+
+/* Notifications UI */
+.notification-dot {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 10px;
+    height: 10px;
+    background: #ef4444;
+    border-radius: 999px;
+    border: 2px solid #0a0f1a;
+    display: none;
+}
+.notification-dot.show {
+    display: block;
+}
+.notifications-menu {
+    width: 320px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+.notification-item {
+    padding: 1rem;
+    border-bottom: 1px solid var(--ai-border);
+    transition: background 0.2s;
+}
+.notification-item:hover {
+    background: var(--ai-bg-active);
+}
+.notification-item.unread {
+    background: rgba(27, 95, 254, 0.05);
+}
+.notification-item .time {
+    font-size: 0.65rem;
+    color: var(--ai-text-muted);
+    margin-bottom: 0.25rem;
+}
+.notification-item .title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 0.15rem;
+}
+.notification-item .message {
+    font-size: 0.75rem;
+    color: var(--ai-text-dim);
+    line-height: 1.4;
+}
+.notification-item .delete-notification-btn {
+    opacity: 0;
+    transform: translateX(5px);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.notification-item:hover .delete-notification-btn {
+    opacity: 1;
+    transform: translateX(0);
+}
+.notifications-empty {
+    padding: 2rem 1rem;
+    text-align: center;
+    color: var(--ai-text-muted);
+    font-size: 0.85rem;
+}

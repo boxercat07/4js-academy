@@ -1,0 +1,472 @@
+{
+  "title": "Genero Quiz",
+  "totalQuestions": 15,
+  "extractedAt": "2026-03-10T22:51:22.336Z",
+  "questions": [
+    {
+      "number": 1,
+      "question": "What is the primary function of the Genero Ghost Client (GGC)?",
+      "options": [
+        {
+          "label": "A",
+          "text": "To provide a graphical interface for administrative database management.",
+          "isCorrect": false,
+          "rationale": "Database management is handled via native drivers and specialized tools, not the Ghost Client."
+        },
+        {
+          "label": "B",
+          "text": "To enable headless regression and load testing by simulating multiple users.",
+          "isCorrect": true,
+          "rationale": "The Ghost Client is designed to hit the system with simulated user traffic to validate stability and performance before release."
+        },
+        {
+          "label": "C",
+          "text": "To act as a secure proxy for mobile device connections in the cloud.",
+          "isCorrect": false,
+          "rationale": "Cloud connectivity and mobile access are handled by the Genero Application Server and specific mobile clients."
+        },
+        {
+          "label": "D",
+          "text": "To automatically convert terminal-based forms into HTML5 web pages.",
+          "isCorrect": false,
+          "rationale": "This transformation is the responsibility of the Genero Browser Client, not the testing client."
+        }
+      ],
+      "correctAnswer": "B"
+    },
+    {
+      "number": 2,
+      "question": "Which Genero Enterprise component is responsible for transforming applications into a zero-footprint HTML5/CSS3 web solution?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Genero Desktop Client (GDC)",
+          "isCorrect": false,
+          "rationale": "The GDC is intended for native desktop deployment rather than zero-footprint browser access."
+        },
+        {
+          "label": "B",
+          "text": "Genero Business Development Language (BDL)",
+          "isCorrect": false,
+          "rationale": "BDL is the programming language itself, which requires a specific client to render the interface."
+        },
+        {
+          "label": "C",
+          "text": "Genero Browser Client (GBC)",
+          "isCorrect": true,
+          "rationale": "The GBC allows applications to run in standard browsers like Chrome or Edge without any local installation or plugins."
+        },
+        {
+          "label": "D",
+          "text": "Genero Report Writer (GRW)",
+          "isCorrect": false,
+          "rationale": "This tool is focused on the design and generation of high-volume reports rather than the application UI."
+        }
+      ],
+      "correctAnswer": "C"
+    },
+    {
+      "number": 3,
+      "question": "How does the Genero Application Server (GAS) ensure fault isolation in mission-critical environments?",
+      "options": [
+        {
+          "label": "A",
+          "text": "By running each user session in a separate, isolated process.",
+          "isCorrect": true,
+          "rationale": "This architecture ensures that a critical failure in one session does not impact other connected users."
+        },
+        {
+          "label": "B",
+          "text": "By automatically restarting the entire server whenever an error occurs.",
+          "isCorrect": false,
+          "rationale": "Restarting the whole server would disrupt all users, which contradicts the goal of business continuity."
+        },
+        {
+          "label": "C",
+          "text": "By encrypting all business logic before it is sent to the client device.",
+          "isCorrect": false,
+          "rationale": "While security is important, encryption does not provide session-level fault isolation or process stability."
+        },
+        {
+          "label": "D",
+          "text": "By utilizing a monolithic thread-based model to manage all active users.",
+          "isCorrect": false,
+          "rationale": "Monolithic models are risky because a single thread crash can crash the entire application for all users."
+        }
+      ],
+      "correctAnswer": "A"
+    },
+    {
+      "number": 4,
+      "question": "What is the core high-level programming language used within the Genero Enterprise platform?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Java",
+          "isCorrect": false,
+          "rationale": "While Genero integrates with Java, it uses its own specialized language for business logic development."
+        },
+        {
+          "label": "B",
+          "text": "Business Development Language (BDL)",
+          "isCorrect": true,
+          "rationale": "BDL is the readable 4GL syntax that compiles to p-code and serves as the successor to Informix 4GL."
+        },
+        {
+          "label": "C",
+          "text": "Python",
+          "isCorrect": false,
+          "rationale": "Python is not the primary language of the Genero platform, although external scripts might be used in DevOps."
+        },
+        {
+          "label": "D",
+          "text": "C++",
+          "isCorrect": false,
+          "rationale": "Genero compiles to p-code for a virtual machine rather than generating C or C++ code directly."
+        }
+      ],
+      "correctAnswer": "B"
+    },
+    {
+      "number": 5,
+      "question": "Which tool provides developers with a visual productivity environment for drag-and-drop form layout and graphical workflow modeling?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Visual Studio Code",
+          "isCorrect": false,
+          "rationale": "VS Code is supported for coding and debugging, but it is not the primary tool for visual form and report design."
+        },
+        {
+          "label": "B",
+          "text": "Genero Studio (GST)",
+          "isCorrect": true,
+          "rationale": "Genero Studio is the specialized IDE designed for visual interface design, project management, and report modeling."
+        },
+        {
+          "label": "C",
+          "text": "Genero Application Server (GAS)",
+          "isCorrect": false,
+          "rationale": "The GAS is a runtime component used for hosting applications, not a design-time development tool."
+        },
+        {
+          "label": "D",
+          "text": "DB Sync",
+          "isCorrect": false,
+          "rationale": "DB Sync is a utility for database management and synchronization, not for UI design."
+        }
+      ],
+      "correctAnswer": "B"
+    },
+    {
+      "number": 6,
+      "question": "What is a major advantage of using Genero Mobile (GMA/GMI) for field operations over a standard web application?",
+      "options": [
+        {
+          "label": "A",
+          "text": "It requires a constant internet connection to function.",
+          "isCorrect": false,
+          "rationale": "Genero Mobile is specifically noted for its offline-first capabilities, allowing logic to run without connectivity."
+        },
+        {
+          "label": "B",
+          "text": "It runs inside a standard mobile browser like Safari.",
+          "isCorrect": false,
+          "rationale": "While web clients exist, GMA and GMI are true native apps that run directly on the operating system."
+        },
+        {
+          "label": "C",
+          "text": "It provides native access to hardware like GPS, cameras, and scanners.",
+          "isCorrect": true,
+          "rationale": "Native mobile apps can directly integrate with device hardware, which is critical for mission-critical field work."
+        },
+        {
+          "label": "D",
+          "text": "It prevents developers from using the same codebase for desktop versions.",
+          "isCorrect": false,
+          "rationale": "A key benefit of Genero is the 'Develop Once, Deploy Anywhere' philosophy using a single codebase."
+        }
+      ],
+      "correctAnswer": "C"
+    },
+    {
+      "number": 7,
+      "question": "The Genero architecture compiles BDL code into portable p-code. Which component executes this p-code to ensure OS-agnostic behavior?",
+      "options": [
+        {
+          "label": "A",
+          "text": "A standard Java Virtual Machine (JVM).",
+          "isCorrect": false,
+          "rationale": "Genero uses its own stable virtual machine rather than the Java Virtual Machine."
+        },
+        {
+          "label": "B",
+          "text": "The Genero Virtual Machine (VM).",
+          "isCorrect": true,
+          "rationale": "The Genero VM runs the p-code and maintains consistency across Linux, Windows, and Unix platforms."
+        },
+        {
+          "label": "C",
+          "text": "The Web Browser's JavaScript engine.",
+          "isCorrect": false,
+          "rationale": "While the Browser Client uses JS for rendering, the core business logic is executed by the backend VM."
+        },
+        {
+          "label": "D",
+          "text": "The Native C Compiler.",
+          "isCorrect": false,
+          "rationale": "Genero does not generate C code like legacy Informix 4GL; it relies on a virtual machine for execution."
+        }
+      ],
+      "correctAnswer": "B"
+    },
+    {
+      "number": 8,
+      "question": "Which Genero tool is used to containerize backend components like GAS and FGL for deployment in Kubernetes clusters?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Genero Container Interface (GCI)",
+          "isCorrect": true,
+          "rationale": "GCI provides the tools and images needed to integrate Genero applications into Docker and Kubernetes environments."
+        },
+        {
+          "label": "B",
+          "text": "Genero Ghost Client (GGC)",
+          "isCorrect": false,
+          "rationale": "GGC is used for testing and simulation, not for container orchestration or packaging."
+        },
+        {
+          "label": "C",
+          "text": "Genero Desktop Client (GDC)",
+          "isCorrect": false,
+          "rationale": "GDC is a frontend client for desktop users and is not involved in backend containerization."
+        },
+        {
+          "label": "D",
+          "text": "Genero Report Engine (GRE)",
+          "isCorrect": false,
+          "rationale": "The GRE is the runtime engine for processing reports, not a container management tool."
+        }
+      ],
+      "correctAnswer": "A"
+    },
+    {
+      "number": 9,
+      "question": "In the context of the Genero Report Writer, what is the role of the Genero Report Engine (GRE)?",
+      "options": [
+        {
+          "label": "A",
+          "text": "It is a visual tool used to drag and drop elements onto a report layout.",
+          "isCorrect": false,
+          "rationale": "The visual design is handled by the Report Designer/Studio, while the GRE is the runtime processor."
+        },
+        {
+          "label": "B",
+          "text": "It acts as a high-performance engine for processing and rendering reports from XML data streams.",
+          "isCorrect": true,
+          "rationale": "The GRE is the core runtime component that takes data and templates to produce finalized outputs like PDFs."
+        },
+        {
+          "label": "C",
+          "text": "It is a specialized database used only for storing report history.",
+          "isCorrect": false,
+          "rationale": "Genero is database-independent and the GRE processes live data streams rather than acting as storage."
+        },
+        {
+          "label": "D",
+          "text": "It serves as the identity provider for secure report access.",
+          "isCorrect": false,
+          "rationale": "Security and authentication are handled by the SSO/IDP components, not the report engine."
+        }
+      ],
+      "correctAnswer": "B"
+    },
+    {
+      "number": 10,
+      "question": "What is the primary benefit of the Genero Chatbot introduced in Genero Enterprise v6?",
+      "options": [
+        {
+          "label": "A",
+          "text": "It automatically rewrites legacy Java code into BDL syntax.",
+          "isCorrect": false,
+          "rationale": "The chatbot is for developer support and documentation search, not automated code translation from other languages."
+        },
+        {
+          "label": "B",
+          "text": "It provides instant answers and code examples grounded in official documentation using conversational AI.",
+          "isCorrect": true,
+          "rationale": "The chatbot uses Retrieval-Augmented Generation (RAG) to help developers resolve issues and find documentation faster."
+        },
+        {
+          "label": "C",
+          "text": "It acts as a replacement for the Genero Studio debugging tools.",
+          "isCorrect": false,
+          "rationale": "While helpful, it is a support tool and does not replace the functional IDE debugging capabilities."
+        },
+        {
+          "label": "D",
+          "text": "It manages the synchronization between local Git repositories and cloud servers.",
+          "isCorrect": false,
+          "rationale": "Git integration is a feature of the development tooling, not a conversational AI chatbot."
+        }
+      ],
+      "correctAnswer": "B"
+    },
+    {
+      "number": 11,
+      "question": "Which component allows for a native desktop deployment that can access local hardware and operate with high-performance UI on Windows, Linux, or macOS?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Genero Browser Client (GBC)",
+          "isCorrect": false,
+          "rationale": "The Browser Client is constrained by the browser sandbox and is not a native desktop application."
+        },
+        {
+          "label": "B",
+          "text": "Genero Desktop Client (GDC)",
+          "isCorrect": true,
+          "rationale": "The GDC provides the most powerful desktop experience with native performance and platform-specific feature access."
+        },
+        {
+          "label": "C",
+          "text": "Genero Application Server (GAS)",
+          "isCorrect": false,
+          "rationale": "The GAS is the backend server component, not the client-side UI renderer for desktop users."
+        },
+        {
+          "label": "D",
+          "text": "Genero Mobile (GMA)",
+          "isCorrect": false,
+          "rationale": "GMA is specifically for Android mobile devices, not desktop operating systems like Windows or macOS."
+        }
+      ],
+      "correctAnswer": "B"
+    },
+    {
+      "number": 12,
+      "question": "Genero Report Writer supports the generation of $Factur-X$ compliant invoices. What is $Factur-X$?",
+      "options": [
+        {
+          "label": "A",
+          "text": "A specialized database driver for high-speed report queries.",
+          "isCorrect": false,
+          "rationale": "Factur-X is a document standard, not a technical database driver."
+        },
+        {
+          "label": "B",
+          "text": "An automated testing script used for validating UI responsiveness.",
+          "isCorrect": false,
+          "rationale": "UI responsiveness is tested via the Ghost Client, not through invoice standards."
+        },
+        {
+          "label": "C",
+          "text": "A global standard for electronic invoicing that combines PDF data with XML metadata.",
+          "isCorrect": true,
+          "rationale": "Factur-X is the standard for e-invoicing that Genero supports to ensure regulatory compliance."
+        },
+        {
+          "label": "D",
+          "text": "A proprietary compression algorithm used to reduce the size of report files.",
+          "isCorrect": false,
+          "rationale": "Genero uses standard technologies; Factur-X is a compliance standard rather than a compression method."
+        }
+      ],
+      "correctAnswer": "C"
+    },
+    {
+      "number": 13,
+      "question": "Which monitoring tool integration allows IT staff to track Genero Application Server (GAS) health and trigger alerts for infrastructure monitoring?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Grafana and Prometheus",
+          "isCorrect": true,
+          "rationale": "Genero Enterprise v6 explicitly includes Prometheus/Grafana integration for real-time application and server performance tracking."
+        },
+        {
+          "label": "B",
+          "text": "Apache Spark",
+          "isCorrect": false,
+          "rationale": "Spark is for big data processing and is not the primary monitoring tool integrated into the GAS."
+        },
+        {
+          "label": "C",
+          "text": "Google Analytics",
+          "isCorrect": false,
+          "rationale": "Google Analytics is for web traffic analysis, not for deep infrastructure monitoring of application server health."
+        },
+        {
+          "label": "D",
+          "text": "Microsoft Excel",
+          "isCorrect": false,
+          "rationale": "While Excel can be a report target, it is not used for real-time infrastructure health monitoring and alerts."
+        }
+      ],
+      "correctAnswer": "A"
+    },
+    {
+      "number": 14,
+      "question": "What distinguishes Genero’s 'Stateful Application Architecture' from a standard stateless web architecture?",
+      "options": [
+        {
+          "label": "A",
+          "text": "It requires the client to store all business logic and validation rules locally.",
+          "isCorrect": false,
+          "rationale": "Genero's logic runs securely on the server; the stateful nature refers to the persistent backend process."
+        },
+        {
+          "label": "B",
+          "text": "It assigns a persistent backend process (VM) to each user session to preserve business context on the server.",
+          "isCorrect": true,
+          "rationale": "This simplifies complex, multi-step workflows by keeping data and context active on the server throughout the session."
+        },
+        {
+          "label": "C",
+          "text": "It prevents the application from being deployed in a cloud environment.",
+          "isCorrect": false,
+          "rationale": "Genero is cloud-ready and supports session management and load balancing within cloud infrastructures."
+        },
+        {
+          "label": "D",
+          "text": "It forces the user to log in again every time they navigate to a new screen.",
+          "isCorrect": false,
+          "rationale": "A stateful architecture actually prevents this by maintaining the user's session context automatically."
+        }
+      ],
+      "correctAnswer": "B"
+    },
+    {
+      "number": 15,
+      "question": "Which component enables Genero developers to expose their business logic as RESTful web services for third-party integration?",
+      "options": [
+        {
+          "label": "A",
+          "text": "Genero Studio (GST)",
+          "isCorrect": false,
+          "rationale": "GST is the design environment where the services are defined, but the runtime component is required for communication."
+        },
+        {
+          "label": "B",
+          "text": "Genero Web Services (GWS) and BDL libraries",
+          "isCorrect": true,
+          "rationale": "GWS and the built-in BDL libraries (JSON, HTTP, XML) provide the native capability to communicate with external web apps and APIs."
+        },
+        {
+          "label": "C",
+          "text": "Genero Ghost Client (GGC)",
+          "isCorrect": false,
+          "rationale": "GGC tests existing interfaces but does not serve as the production gateway for RESTful API communication."
+        },
+        {
+          "label": "D",
+          "text": "Genero Report Engine (GRE)",
+          "isCorrect": false,
+          "rationale": "The GRE is dedicated to document output rather than real-time web service logic execution."
+        }
+      ],
+      "correctAnswer": "B"
+    }
+  ]
+}

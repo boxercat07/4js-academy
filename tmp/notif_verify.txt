@@ -1,0 +1,16 @@
+Track: "Employee Onboarding - FR" (isGlobal: true)
+  Would notify 5 learners:
+    - AlexJet Ski (dept: Other)
+    - John Doe (dept: Sales)
+    - Admin System (dept: R&D)
+    - Test User (dept: IT)
+    - Test Learner (dept: null)
+
+Track: "AI Engineering Fundamentals" (isGlobal: true)
+  Would notify 5 learners:
+    - AlexJet Ski (dept: Other)
+    - John Doe (dept: Sales)
+    - Admin System (dept: R&D)
+    - Test User (dept: IT)
+    - Test Learner (dept: null)
+

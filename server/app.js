@@ -60,6 +60,16 @@ app.use((req, res, next) => {
     }
 });
 
+// API Routes
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/modules', require('./routes/modules'));
+app.use('/api/users', require('./routes/users'));
+app.use('/api/tracks', require('./routes/tracks'));
+app.use('/api/upload', require('./routes/upload'));
+app.use('/api/progress', require('./routes/progress'));
+app.use('/api/admin', require('./routes/admin'));
+app.use('/api/notifications', require('./routes/notifications'));
+
 // Serve static frontend files from 'app' folder
 app.use(express.static(path.join(__dirname, '../app'), {
     setHeaders: (res, path) => {
@@ -72,15 +82,6 @@ app.use(express.static(path.join(__dirname, '../app'), {
 
 // Serve uploaded files statically
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-
-// API Routes
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/modules', require('./routes/modules'));
-app.use('/api/users', require('./routes/users'));
-app.use('/api/tracks', require('./routes/tracks'));
-app.use('/api/upload', require('./routes/upload'));
-app.use('/api/progress', require('./routes/progress'));
-app.use('/api/admin', require('./routes/admin'));
 
 // Health Check Route
 app.get('/api/health', (req, res) => {

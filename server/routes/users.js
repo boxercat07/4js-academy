@@ -22,6 +22,7 @@ router.get('/', verifyToken, verifyAdmin, async (req, res) => {
         const employees = await prisma.user.findMany({
             include: {
                 tracks: {
+                    where: { status: 'PUBLISHED' },
                     include: {
                         modules: { where: { status: 'PUBLISHED' } }
                     }
@@ -188,6 +189,29 @@ router.post('/', verifyToken, verifyAdmin, async (req, res) => {
             }
         });
 
+        // --- NEW TRACK NOTIFICATION LOGIC ---
+        if (newUser.role === 'LEARNER' && trackIds && trackIds.length > 0) {
+            try {
+                const tracks = await prisma.track.findMany({
+                    where: { id: { in: trackIds }, status: 'PUBLISHED' }
+                });
+                
+                if (tracks.length > 0) {
+                    await prisma.notification.createMany({
+                        data: tracks.map(t => ({
+                            userId: newUser.id,
+                            type: 'NEW_TRACK',
+                            title: 'New Track Available!',
+                            message: `🚀 A new track "${t.name}" is now available for you.`
+                        }))
+                    });
+                }
+            } catch (err) {
+                console.error('Error creating user creation notifications:', err);
+            }
+        }
+        // --- END NOTIFICATION LOGIC ---
+
         res.status(201).json({ user: newUser });
     } catch (error) {
         console.error('Create employee error:', error);
@@ -239,7 +263,7 @@ router.post('/bulk', verifyToken, verifyAdmin, async (req, res) => {
                 }
                 const passwordHash = await bcrypt.hash(passwordToHash, salt);
 
-                await prisma.user.create({
+                const newUser = await prisma.user.create({
                     data: {
                         firstName,
                         lastName,
@@ -249,6 +273,37 @@ router.post('/bulk', verifyToken, verifyAdmin, async (req, res) => {
                         department: department || 'Other'
                     }
                 });
+
+                // --- NEW TRACK NOTIFICATION LOGIC ---
+                // In bulk creation, if no trackIds are provided in the request body (which is often the case for CSV import),
+                // we might want to check if any published tracks target this user's department.
+                if (newUser.role === 'LEARNER') {
+                    try {
+                        const targetDepts = [newUser.department, 'All', 'Other'];
+                        const tracks = await prisma.track.findMany({
+                            where: {
+                                status: 'PUBLISHED',
+                                OR: targetDepts.map(dept => ({
+                                    targetDepartments: { contains: dept }
+                                }))
+                            }
+                        });
+
+                        if (tracks.length > 0) {
+                            await prisma.notification.createMany({
+                                data: tracks.map(t => ({
+                                    userId: newUser.id,
+                                    type: 'NEW_TRACK',
+                                    title: 'Welcome! New Tracks Available',
+                                    message: `🚀 The track "${t.name}" is available for you.`
+                                }))
+                            });
+                        }
+                    } catch (err) {
+                        console.error('Bulk user notification error:', err);
+                    }
+                }
+                // --- END NOTIFICATION LOGIC ---
 
                 results.created++;
             } catch (err) {
@@ -270,6 +325,11 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
         const { id } = req.params;
         const { firstName, lastName, email, trackIds, role, department } = req.body;
 
+        const oldUser = await prisma.user.findUnique({
+            where: { id },
+            include: { tracks: { select: { id: true } } }
+        });
+
         const updatedUser = await prisma.user.update({
             where: { id },
             data: {
@@ -283,6 +343,34 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
                 department: department
             }
         });
+
+        // --- NEW TRACK NOTIFICATION LOGIC ---
+        if (updatedUser.role === 'LEARNER' && trackIds && Array.isArray(trackIds)) {
+            try {
+                const oldTrackIds = oldUser.tracks.map(t => t.id);
+                const newTrackIds = trackIds.filter(id => !oldTrackIds.includes(id));
+
+                if (newTrackIds.length > 0) {
+                    const tracks = await prisma.track.findMany({
+                        where: { id: { in: newTrackIds }, status: 'PUBLISHED' }
+                    });
+
+                    if (tracks.length > 0) {
+                        await prisma.notification.createMany({
+                            data: tracks.map(t => ({
+                                userId: updatedUser.id,
+                                type: 'NEW_TRACK',
+                                title: 'New Track Assigned!',
+                                message: `🚀 A new track "${t.name}" has been assigned to you.`
+                            }))
+                        });
+                    }
+                }
+            } catch (err) {
+                console.error('Error creating update notifications:', err);
+            }
+        }
+        // --- END NOTIFICATION LOGIC ---
 
         res.json({ user: updatedUser });
     } catch (error) {

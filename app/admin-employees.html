@@ -847,7 +847,7 @@
                     const trackFilter = document.getElementById('trackFilter');
                     if (trackFilter) {
                         trackFilter.innerHTML = '<option value="ALL">All tracks</option>';
-                        tracks.forEach(track => {
+                        tracks.filter(t => t.status === 'PUBLISHED').forEach(track => {
                             const option = document.createElement('option');
                             option.value = track.id;
                             option.textContent = track.name;

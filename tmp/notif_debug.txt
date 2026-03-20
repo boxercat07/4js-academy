@@ -1,0 +1,29 @@
+AI Engineering Track:
+{
+  "id": "138b8490-cd5a-4575-87f0-671ba5a03d78",
+  "name": "AI Engineering Fundamentals",
+  "status": "PUBLISHED",
+  "targetDepartments": "Sales,PS,R&D,Customer Care,IT & Security,Other",
+  "updatedAt": "2026-03-20T17:58:47.105Z"
+}
+
+jdoe@test.com user:
+{
+  "id": "4c5fefdf-51fb-442d-95b2-6e52e5d61a74",
+  "email": "jdoe@test.com",
+  "firstName": "John",
+  "lastName": "Doe",
+  "department": "Sales",
+  "role": "LEARNER"
+}
+
+Latest NEW_TRACK notifications:
+[
+  {
+    "userId": "6f42892b-7e17-4b29-999d-460309225245",
+    "userEmail": "jetski@4js.com",
+    "userName": "AlexJet Ski",
+    "message": "🚀 A new track \"Assigned Track 1774024144534\" has been assigned to you.",
+    "createdAt": "2026-03-20T16:29:04.569Z"
+  }
+]

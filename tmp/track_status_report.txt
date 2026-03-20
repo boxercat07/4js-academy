@@ -1,0 +1,8 @@
+=== PUBLISHED TRACKS (what trackComparison returns) ===
+  - "Employee Onboarding - FR" | status="PUBLISHED"
+  TOTAL: 1
+
+=== ALL TRACKS ===
+  - "Employee Onboarding - FR" | status="PUBLISHED"
+  - "AI Engineering Fundamentals" | status="DRAFT"
+  TOTAL: 2

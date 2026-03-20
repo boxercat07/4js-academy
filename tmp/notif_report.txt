@@ -1,0 +1,101 @@
+Published tracks:
+[
+  {
+    "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+    "name": "Employee Onboarding - FR",
+    "targetDepartments": "Other"
+  },
+  {
+    "id": "138b8490-cd5a-4575-87f0-671ba5a03d78",
+    "name": "AI Engineering Fundamentals",
+    "targetDepartments": "Sales,PS,R&D,Customer Care,IT & Security,Other"
+  }
+]
+
+Learners:
+[
+  {
+    "id": "6f42892b-7e17-4b29-999d-460309225245",
+    "firstName": "AlexJet",
+    "lastName": "Ski",
+    "department": "Other"
+  },
+  {
+    "id": "4c5fefdf-51fb-442d-95b2-6e52e5d61a74",
+    "firstName": "John",
+    "lastName": "Doe",
+    "department": "Sales"
+  },
+  {
+    "id": "a6d2cf9f-27bc-4a95-8f9d-ea41b0d2e946",
+    "firstName": "Admin",
+    "lastName": "System",
+    "department": "R&D"
+  },
+  {
+    "id": "a467ad6f-e1cc-4fd0-8f7f-eecf90a40ba0",
+    "firstName": "Test",
+    "lastName": "User",
+    "department": "IT"
+  },
+  {
+    "id": "b017d595-c10c-4abb-9230-ff65ee533256",
+    "firstName": "Test",
+    "lastName": "Learner",
+    "department": null
+  }
+]
+
+NEW_TRACK notifs:
+[
+  {
+    "id": "4a469009-9bad-4042-b6a1-909aaaade1d5",
+    "userId": "6f42892b-7e17-4b29-999d-460309225245",
+    "title": "New Track Assigned!",
+    "message": "🚀 A new track \"Assigned Track 1774024144534\" has been assigned to you.",
+    "createdAt": "2026-03-20T16:29:04.569Z"
+  }
+]
+
+Track: "Employee Onboarding - FR"
+  targetDepartments raw: "Other"
+  parsed: ["Other"]
+  isGlobal: true
+
+Current query result: 1 users
+[
+  {
+    "id": "4c5fefdf-51fb-442d-95b2-6e52e5d61a74",
+    "firstName": "John",
+    "lastName": "Doe"
+  }
+]
+
+All learners (simple query): 5 users
+[
+  {
+    "id": "6f42892b-7e17-4b29-999d-460309225245",
+    "firstName": "AlexJet",
+    "lastName": "Ski"
+  },
+  {
+    "id": "4c5fefdf-51fb-442d-95b2-6e52e5d61a74",
+    "firstName": "John",
+    "lastName": "Doe"
+  },
+  {
+    "id": "a6d2cf9f-27bc-4a95-8f9d-ea41b0d2e946",
+    "firstName": "Admin",
+    "lastName": "System"
+  },
+  {
+    "id": "a467ad6f-e1cc-4fd0-8f7f-eecf90a40ba0",
+    "firstName": "Test",
+    "lastName": "User"
+  },
+  {
+    "id": "b017d595-c10c-4abb-9230-ff65ee533256",
+    "firstName": "Test",
+    "lastName": "Learner"
+  }
+]

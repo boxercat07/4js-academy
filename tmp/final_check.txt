@@ -1,0 +1,14 @@
+{
+  "track": {
+    "id": "138b8490-cd5a-4575-87f0-671ba5a03d78",
+    "name": "AI Engineering Fundamentals",
+    "status": "PUBLISHED",
+    "targetDepartments": "Sales,PS,R&D,Customer Care,IT & Security,Other"
+  },
+  "jdoe": {
+    "id": "4c5fefdf-51fb-442d-95b2-6e52e5d61a74",
+    "email": "jdoe@test.com",
+    "department": "Sales"
+  },
+  "notifCount": 0
+}

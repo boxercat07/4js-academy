@@ -43,6 +43,82 @@ router.post('/complete', verifyToken, async (req, res) => {
             }
         });
 
+        // Milestone Detection Logic
+        if (completed) {
+            try {
+                const moduleWithTrack = await prisma.module.findUnique({
+                    where: { id: moduleId },
+                    include: { track: { include: { modules: { where: { status: 'PUBLISHED' } } } } }
+                });
+
+                if (moduleWithTrack && moduleWithTrack.track && moduleWithTrack.track.status === 'PUBLISHED') {
+                    const track = moduleWithTrack.track;
+                    const totalModules = track.modules.length;
+                    
+                    if (totalModules > 0) {
+                        const trackModuleIds = track.modules.map(m => m.id);
+                        const completedInTrack = await prisma.enrollment.count({
+                            where: {
+                                userId: userId,
+                                completed: true,
+                                moduleId: { in: trackModuleIds }
+                            }
+                        });
+
+                        const progressPercent = Math.round((completedInTrack / totalModules) * 100);
+                        
+                        // Possible milestones: 50, 75, 100
+                        const thresholds = [50, 75, 100];
+                        for (const threshold of thresholds) {
+                            if (progressPercent >= threshold) {
+                                // Check if already reached
+                                const existing = await prisma.userMilestone.findUnique({
+                                    where: {
+                                        userId_trackId_milestone: {
+                                            userId,
+                                            trackId: track.id,
+                                            milestone: threshold
+                                        }
+                                    }
+                                });
+
+                                if (!existing) {
+                                    // Mark as reached
+                                    await prisma.userMilestone.create({
+                                        data: {
+                                            userId,
+                                            trackId: track.id,
+                                            milestone: threshold
+                                        }
+                                    });
+
+                                    // Create notification
+                                    let title = 'Milestone Reached!';
+                                    let message = `🚀 Major milestone reached: ${threshold}% of ${track.name} completed.`;
+                                    if (threshold === 100) {
+                                        title = 'Track Completed!';
+                                        message = `🏅 Finished ${track.name} track. Great job!`;
+                                    }
+
+                                    await prisma.notification.create({
+                                        data: {
+                                            userId,
+                                            type: threshold === 100 ? 'TRACK_COMPLETED' : 'MILESTONE',
+                                            title,
+                                            message
+                                        }
+                                    });
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error('Milestone detection error:', err);
+                // Don't fail the main request if milestone detection fails
+            }
+        }
+
         res.json({ message: 'Progress updated', enrollment });
     } catch (error) {
         console.error('Update progress error:', error);
@@ -70,6 +146,7 @@ router.get('/dashboard', verifyToken, async (req, res) => {
 
         // Fetch all tracks with their published modules
         const allTracks = await prisma.track.findMany({
+            where: { status: 'PUBLISHED' },
             include: {
                 modules: { where: { status: 'PUBLISHED' } }
             }

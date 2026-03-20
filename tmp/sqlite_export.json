@@ -1,0 +1,293 @@
+{
+  "users": [
+    {
+      "id": "6aa4ee7d-3312-480b-8ddb-ef99fcdee2b5",
+      "email": "vincent.martinet@4js.com",
+      "passwordHash": "$2b$10$O63UbbDJcoSSwKIth8tK5.OtBCno/SSry570gdt6OutKfLx4Tfeiq",
+      "firstName": "Vincent",
+      "lastName": "Martinet",
+      "role": "ADMIN",
+      "department": null,
+      "createdAt": "2026-03-05T22:59:01.308Z",
+      "updatedAt": "2026-03-12T19:30:43.754Z"
+    },
+    {
+      "id": "6f42892b-7e17-4b29-999d-460309225245",
+      "email": "jetski@4js.com",
+      "passwordHash": "$2b$10$s7mzh55/tiM47shnFlBng.jM2ZMe5AXZb52qLvi0Qkk/F.oBiB1aC",
+      "firstName": "AlexJet",
+      "lastName": "Ski",
+      "role": "LEARNER",
+      "department": "Other",
+      "createdAt": "2026-03-10T17:44:46.530Z",
+      "updatedAt": "2026-03-12T20:48:37.286Z"
+    },
+    {
+      "id": "69a0fcff-f50f-4ec6-a84f-056d921c2c36",
+      "email": "antigravity@admin.com",
+      "passwordHash": "$2b$10$79oyIsW5g2BOSwM.VKbYpestq.FNhUhLgYEbeOwa1kUt6u5EZBVOe",
+      "firstName": "Anti",
+      "lastName": "Gravity",
+      "role": "ADMIN",
+      "department": "Other",
+      "createdAt": "2026-03-10T17:53:45.584Z",
+      "updatedAt": "2026-03-14T09:12:54.008Z"
+    },
+    {
+      "id": "4c5fefdf-51fb-442d-95b2-6e52e5d61a74",
+      "email": "jdoe@test.com",
+      "passwordHash": "$2b$10$s3voYw462PFV8XEKjuCcK.5Hh2lsKwlR9rbAIG7zkvVP8rKX2uZiq",
+      "firstName": "John",
+      "lastName": "Doe",
+      "role": "LEARNER",
+      "department": "Sales",
+      "createdAt": "2026-03-10T17:59:19.343Z",
+      "updatedAt": "2026-03-17T22:54:07.356Z"
+    },
+    {
+      "id": "c1a31fae-cf89-4387-b005-b24f3fd36ff4",
+      "email": "gs.martinet@gmail.com",
+      "passwordHash": "$2b$10$TvXLhHKbU5810U22GxiLu.4Kmd9AYYWPvSBPGOim/qpVWUGp3/2/K",
+      "firstName": "Raphaël",
+      "lastName": "Martinet",
+      "role": "ADMIN",
+      "department": null,
+      "createdAt": "2026-03-11T22:07:04.605Z",
+      "updatedAt": "2026-03-11T22:39:13.011Z"
+    },
+    {
+      "id": "795bd343-b4b7-4d6b-ac7a-08f785db53b1",
+      "email": "tester@4js.com",
+      "passwordHash": "$2b$10$5DL3IR4kY1Znm6bCOT2Dl.Eh6BFcZ8vFQ1Ck1sETMvkriJwBNOaGW",
+      "firstName": "AlexAdmin",
+      "lastName": "User",
+      "role": "LEARNER",
+      "department": "HR",
+      "createdAt": "2026-03-17T20:12:44.047Z",
+      "updatedAt": "2026-03-17T20:12:44.047Z"
+    },
+    {
+      "id": "7031c1a4-7f9e-4aee-883f-145fcaa13c6f",
+      "email": "jetski_admin@4js.com",
+      "passwordHash": "$2b$10$I6ATLj/phFJIIdqJJFZpwuGhgxvY82aF2zfturChvHIXnnXfeHmsu",
+      "firstName": "AlexSuper",
+      "lastName": "Admin",
+      "role": "LEARNER",
+      "department": "HR",
+      "createdAt": "2026-03-17T20:15:58.206Z",
+      "updatedAt": "2026-03-17T20:15:58.206Z"
+    },
+    {
+      "id": "5279f9a3-6051-40b5-a58f-707f6fe54db2",
+      "email": "secadmin@4js.com",
+      "passwordHash": "$2b$10$CU9KMu6gNVr.ISWhGx1W3e/GAApD11eQZ2tVY1Fyfz0jIFGZMPjAm",
+      "firstName": "AlexAdmin",
+      "lastName": "Security",
+      "role": "LEARNER",
+      "department": "R&D",
+      "createdAt": "2026-03-17T20:17:43.223Z",
+      "updatedAt": "2026-03-17T20:17:43.223Z"
+    },
+    {
+      "id": "f4833b0f-c554-4cba-b80e-9e2602a3f620",
+      "email": "vincent@4js.com",
+      "passwordHash": "$2b$10$YBh1pY4kEhsqRJaRy5AcxuGHDhJuSdTapgSmtnNgyoqRxr4IAjjFa",
+      "firstName": "Vincent",
+      "lastName": "Martinet",
+      "role": "ADMIN",
+      "department": "R&D",
+      "createdAt": "2026-03-17T20:21:49.559Z",
+      "updatedAt": "2026-03-17T20:43:09.031Z"
+    },
+    {
+      "id": "a6d2cf9f-27bc-4a95-8f9d-ea41b0d2e946",
+      "email": "admin.system@4js.com",
+      "passwordHash": "$2b$10$HTb5nkTa60FNagz6s6L6ru9SyxSQho9C6sjP6tF9sqPp1Yb1jN6jC",
+      "firstName": "Admin",
+      "lastName": "System",
+      "role": "LEARNER",
+      "department": "R&D",
+      "createdAt": "2026-03-17T20:22:35.613Z",
+      "updatedAt": "2026-03-17T20:22:35.613Z"
+    }
+  ],
+  "tracks": [
+    {
+      "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+      "name": "AI Business Track",
+      "slug": "ai-business-track",
+      "description": "Business strategy pathway",
+      "icon": "rocket",
+      "targetDepartments": "Sales,Other",
+      "status": "PUBLISHED",
+      "curriculumDraft": "[{\"step\":\"01\",\"title\":\"Connecting with generic stacks\",\"items\":[{\"title\":\"hjg\",\"type\":\"LINK\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"Enterprise Integration\",\"type\":\"DOCUMENT\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"}]},{\"step\":\"03\",\"title\":\"AI Strategy Fundamentals\",\"items\":[{\"title\":\"AI Strategy Quiz\",\"type\":\"QUIZ\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"Intro to AI Strategy\",\"type\":\"VIDEO TUTORIAL\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\",\"locked\":\"true\"},{\"title\":\"Persistence Test Link\",\"type\":\"LINK\",\"file-id\":\"\",\"video-id\":\"https://google.com\",\"blob-url\":\"\",\"locked\":\"true\"}]}]",
+      "createdAt": "2026-03-05T23:00:55.810Z",
+      "updatedAt": "2026-03-18T21:02:25.157Z"
+    },
+    {
+      "id": "138b8490-cd5a-4575-87f0-671ba5a03d78",
+      "name": "AI Engineering Fundamentals",
+      "slug": "ai-engineering-fundamentals",
+      "description": "Provide a durable theoretical knowledge base for technical teams to understand, interact with, and design AI-centric solutions, independently of R&D technological choices.",
+      "icon": "code_blocks",
+      "targetDepartments": "PS,R&D,Customer Care,IT & Security,Other",
+      "status": "PUBLISHED",
+      "curriculumDraft": "[{\"step\":\"01\",\"title\":\"The Evolution of Assistance.\",\"items\":[{\"title\":\"The Evolution of Assistance\",\"type\":\"VIDEO\",\"file-id\":\"\",\"video-id\":\"https://youtu.be/izsJ0_ly7L4\",\"blob-url\":\"\"},{\"title\":\"hh\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"http://localhost:3000/learning-track-business.html?preview=true&id=8ec8753d-008e-4a0b-b038-cfd3da7c4ab7\"}]},{\"step\":\"02\",\"title\":\"Test Module\",\"items\":[]}]",
+      "createdAt": "2026-03-12T10:05:53.282Z",
+      "updatedAt": "2026-03-18T22:52:32.828Z"
+    },
+    {
+      "id": "99d50866-2eff-4709-863b-4b2bec1a4c39",
+      "name": "Test Track",
+      "slug": "test-track",
+      "description": "Testing the link feature.",
+      "icon": "terminal",
+      "targetDepartments": "Other",
+      "status": "DRAFT",
+      "curriculumDraft": "[{\"step\":\"01\",\"title\":\"Test Module\",\"items\":[{\"title\":\"Google Search\",\"type\":\"LINK\",\"file-id\":\"\",\"video-id\":\"https://google.com\",\"blob-url\":\"\"}]}]",
+      "createdAt": "2026-03-17T20:52:15.064Z",
+      "updatedAt": "2026-03-18T21:03:20.589Z"
+    }
+  ],
+  "modules": [
+    {
+      "id": "e745f638-b80c-4bb9-af4e-991b61cdbac4",
+      "title": "Enterprise Integration",
+      "description": "Connecting with generic stacks",
+      "trackId": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+      "duration": 120,
+      "type": "DOCUMENT",
+      "mediaUrl": "",
+      "fileId": null,
+      "status": "PUBLISHED",
+      "order": 2,
+      "createdAt": "2026-03-05T23:00:55.821Z",
+      "updatedAt": "2026-03-17T22:53:38.322Z"
+    },
+    {
+      "id": "test-video-mod-1",
+      "title": "Intro to AI Strategy",
+      "description": "AI Strategy Fundamentals",
+      "trackId": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+      "duration": 10,
+      "type": "VIDEO TUTORIAL",
+      "mediaUrl": "",
+      "fileId": null,
+      "status": "PUBLISHED",
+      "order": 4,
+      "createdAt": "2026-03-12T14:18:13.127Z",
+      "updatedAt": "2026-03-17T22:53:38.361Z"
+    },
+    {
+      "id": "test-quiz-mod-1",
+      "title": "AI Strategy Quiz",
+      "description": "AI Strategy Fundamentals",
+      "trackId": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+      "duration": 5,
+      "type": "QUIZ",
+      "mediaUrl": "",
+      "fileId": null,
+      "status": "PUBLISHED",
+      "order": 3,
+      "createdAt": "2026-03-12T14:18:13.144Z",
+      "updatedAt": "2026-03-17T22:53:38.343Z"
+    },
+    {
+      "id": "b03e40c6-21d3-4a5e-ba87-2183774a7c11",
+      "title": "The Evolution of Assistance",
+      "description": "The Evolution of Assistance.",
+      "trackId": "138b8490-cd5a-4575-87f0-671ba5a03d78",
+      "duration": 30,
+      "type": "VIDEO",
+      "mediaUrl": "https://youtu.be/izsJ0_ly7L4",
+      "fileId": null,
+      "status": "PUBLISHED",
+      "order": 1,
+      "createdAt": "2026-03-14T11:04:09.816Z",
+      "updatedAt": "2026-03-14T11:04:09.816Z"
+    },
+    {
+      "id": "09070044-0fd9-49b7-9575-c490275276f4",
+      "title": "hjg",
+      "description": "Connecting with generic stacks",
+      "trackId": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+      "duration": 30,
+      "type": "LINK",
+      "mediaUrl": "https://en.morisawafonts.com/?utm_source=ZeBrand&utm_medium=referral&utm_campaign=zebrand_redirect",
+      "fileId": null,
+      "status": "PUBLISHED",
+      "order": 1,
+      "createdAt": "2026-03-17T22:53:38.303Z",
+      "updatedAt": "2026-03-17T22:53:38.303Z"
+    },
+    {
+      "id": "089754ca-fd7c-47cc-ba1a-53716db1e0a3",
+      "title": "Persistence Test Link",
+      "description": "AI Strategy Fundamentals",
+      "trackId": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+      "duration": 30,
+      "type": "LINK",
+      "mediaUrl": "https://google.com",
+      "fileId": null,
+      "status": "PUBLISHED",
+      "order": 5,
+      "createdAt": "2026-03-17T22:53:38.374Z",
+      "updatedAt": "2026-03-17T22:53:38.374Z"
+    },
+    {
+      "id": "031092b8-0389-4b1b-b95f-08b09134ab79",
+      "title": "Google Search",
+      "description": "Test Module",
+      "trackId": "99d50866-2eff-4709-863b-4b2bec1a4c39",
+      "duration": 30,
+      "type": "LINK",
+      "mediaUrl": "https://google.com",
+      "fileId": null,
+      "status": "PUBLISHED",
+      "order": 1,
+      "createdAt": "2026-03-17T23:03:49.974Z",
+      "updatedAt": "2026-03-17T23:03:49.974Z"
+    }
+  ],
+  "enrollments": [
+    {
+      "id": "f4b179b2-0cdb-4b2f-a1c3-69d206b06ad7",
+      "userId": "4c5fefdf-51fb-442d-95b2-6e52e5d61a74",
+      "moduleId": "test-video-mod-1",
+      "progress": 100,
+      "completed": true,
+      "attempts": 0,
+      "lastScore": null,
+      "createdAt": "2026-03-12T14:18:13.163Z",
+      "updatedAt": "2026-03-12T14:18:13.163Z"
+    },
+    {
+      "id": "da20c8d4-bdbb-486d-bad8-604cab6a45f9",
+      "userId": "6aa4ee7d-3312-480b-8ddb-ef99fcdee2b5",
+      "moduleId": "e745f638-b80c-4bb9-af4e-991b61cdbac4",
+      "progress": 100,
+      "completed": true,
+      "attempts": 0,
+      "lastScore": null,
+      "createdAt": "2026-03-12T21:03:03.411Z",
+      "updatedAt": "2026-03-12T21:03:03.411Z"
+    },
+    {
+      "id": "7ca02c10-1d21-4c4b-913f-94b96aa3a3d5",
+      "userId": "4c5fefdf-51fb-442d-95b2-6e52e5d61a74",
+      "moduleId": "test-quiz-mod-1",
+      "progress": 40,
+      "completed": false,
+      "attempts": 1,
+      "lastScore": 40,
+      "createdAt": "2026-03-18T21:28:17.855Z",
+      "updatedAt": "2026-03-18T21:28:17.855Z"
+    }
+  ],
+  "userTrackRelations": [
+    {
+      "userId": "4c5fefdf-51fb-442d-95b2-6e52e5d61a74",
+      "trackId": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7"
+    }
+  ]
+}

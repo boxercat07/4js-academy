@@ -941,3 +941,6 @@ Result: {
   "updatedAt": "2026-03-17T23:04:17.227Z"
 }
 ---
+[2026-03-20T15:40:14.314Z] BULK DELETE: Attempt by 6aa4ee7d-3312-480b-8ddb-ef99fcdee2b5 for IDs: 795bd343-b4b7-4d6b-ac7a-08f785db53b1, 7031c1a4-7f9e-4aee-883f-145fcaa13c6f, 5279f9a3-6051-40b5-a58f-707f6fe54db2
+[2026-03-20T15:40:14.409Z] BULK DELETE: Manual cascade: Deleted 0 enrollments
+[2026-03-20T15:40:14.531Z] BULK DELETE: Successfully deleted 3 users

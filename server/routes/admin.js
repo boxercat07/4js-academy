@@ -25,12 +25,13 @@ router.get('/analytics', verifyToken, verifyAdmin, async (req, res) => {
         const totalUsers = await prisma.user.count({ 
             where: { 
                 role: 'LEARNER',
-                tracks: { some: {} }
+                tracks: { some: { status: 'PUBLISHED' } }
             } 
         });
 
         // 2. Track Comparison
         const tracks = await prisma.track.findMany({
+            where: { status: 'PUBLISHED' },
             include: {
                 modules: { where: { status: 'PUBLISHED' } },
                 users: {
@@ -68,7 +69,10 @@ router.get('/analytics', verifyToken, verifyAdmin, async (req, res) => {
                 ...dateFilter,
                 user: {
                     role: 'LEARNER',
-                    tracks: { some: {} }
+                    tracks: { some: { status: 'PUBLISHED' } }
+                },
+                module: {
+                    track: { status: 'PUBLISHED' }
                 }
             },
             orderBy: { updatedAt: 'desc' },
@@ -131,10 +135,11 @@ router.get('/analytics', verifyToken, verifyAdmin, async (req, res) => {
         const learners = await prisma.user.findMany({
             where: { 
                 role: 'LEARNER',
-                tracks: { some: {} }
+                tracks: { some: { status: 'PUBLISHED' } }
             },
             include: {
                 tracks: {
+                    where: { status: 'PUBLISHED' },
                     include: {
                         modules: { where: { status: 'PUBLISHED' } }
                     }
@@ -206,7 +211,10 @@ router.get('/analytics', verifyToken, verifyAdmin, async (req, res) => {
 
         // 5. Top Performing Modules
         const modules = await prisma.module.findMany({
-            where: { status: 'PUBLISHED' },
+            where: { 
+                status: 'PUBLISHED',
+                track: { status: 'PUBLISHED' }
+            },
             include: {
                 enrollments: {
                     where: dateFilter 
@@ -236,7 +244,10 @@ router.get('/analytics', verifyToken, verifyAdmin, async (req, res) => {
         // 6. Department Distribution
         const usersByDept = await prisma.user.groupBy({
             by: ['department'],
-            where: { role: 'LEARNER' },
+            where: { 
+                role: 'LEARNER',
+                tracks: { some: { status: 'PUBLISHED' } }
+            },
             _count: { _all: true }
         });
         const deptDistribution = usersByDept.map(d => ({

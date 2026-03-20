@@ -729,12 +729,17 @@
                                     return;
                                 }
 
-                                // 1. Check for local files
+                                // 1. Check for local files (only flag truly temporary content)
                                 const hasLocalFiles = curriculum.some(mod => 
-                                    (mod.items || []).some(item => 
-                                        (item['blob-url'] && item['blob-url'].startsWith('blob:')) || 
-                                        (item.type === 'QUIZ' && (item.fileId || item['file-id']))
-                                    )
+                                    (mod.items || []).some(item => {
+                                        const blobUrl = item['blob-url'] || '';
+                                        const hasFileId = !!(item.fileId || item['file-id']);
+                                        // A blob: URL is always temporary
+                                        if (blobUrl.startsWith('blob:')) return true;
+                                        // A file-id without a permanent server URL means local-only
+                                        if (hasFileId && (!blobUrl || blobUrl === '#' || blobUrl.startsWith('local:'))) return true;
+                                        return false;
+                                    })
                                 );
 
                                 if (hasLocalFiles) {

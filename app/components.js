@@ -213,9 +213,21 @@ class LearnerHeader extends HTMLElement {
                 </div>
                 <div class="flex items-center gap-3">
                     <div id="admin-link-container"></div>
-                    <button class="w-9 h-9 flex items-center justify-center text-[var(--ai-text-dim)] bg-[var(--ai-bg-active)] hover:bg-slate-700 rounded-[var(--ai-radius-md)] transition-all border border-[var(--ai-border)]">
-                        <span class="material-symbols-outlined text-[20px]">notifications</span>
-                    </button>
+                    <div class="relative notifications-dropdown-container">
+                        <button class="w-9 h-9 flex items-center justify-center text-[var(--ai-text-dim)] bg-[var(--ai-bg-active)] hover:bg-slate-700 rounded-[var(--ai-radius-md)] transition-all border border-[var(--ai-border)] notifications-toggle-btn">
+                            <span class="material-symbols-outlined text-[20px]">notifications</span>
+                            <span class="notification-dot"></span>
+                        </button>
+                        <div class="ai-dropdown-menu notifications-menu p-0">
+                            <div class="px-4 py-3 border-b border-[var(--ai-border)] flex justify-between items-center bg-slate-900/80">
+                                <span class="text-[10px] font-bold text-white uppercase tracking-wider">Notifications</span>
+                                <button class="text-[9px] font-bold text-primary hover:text-white transition-colors read-all-btn uppercase">Mark all as read</button>
+                            </div>
+                            <div id="notifications-list" class="max-h-[320px] overflow-y-auto">
+                                <div class="notifications-empty">Loading...</div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="relative profile-dropdown-container">
                         <button class="w-9 h-9 flex items-center justify-center text-[11px] font-bold text-[var(--ai-primary)] bg-[var(--ai-primary-soft)] hover:bg-slate-700 rounded-[var(--ai-radius-md)] transition-all border border-[var(--ai-border)] profile-toggle-btn">
                             <span class="profile-initials-display">??</span>
@@ -243,6 +255,7 @@ class LearnerHeader extends HTMLElement {
         // Execute the fetch asynchronously without blocking the component rendering
         this.checkAdminStatus();
         this.setupDropdown();
+        this.fetchNotificationsCount();
     }
 
     setupDropdown() {
@@ -253,6 +266,9 @@ class LearnerHeader extends HTMLElement {
             toggleBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 menu.classList.toggle('show');
+                // Close other menus
+                const notifMenu = this.querySelector('.notifications-menu');
+                if (notifMenu) notifMenu.classList.remove('show');
             });
             
             const editBtn = this.querySelector('.edit-profile-btn');
@@ -266,6 +282,37 @@ class LearnerHeader extends HTMLElement {
             document.addEventListener('click', () => {
                 menu.classList.remove('show');
             });
+        }
+
+        // Notifications Dropdown
+        const notifBtn = this.querySelector('.notifications-toggle-btn');
+        const notifMenu = this.querySelector('.notifications-menu');
+
+        if (notifBtn && notifMenu) {
+            notifBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                notifMenu.classList.toggle('show');
+                // Close other menus
+                const profileMenu = this.querySelector('.profile-menu');
+                if (profileMenu) profileMenu.classList.remove('show');
+
+                if (notifMenu.classList.contains('show')) {
+                    this.fetchNotificationsList();
+                }
+            });
+
+            // Close notifications menu when clicking outside
+            document.addEventListener('click', () => {
+                notifMenu.classList.remove('show');
+            });
+
+            const readAllBtn = this.querySelector('.read-all-btn');
+            if (readAllBtn) {
+                readAllBtn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    await this.markAllAsRead();
+                });
+            }
         }
 
         // Update name/role from session if available
@@ -307,6 +354,105 @@ class LearnerHeader extends HTMLElement {
             console.error('Error fetching user info for header:', error);
         }
     }
+
+    async fetchNotificationsCount() {
+        try {
+            const res = await fetch('/api/notifications', { credentials: 'include' });
+            if (res.ok) {
+                const data = await res.json();
+                const dot = this.querySelector('.notification-dot');
+                if (dot) {
+                    if (data.unreadCount > 0) dot.classList.add('show');
+                    else dot.classList.remove('show');
+                }
+            }
+        } catch (err) {
+            console.error('Fetch count error:', err);
+        }
+    }
+
+    async fetchNotificationsList() {
+        const list = this.querySelector('#notifications-list');
+        if (!list) return;
+
+        try {
+            const res = await fetch('/api/notifications', { credentials: 'include' });
+            if (res.ok) {
+                const data = await res.json();
+                if (data.notifications.length === 0) {
+                    list.innerHTML = '<div class="notifications-empty">No notifications yet</div>';
+                } else {
+                    list.innerHTML = data.notifications.map(n => `
+                        <div class="notification-item ${n.read ? '' : 'unread'}" data-id="${n.id}">
+                            <div class="flex justify-between items-start">
+                                <div class="time">${new Date(n.createdAt).toLocaleTimeString()} · ${new Date(n.createdAt).toLocaleDateString()}</div>
+                                <button class="delete-notification-btn text-[var(--ai-text-muted)] hover:text-[var(--ai-danger)] transition-colors" title="Delete notification">
+                                    <span class="material-symbols-outlined text-[16px]">close</span>
+                                </button>
+                            </div>
+                            <div class="title">${n.title}</div>
+                            <div class="message">${n.message}</div>
+                        </div>
+                    `).join('');
+
+                    // Add click listeners to items
+                    list.querySelectorAll('.notification-item').forEach(item => {
+                        item.addEventListener('click', async (e) => {
+                            e.stopPropagation();
+                            const id = item.dataset.id;
+                            await this.markAsRead(id);
+                            item.classList.remove('unread');
+                        });
+
+                        // Add click listener to delete button
+                        const deleteBtn = item.querySelector('.delete-notification-btn');
+                        if (deleteBtn) {
+                            deleteBtn.addEventListener('click', async (e) => {
+                                e.stopPropagation();
+                                console.log('[LearnerHeader] Deleting notification:', item.dataset.id);
+                                const id = item.dataset.id;
+                                await this.deleteNotification(id);
+                            });
+                        }
+                    });
+                }
+            }
+        } catch (err) {
+            console.error('Fetch list error:', err);
+            list.innerHTML = '<div class="notifications-empty">Error loading alerts</div>';
+        }
+    }
+
+    async deleteNotification(id) {
+        try {
+            const res = await fetch(`/api/notifications/${id}`, { method: 'DELETE', credentials: 'include' });
+            if (res.ok) {
+                this.fetchNotificationsCount();
+                this.fetchNotificationsList();
+            }
+        } catch (err) {
+            console.error('Delete notification error:', err);
+        }
+    }
+
+    async markAsRead(id) {
+        try {
+            await fetch(`/api/notifications/${id}/read`, { method: 'PATCH', credentials: 'include' });
+            this.fetchNotificationsCount();
+        } catch (err) {
+            console.error('Mark read error:', err);
+        }
+    }
+
+    async markAllAsRead() {
+        try {
+            await fetch('/api/notifications/read-all', { method: 'PATCH', credentials: 'include' });
+            this.fetchNotificationsCount();
+            this.fetchNotificationsList();
+        } catch (err) {
+            console.error('Mark all read error:', err);
+        }
+    }
 }
 
 class AdminHeader extends HTMLElement {
@@ -324,9 +470,21 @@ class AdminHeader extends HTMLElement {
                 </span>
             </div>
             <div class="flex items-center gap-3">
-                <button class="w-9 h-9 flex items-center justify-center text-[var(--ai-text-dim)] bg-[var(--ai-bg-active)] hover:bg-slate-700 rounded-[var(--ai-radius-md)] transition-all border border-[var(--ai-border)]">
-                    <span class="material-symbols-outlined text-[20px]">notifications</span>
-                </button>
+                <div class="relative notifications-dropdown-container">
+                    <button class="w-9 h-9 flex items-center justify-center text-[var(--ai-text-dim)] bg-[var(--ai-bg-active)] hover:bg-slate-700 rounded-[var(--ai-radius-md)] transition-all border border-[var(--ai-border)] notifications-toggle-btn">
+                        <span class="material-symbols-outlined text-[20px]">notifications</span>
+                        <span class="notification-dot"></span>
+                    </button>
+                    <div class="ai-dropdown-menu notifications-menu p-0">
+                        <div class="px-4 py-3 border-b border-[var(--ai-border)] flex justify-between items-center bg-slate-900/80">
+                            <span class="text-[10px] font-bold text-white uppercase tracking-wider">Notifications</span>
+                            <button class="text-[9px] font-bold text-primary hover:text-white transition-colors read-all-btn uppercase">Mark all as read</button>
+                        </div>
+                        <div id="notifications-list" class="max-h-[320px] overflow-y-auto">
+                            <div class="notifications-empty">Loading...</div>
+                        </div>
+                    </div>
+                </div>
                 <div class="relative profile-dropdown-container">
                     <button class="w-9 h-9 flex items-center justify-center text-[11px] font-bold text-[var(--ai-primary)] bg-[var(--ai-primary-soft)] hover:bg-slate-700 rounded-[var(--ai-radius-md)] transition-all border border-[var(--ai-border)] profile-toggle-btn">
                         <span class="profile-initials-display">??</span>
@@ -351,6 +509,7 @@ class AdminHeader extends HTMLElement {
         `;
         this.setupDropdown();
         this.setupMobileToggle();
+        this.fetchNotificationsCount();
     }
 
     setupMobileToggle() {
@@ -372,6 +531,8 @@ class AdminHeader extends HTMLElement {
             toggleBtn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 menu.classList.toggle('show');
+                const notifMenu = this.querySelector('.notifications-menu');
+                if (notifMenu) notifMenu.classList.remove('show');
             });
 
             const editBtn = this.querySelector('.edit-profile-btn');
@@ -385,6 +546,32 @@ class AdminHeader extends HTMLElement {
             document.addEventListener('click', () => {
                 menu.classList.remove('show');
             });
+        }
+
+        // Notifications Dropdown for Admin
+        const notifBtn = this.querySelector('.notifications-toggle-btn');
+        const notifMenu = this.querySelector('.notifications-menu');
+        if (notifBtn && notifMenu) {
+            notifBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                notifMenu.classList.toggle('show');
+                const adminMenu = this.querySelector('.profile-menu');
+                if (adminMenu) adminMenu.classList.remove('show');
+                if (notifMenu.classList.contains('show')) {
+                    this.fetchNotificationsList();
+                }
+            });
+            document.addEventListener('click', () => {
+                notifMenu.classList.remove('show');
+            });
+
+            const readAllBtn = this.querySelector('.read-all-btn');
+            if (readAllBtn) {
+                readAllBtn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    await this.markAllAsRead();
+                });
+            }
         }
 
         // Update admin info from session
@@ -403,6 +590,94 @@ class AdminHeader extends HTMLElement {
             }
         }
         if (roleEl && storedRole) roleEl.textContent = storedRole;
+    }
+
+    async fetchNotificationsCount() {
+        try {
+            const res = await fetch('/api/notifications', { credentials: 'include' });
+            if (res.ok) {
+                const data = await res.json();
+                const dot = this.querySelector('.notification-dot');
+                if (dot) {
+                    if (data.unreadCount > 0) dot.classList.add('show');
+                    else dot.classList.remove('show');
+                }
+            }
+        } catch (err) { console.error('Admin Fetch count error:', err); }
+    }
+
+    async fetchNotificationsList() {
+        const list = this.querySelector('#notifications-list');
+        if (!list) return;
+        try {
+            const res = await fetch('/api/notifications', { credentials: 'include' });
+            if (res.ok) {
+                const data = await res.json();
+                if (data.notifications.length === 0) {
+                    list.innerHTML = '<div class="notifications-empty">No notifications yet</div>';
+                } else {
+                    list.innerHTML = data.notifications.map(n => `
+                        <div class="notification-item ${n.read ? '' : 'unread'}" data-id="${n.id}">
+                            <div class="flex justify-between items-start">
+                                <div class="time">${new Date(n.createdAt).toLocaleTimeString()} · ${new Date(n.createdAt).toLocaleDateString()}</div>
+                                <button class="delete-notification-btn text-[var(--ai-text-muted)] hover:text-[var(--ai-danger)] transition-colors" title="Delete notification">
+                                    <span class="material-symbols-outlined text-[16px]">close</span>
+                                </button>
+                            </div>
+                            <div class="title">${n.title}</div>
+                            <div class="message">${n.message}</div>
+                        </div>
+                    `).join('');
+
+                    list.querySelectorAll('.notification-item').forEach(item => {
+                        item.addEventListener('click', async (e) => {
+                            e.stopPropagation();
+                            const id = item.dataset.id;
+                            await this.markAsRead(id);
+                            item.classList.remove('unread');
+                        });
+                        const deleteBtn = item.querySelector('.delete-notification-btn');
+                        if (deleteBtn) {
+                            deleteBtn.addEventListener('click', async (e) => {
+                                e.stopPropagation();
+                                console.log('[AdminHeader] Deleting notification:', item.dataset.id);
+                                await this.deleteNotification(item.dataset.id);
+                            });
+                        }
+                    });
+                }
+            }
+        } catch (err) {
+            console.error('Admin Fetch list error:', err);
+            list.innerHTML = '<div class="notifications-empty">Error loading alerts</div>';
+        }
+    }
+
+    async deleteNotification(id) {
+        try {
+            const res = await fetch(`/api/notifications/${id}`, { method: 'DELETE', credentials: 'include' });
+            if (res.ok) {
+                this.fetchNotificationsCount();
+                this.fetchNotificationsList();
+            }
+        } catch (err) { console.error('Admin Delete error:', err); }
+    }
+
+    async markAsRead(id) {
+        try {
+            await fetch(`/api/notifications/${id}/read`, { method: 'PATCH', credentials: 'include' });
+            this.fetchNotificationsCount();
+        } catch (err) { console.error('Admin Mark as read error:', err); }
+    }
+
+    async markAllAsRead() {
+        try {
+            const res = await fetch('/api/notifications/read-all', { method: 'PATCH', credentials: 'include' });
+            if (res.ok) {
+                this.fetchNotificationsCount();
+                this.fetchNotificationsList();
+            }
+        } catch (err) { console.error('Admin Mark all read error:', err); }
     }
 }
 

@@ -16,10 +16,17 @@ function slugify(text) {
         .replace(/\-\-+/g, '-');   // Replace multiple - with single -
 }
 
-// GET /api/tracks - Get all available tracks
+// GET /api/tracks - Get available tracks (with optional status filter)
 router.get('/', verifyToken, async (req, res) => {
     try {
+        const { status } = req.query;
+        const where = {};
+        if (status) {
+            where.status = status;
+        }
+
         const tracks = await prisma.track.findMany({
+            where,
             orderBy: { createdAt: 'desc' }
         });
 
@@ -117,6 +124,12 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
         const { id } = req.params;
         const { name, description, icon, targetDepartments, status, curriculumDraft } = req.body;
 
+        // Fetch current track to detect status transitions
+        const currentTrack = await prisma.track.findUnique({ where: { id }, select: { status: true } });
+        if (!currentTrack) {
+            return res.status(404).json({ error: 'Track not found' });
+        }
+
         // If name is changing, check for uniqueness and update slug
         let slug;
         if (name) {
@@ -146,6 +159,46 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
                 curriculumDraft
             }
         });
+
+        // Notify learners when a track transitions to PUBLISHED
+        if (status === 'PUBLISHED' && currentTrack.status !== 'PUBLISHED') {
+            try {
+                const targetDepts = track.targetDepartments ? track.targetDepartments.split(',').map(d => d.trim()) : [];
+                const isGlobal = targetDepts.length === 0 || targetDepts.some(d => d.toLowerCase() === 'all' || d.toLowerCase() === 'other');
+
+                let userWhere;
+                if (isGlobal) {
+                    userWhere = { role: 'LEARNER' };
+                } else {
+                    userWhere = {
+                        role: 'LEARNER',
+                        OR: [
+                            { tracks: { some: { id: track.id } } },
+                            { department: { in: targetDepts } }
+                        ]
+                    };
+                }
+
+                const usersToNotify = await prisma.user.findMany({
+                    where: userWhere,
+                    select: { id: true }
+                });
+
+                if (usersToNotify.length > 0) {
+                    await prisma.notification.createMany({
+                        data: usersToNotify.map(u => ({
+                            userId: u.id,
+                            type: 'NEW_TRACK',
+                            title: 'New Track Available!',
+                            message: `🚀 A new track "${track.name}" is now available for you.`
+                        }))
+                    });
+                    console.log(`[Notifications] Sent NEW_TRACK to ${usersToNotify.length} learner(s) for "${track.name}" (via PUT)`);
+                }
+            } catch (notifError) {
+                console.error('Error creating publication notifications (PUT):', notifError);
+            }
+        }
 
         res.json(track);
     } catch (error) {
@@ -326,13 +379,59 @@ router.post('/:id/publish', verifyToken, verifyAdmin, async (req, res) => {
         }
 
         // Update track status to PUBLISHED
-        await prisma.track.update({
+        const updatedTrack = await prisma.track.update({
             where: { id },
             data: { 
                 status: 'PUBLISHED',
                 curriculumDraft: null // Clear draft on successful publish
             }
         });
+
+        // --- NEW TRACK NOTIFICATION LOGIC ---
+        // Notify users when a track is published
+        try {
+            const targetDepts = updatedTrack.targetDepartments ? updatedTrack.targetDepartments.split(',').map(d => d.trim()) : [];
+            const isGlobal = targetDepts.length === 0 || targetDepts.some(d => d.toLowerCase() === 'all' || d.toLowerCase() === 'other');
+            
+            // Build user query based on scope
+            let userWhere;
+            if (isGlobal) {
+                // All learners should be notified
+                userWhere = { role: 'LEARNER' };
+            } else {
+                // Only learners in target departments or explicitly assigned
+                userWhere = {
+                    role: 'LEARNER',
+                    OR: [
+                        { tracks: { some: { id: updatedTrack.id } } },
+                        { department: { in: targetDepts } }
+                    ]
+                };
+            }
+
+            const usersToNotify = await prisma.user.findMany({
+                where: userWhere,
+                select: { id: true }
+            });
+
+            if (usersToNotify.length > 0) {
+                const notificationData = usersToNotify.map(u => ({
+                    userId: u.id,
+                    type: 'NEW_TRACK',
+                    title: 'New Track Available!',
+                    message: `🚀 A new track "${updatedTrack.name}" is now available for you.`
+                }));
+
+                await prisma.notification.createMany({
+                    data: notificationData
+                });
+                console.log(`[Notifications] Sent NEW_TRACK to ${usersToNotify.length} learner(s) for "${updatedTrack.name}"`);
+            }
+        } catch (notifError) {
+            console.error('Error creating publication notifications:', notifError);
+            // Don't fail the entire publish request if notifications fail
+        }
+        // --- END NOTIFICATION LOGIC ---
 
         res.json({ message: `Track published successfully with ${orderIndex} item(s).` });
     } catch (error) {
