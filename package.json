@@ -4,6 +4,7 @@
   "description": "",
   "main": "extract.js",
   "scripts": {
+    "start": "node server.js",
     "test": "cross-env NODE_ENV=test jest",
     "format": "prettier --write \"app/**/*.{html,css,js}\" \"server/**/*.js\"",
     "prepare": "husky"

@@ -132,7 +132,7 @@ app.post('/api/seed', async (req, res) => {
 });
 
 // Start Server
-if (process.env.NODE_ENV !== 'test') {
+if (require.main === module && process.env.NODE_ENV !== 'test') {
     app.listen(port, () => {
         console.log(`AI Academy backend listening at http://localhost:${port}`);
     });
