@@ -212,6 +212,8 @@
                 ? 'from-slate-700 to-slate-900' 
                 : 'from-teal-900/30 to-slate-900';
             
+            const truncatedName = trackName.length > 40 ? trackName.substring(0, 37) + '...' : trackName;
+            
             const depts = (track.targetDepartments || '').split(',').map(d => d.trim()).filter(d => d && d !== 'Other');
             const departmentBadges = depts.map(dept => `
                 <span class="status-badge bg-white/10 text-white text-[9px] px-2 py-0.5 uppercase tracking-widest font-bold border border-white/20 backdrop-blur-sm">
@@ -241,7 +243,7 @@
                         </div>
                     </div>
                     <div class="p-4 flex-1 flex flex-col">
-                        <h2 class="text-lg font-extrabold text-white mb-2 font-display uppercase tracking-wider line-clamp-1">${trackName}</h2>
+                        <h2 class="text-lg font-extrabold text-white mb-2 font-display uppercase tracking-wider line-clamp-2" title="${trackName}">${truncatedName}</h2>
                         <p class="text-slate-400 leading-relaxed mb-4 text-[11px]">
                             ${track.description || 'Access dedicated expert training for this specialized track.'}
                         </p>

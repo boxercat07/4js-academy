@@ -191,6 +191,7 @@
                 // Escape strings for safe use in JS
                 const safeName = track.name.replace(/'/g, "\\'");
                 const safeDesc = (track.description || '').replace(/'/g, "\\'").replace(/\n/g, "\\n");
+                const truncatedName = track.name.length > 40 ? track.name.substring(0, 37) + '...' : track.name;
                 
                 return `
                 <div class="glass-card flex flex-col group p-4 hover:border-primary/40 transition-all duration-300">
@@ -201,7 +202,7 @@
                         <span class="status-badge border ${statusColor} text-[10px] px-2 py-0.5">${track.status}</span>
                     </div>
                     
-                    <h3 class="text-lg font-extrabold text-white mb-2 font-display uppercase tracking-wider line-clamp-1">${track.name}</h3>
+                    <h3 class="text-lg font-extrabold text-white mb-2 font-display uppercase tracking-wider line-clamp-2" title="${track.name}">${truncatedName}</h3>
                     
                     <div class="flex flex-wrap gap-1 mb-4">
                         ${departmentTags || '<span class="text-[9px] text-slate-600 italic">No dept.</span>'}
