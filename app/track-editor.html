@@ -366,8 +366,11 @@
                             if (indicator) indicator.textContent = manual ? 'Saving draft...' : 'Auto-saving...';
 
                             const modules = Array.from(modulesContainer.querySelectorAll('ai-module'));
-                            const data = modules.map(mod => {
+                            console.log(`[performSave] Found ${modules.length} modules to save.`);
+                            
+                            const data = modules.map((mod, idx) => {
                                 const items = Array.from(mod.querySelectorAll('ai-content-item'));
+                                console.log(`[performSave] Module ${idx + 1} ("${mod.getAttribute('title')}") has ${items.length} items.`);
                                 return {
                                     step: mod.getAttribute('step'),
                                     title: mod.getAttribute('title'),
@@ -384,7 +387,7 @@
                             // 1. Local Storage fallback/cache
                             localStorage.setItem(`ai-curriculum-${trackId || 'default'}`, JSON.stringify(data));
 
-                            console.log('[performSave] Data to be sent:', JSON.stringify(data, null, 2));
+                            console.log('[performSave] Sending PUT request to /api/tracks/' + trackId);
 
                             try {
                                 if (!window.currentTrack) {
@@ -400,6 +403,8 @@
                                     })
                                 });
 
+                                console.log(`[performSave] Response status: ${response.status} ${response.statusText}`);
+
                                 if (saveBtn && manual) {
                                     saveBtn.disabled = false;
                                     saveBtn.innerHTML = originalBtnContent;
@@ -407,8 +412,7 @@
 
                                 if (response.ok) {
                                     const result = await response.json();
-                                    // Update window.currentTrack with the latest from server (crucial for updatedAt etc)
-                                    window.currentTrack = result;
+                                    console.log('[performSave] Save successful. Updated track status:', result.status);
 
                                     if (indicator) {
                                         indicator.textContent = 'All changes saved';

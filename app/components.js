@@ -1111,14 +1111,15 @@ class AiModule extends HTMLElement {
 
         // Module actions
         this.querySelector('.edit-module')?.addEventListener('click', async () => {
-            const modal = document.querySelector('ai-confirm-modal');
-            if (modal) {
-                await modal.show({
-                    title: 'Edit Module',
-                    message: `Would you like to open the editor for Module: ${this.getAttribute('title')}?`,
-                    confirmText: 'Open Editor',
-                    type: 'info'
-                });
+            const renameModal = document.querySelector('ai-rename-modal');
+            if (renameModal) {
+                const currentTitle = this.getAttribute('title') || '';
+                const newTitle = await renameModal.show(currentTitle, 'Rename Module');
+                if (newTitle && newTitle !== currentTitle) {
+                    this.setAttribute('title', newTitle);
+                    this.querySelector('h3').textContent = newTitle;
+                    // MutationObserver will trigger save
+                }
             }
             dropdown.classList.remove('show');
         });

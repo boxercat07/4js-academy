@@ -124,6 +124,16 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
         const { id } = req.params;
         const { name, description, icon, targetDepartments, status, curriculumDraft } = req.body;
 
+        console.log(`[TRACKS] PUT /api/tracks/${id} - Updating metadata/curriculum`);
+        if (curriculumDraft) {
+            try {
+                const parsed = JSON.parse(curriculumDraft);
+                console.log(`[TRACKS] Curriculum draft received: ${parsed.length} module(s)`);
+            } catch (e) {
+                console.warn('[TRACKS] Failed to parse curriculumDraft JSON');
+            }
+        }
+
         // Fetch current track to detect status transitions
         const currentTrack = await prisma.track.findUnique({ where: { id }, select: { status: true } });
         if (!currentTrack) {
@@ -159,6 +169,7 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
                 curriculumDraft
             }
         });
+        console.log(`[TRACKS] Track ${id} updated successfully in DB.`);
 
         // Notify learners when a track transitions to PUBLISHED
         if (status === 'PUBLISHED' && currentTrack.status !== 'PUBLISHED') {
