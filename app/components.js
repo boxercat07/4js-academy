@@ -956,7 +956,11 @@ class AiModule extends HTMLElement {
                             <div class="ai-dropdown-menu">
                                 <button class="ai-dropdown-item edit-module">
                                     <span class="material-symbols-outlined text-lg">edit</span>
-                                    Edit
+                                    Edit Title
+                                </button>
+                                <button class="ai-dropdown-item edit-subtitle">
+                                    <span class="material-symbols-outlined text-lg">format_list_numbered</span>
+                                    Edit Subtitle
                                 </button>
                                 <button class="ai-dropdown-item delete delete-module">
                                     <span class="material-symbols-outlined text-lg">delete</span>
@@ -1114,10 +1118,27 @@ class AiModule extends HTMLElement {
             const renameModal = document.querySelector('ai-rename-modal');
             if (renameModal) {
                 const currentTitle = this.getAttribute('title') || '';
-                const newTitle = await renameModal.show(currentTitle, 'Rename Module');
+                const newTitle = await renameModal.show(currentTitle, 'Rename Module', 'Module Title');
                 if (newTitle && newTitle !== currentTitle) {
                     this.setAttribute('title', newTitle);
                     this.querySelector('h3').textContent = newTitle;
+                    // MutationObserver will trigger save
+                }
+            }
+            dropdown.classList.remove('show');
+        });
+
+        this.querySelector('.edit-subtitle')?.addEventListener('click', async () => {
+            const renameModal = document.querySelector('ai-rename-modal');
+            if (renameModal) {
+                const currentStep = this.getAttribute('step') || '01';
+                const newStep = await renameModal.show(currentStep, 'Edit Subtitle', 'Subtitle (e.g. Module 01)');
+                if (newStep && newStep !== currentStep) {
+                    this.setAttribute('step', newStep);
+                    const subtitleEl = this.querySelector('span.uppercase.tracking-\\[0\\.2em\\]');
+                    if (subtitleEl) {
+                        subtitleEl.textContent = `Module ${newStep}`;
+                    }
                     // MutationObserver will trigger save
                 }
             }
@@ -2754,8 +2775,8 @@ class AiRenameModal extends HTMLElement {
                         <h3 class="text-xl font-bold text-white uppercase tracking-widest modal-title">Rename</h3>
                     </div>
                     <div class="mb-8">
-                        <label class="block text-[10px] font-bold text-[var(--ai-text-muted)] uppercase tracking-widest mb-2 px-1">Title</label>
-                        <input type="text" id="ai-rename-input" class="w-full bg-[var(--ai-bg-card)] border border-[var(--ai-border)] rounded-[var(--ai-radius-lg)] px-4 py-3 text-white focus:outline-none focus:border-[var(--ai-primary)]/50 transition-all" placeholder="Enter title...">
+                        <label id="ai-rename-label" class="block text-[10px] font-bold text-[var(--ai-text-muted)] uppercase tracking-widest mb-2 px-1">Title</label>
+                        <input type="text" id="ai-rename-input" class="w-full bg-[var(--ai-bg-card)] border border-[var(--ai-border)] rounded-[var(--ai-radius-lg)] px-4 py-3 text-white focus:outline-none focus:border-[var(--ai-primary)]/50 transition-all" placeholder="Enter value...">
                     </div>
                     <div class="flex items-center justify-end gap-3">
                         <button id="ai-rename-cancel" class="px-5 py-2.5 rounded-[var(--ai-radius-lg)] text-sm font-bold text-[var(--ai-text-dim)] hover:text-white">Cancel</button>
@@ -2767,6 +2788,7 @@ class AiRenameModal extends HTMLElement {
         this.container = this.querySelector('#ai-rename-modal-container');
         this.card = this.querySelector('.ai-rename-card');
         this.titleEl = this.querySelector('.modal-title');
+        this.labelEl = this.querySelector('#ai-rename-label');
         this.input = this.querySelector('#ai-rename-input');
         this.cancelBtn = this.querySelector('#ai-rename-cancel');
         this.saveBtn = this.querySelector('#ai-rename-save');
@@ -2776,8 +2798,9 @@ class AiRenameModal extends HTMLElement {
         this.container.querySelector('.absolute').addEventListener('click', () => this.close(null));
     }
 
-    async show(cur = '', title = 'Rename') {
+    async show(cur = '', title = 'Rename', label = 'Title') {
         this.titleEl.textContent = title;
+        this.labelEl.textContent = label;
         this.input.value = cur;
         this.container.classList.remove('opacity-0', 'pointer-events-none');
         this.card.classList.remove('scale-95');

@@ -944,3 +944,9 @@ Result: {
 [2026-03-20T15:40:14.314Z] BULK DELETE: Attempt by 6aa4ee7d-3312-480b-8ddb-ef99fcdee2b5 for IDs: 795bd343-b4b7-4d6b-ac7a-08f785db53b1, 7031c1a4-7f9e-4aee-883f-145fcaa13c6f, 5279f9a3-6051-40b5-a58f-707f6fe54db2
 [2026-03-20T15:40:14.409Z] BULK DELETE: Manual cascade: Deleted 0 enrollments
 [2026-03-20T15:40:14.531Z] BULK DELETE: Successfully deleted 3 users
+[2026-03-20T21:11:30.723Z] DELETE: Attempt for ID: b017d595-c10c-4abb-9230-ff65ee533256 by admin 6aa4ee7d-3312-480b-8ddb-ef99fcdee2b5
+[2026-03-20T21:11:30.787Z] DELETE: Manual cascade: Deleted 0 enrollments
+[2026-03-20T21:11:30.877Z] DELETE: Successfully deleted user b017d595-c10c-4abb-9230-ff65ee533256
+[2026-03-20T21:11:51.186Z] BULK DELETE: Attempt by 6aa4ee7d-3312-480b-8ddb-ef99fcdee2b5 for IDs: a467ad6f-e1cc-4fd0-8f7f-eecf90a40ba0, a6d2cf9f-27bc-4a95-8f9d-ea41b0d2e946, 6f42892b-7e17-4b29-999d-460309225245
+[2026-03-20T21:11:51.266Z] BULK DELETE: Manual cascade: Deleted 1 enrollments
+[2026-03-20T21:11:51.303Z] BULK DELETE: Successfully deleted 3 users
