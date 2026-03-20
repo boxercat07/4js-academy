@@ -323,7 +323,13 @@ router.post('/bulk', verifyToken, verifyAdmin, async (req, res) => {
 router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
     try {
         const { id } = req.params;
-        const { firstName, lastName, email, trackIds, role, department } = req.body;
+        const { firstName, lastName, email, trackIds, role, department, password } = req.body;
+
+        let passwordHash = undefined;
+        if (password) {
+            const salt = await bcrypt.genSalt(10);
+            passwordHash = await bcrypt.hash(password, salt);
+        }
 
         const oldUser = await prisma.user.findUnique({
             where: { id },
@@ -337,6 +343,7 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
                 lastName,
                 email,
                 role,
+                passwordHash,
                 tracks: trackIds && Array.isArray(trackIds) ? {
                     set: trackIds.map(id => ({ id }))
                 } : undefined,
