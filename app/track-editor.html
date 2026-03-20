@@ -1,0 +1,848 @@
+<!doctype html>
+<html class="dark" lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Academy Editor - Track Curriculum</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="shared.css" />
+    <script src="video-utils.js"></script>
+    <script src="components.js"></script>
+    <script src="tailwind-config.js"></script>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Michroma&amp;family=Noto+Sans:wght@300;400;500;600;700&amp;display=swap"
+        rel="stylesheet" />
+    <link
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+        rel="stylesheet" />
+    
+    <!-- Quill Rich Text Editor -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Noto Sans', sans-serif;
+        }
+
+        h1,
+        h2,
+        .branding-font {
+            font-family: 'Michroma', sans-serif;
+        }
+
+        .drag-handle {
+            cursor: grab;
+        }
+
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+
+        .module-content {
+            max-height: 2500px;
+            transition:
+                max-height 0.3s ease-out,
+                padding 0.3s ease;
+        }
+
+        .module-collapsed .module-content {
+            max-height: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            overflow: hidden;
+        }
+
+        .chevron-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .module-collapsed .chevron-icon {
+            transform: rotate(-90deg);
+        }
+
+        @keyframes bounce-in {
+            0% {
+                transform: scale(0.9) translateY(10px);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.05) translateY(-2px);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(1) translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .animate-bounce-in {
+            animation: bounce-in 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+
+        .action-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.5rem;
+            font-weight: 700;
+            font-size: 0.875rem;
+            transition: all 0.2s;
+            min-width: 140px;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 640px) {
+            .action-btn {
+                width: 100%;
+                min-width: 0;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
+    <!-- Top Navigation Bar -->
+    <admin-header></admin-header>
+    <div class="flex h-[calc(100vh-60px)] overflow-hidden">
+        <admin-sidebar active-page="tracks"></admin-sidebar>
+        <main class="flex-1 overflow-y-auto p-6 scroll-smooth bg-background-dark">
+            <div class="max-w-5xl mx-auto w-full mb-20">
+                <!-- Track Meta Header -->
+                <div class="mb-8 border-b border-slate-800 pb-8">
+                    <div class="flex items-start justify-between mb-4">
+                        <div>
+                            <div class="flex items-center gap-4 mb-2">
+                                <div class="size-12 rounded-xl bg-slate-800 flex items-center justify-center text-primary border border-slate-700">
+                                    <span id="track-icon-header" class="material-symbols-outlined text-3xl text-primary">terminal</span>
+                                </div>
+                                <div>
+                                    <span id="track-status-badge" class="status-badge bg-amber-500/10 text-amber-500 border border-amber-500/20">
+                                        Draft
+                                    </span>
+                                    <div id="save-indicator-container" class="flex items-center gap-2 ml-4">
+                                        <div id="save-status-dot" class="size-2 rounded-full bg-emerald-500 transition-colors duration-300"></div>
+                                        <span id="save-indicator" class="text-[10px] font-bold text-slate-500 uppercase tracking-widest transition-all duration-300">All changes saved</span>
+                                    </div>
+                                    <h1 class="text-3xl font-display text-white mb-0 uppercase tracking-widest pt-1">Track Curriculum</h1>
+                                </div>
+                            </div>
+                            <p class="text-slate-400 max-w-2xl leading-relaxed">
+                                Loading curriculum details...
+                            </p>
+                        </div>
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto mt-4 sm:mt-0">
+                            <button
+                                onclick="saveCurriculum(true)"
+                                class="action-btn bg-slate-800 border border-slate-700 text-slate-300 hover:bg-slate-700 shadow-lg">
+                                <span class="material-symbols-outlined text-[18px]">cloud_upload</span>
+                                Save Draft
+                            </button>
+                            <button
+                                onclick="previewTrack()"
+                                class="action-btn border border-slate-700 text-slate-300 hover:bg-slate-800">
+                                <span class="material-symbols-outlined text-[18px]">visibility</span>
+                                Preview
+                            </button>
+                            <button
+                                class="action-btn bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-500/20"
+                                onclick="document.getElementById('publish-modal').classList.remove('hidden')">
+                                <span class="material-symbols-outlined text-[18px]">publish</span>
+                                Publish
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Editor Controls -->
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center gap-1 border-b border-slate-800 w-full">
+                        <button
+                            class="border-b-2 border-primary pb-4 text-sm font-bold text-white flex items-center gap-2">
+                            <span class="material-symbols-outlined text-sm">account_tree</span>
+                            Structure Editor
+                        </button>
+                        <button onclick="openTrackSettings()"
+                            class="border-b-2 border-transparent pb-4 text-sm font-bold text-slate-500 hover:text-slate-300 transition-colors flex items-center gap-2 ml-6">
+                            <span class="material-symbols-outlined text-sm">settings</span>
+                            Track Settings
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Sequential Content Flow -->
+                <div class="space-y-6" id="modules-container">
+
+
+                    <!-- Global Add Module Button -->
+                    <div class="pt-6">
+                        <button id="add-module-btn"
+                            class="w-full py-8 bg-slate-900/20 border-2 border-dashed border-slate-800 rounded-xl hover:border-[var(--ai-primary)]/50 hover:bg-[var(--ai-primary)]/5 group transition-all">
+                            <div class="flex flex-col items-center gap-3">
+                                <div
+                                    class="size-12 rounded-full bg-slate-800 group-hover:bg-primary group-hover:text-white text-slate-500 flex items-center justify-center transition-all">
+                                    <span class="material-symbols-outlined text-2xl">add_box</span>
+                                </div>
+                                <span
+                                    class="branding-font text-xs font-bold uppercase tracking-widest text-slate-500 group-hover:text-primary transition-colors">
+                                    Create New Module
+                                </span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Float Info Panel -->
+                <footer class="mt-20 border-t border-slate-800 pt-10 grid grid-cols-1 md:grid-cols-3 gap-8 pb-12">
+                    <div class="flex flex-col gap-2">
+                        <span class="text-slate-500 text-[10px] font-bold uppercase tracking-widest">
+                            Track Summary
+                        </span>
+                        <div class="flex items-center gap-6">
+                            <div>
+                                <p class="text-2xl font-bold" id="total-lessons-count">0</p>
+                                <p class="text-xs text-slate-500 uppercase font-bold tracking-tighter">Lessons
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="md:col-span-2 flex justify-end items-center gap-4"></div>
+                </footer>
+
+                 <!-- Track Settings Modal -->
+                <div class="hidden fixed inset-0 z-[200] flex items-center justify-center" id="settings-modal">
+                    <!-- Backdrop -->
+                    <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"
+                        onclick="closeTrackSettings()"></div>
+                    <!-- Modal Card -->
+                    <div class="relative bg-background-dark border border-slate-800 w-full max-w-md p-8 rounded-xl shadow-2xl mx-4">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="branding-font text-lg font-bold tracking-tight text-white uppercase">
+                                Track Settings
+                            </h3>
+                            <button onclick="closeTrackSettings()" class="text-slate-400 hover:text-white material-symbols-outlined">close</button>
+                        </div>
+                        
+                        <form id="settings-form" onsubmit="saveTrackMetadata(event)" class="space-y-5">
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-widest">Track Name</label>
+                                <input type="text" id="setting-name" required
+                                    class="w-full px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-lg text-white focus:border-primary focus:outline-none" />
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-widest">Description</label>
+                                <textarea id="setting-description" rows="3"
+                                    class="w-full px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-lg text-white focus:border-primary focus:outline-none"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-widest">Material Icon Name</label>
+                                <div class="flex gap-2">
+                                     <input type="text" id="setting-icon" placeholder="e.g. terminal, school, business..."
+                                        class="w-full px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-lg text-white focus:border-primary focus:outline-none flex-1" />
+                                     <div class="size-11 rounded-lg bg-slate-900 flex items-center justify-center border border-slate-800">
+                                        <span id="setting-icon-preview" class="material-symbols-outlined text-primary text-2xl">terminal</span>
+                                     </div>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-widest">Status</label>
+                                <select id="setting-status"
+                                    class="w-full px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-lg text-white focus:border-primary focus:outline-none appearance-none">
+                                    <option value="DRAFT">DRAFT</option>
+                                    <option value="PUBLISHED">PUBLISHED</option>
+                                </select>
+                            </div>
+
+                            <div class="pt-4 flex items-center justify-end gap-3">
+                                <button type="button" onclick="closeTrackSettings()"
+                                    class="px-5 py-2.5 rounded-lg text-sm font-bold text-slate-400 hover:text-white hover:bg-slate-800 transition-all">
+                                    Cancel
+                                </button>
+                                <button type="submit" id="save-settings-btn"
+                                    class="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-lg text-sm font-bold transition-all shadow-lg shadow-primary/20">
+                                    Save Settings
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Publish Confirmation Modal -->
+                <div class="hidden fixed inset-0 z-[200] flex items-center justify-center" id="publish-modal">
+                    <!-- Backdrop -->
+                    <div class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm"
+                        onclick="document.getElementById('publish-modal').classList.add('hidden')"></div>
+                    <!-- Modal Card -->
+                    <div
+                        class="relative bg-background-dark border border-slate-800 w-full max-w-md p-8 rounded-xl shadow-2xl mx-4">
+                        <div class="flex items-center gap-4 mb-6">
+                            <div
+                                class="size-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+                                <span class="material-symbols-outlined text-3xl">upload_file</span>
+                            </div>
+                            <h3 class="branding-font text-lg font-bold tracking-tight text-white">
+                                Publish Changes
+                            </h3>
+                        </div>
+                        <p class="text-slate-400 text-sm leading-relaxed mb-8">
+                            Are you sure you want to publish these changes? This will update the live 
+                            curriculum for all enrolled students.
+                        </p>
+                        <div class="flex items-center justify-end gap-3">
+                            <button
+                                class="px-5 py-2.5 rounded-lg text-sm font-bold text-slate-400 hover:text-white hover:bg-slate-800 transition-all"
+                                onclick="document.getElementById('publish-modal').classList.add('hidden')">
+                                Cancel
+                            </button>
+                            <button
+                                class="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-lg text-sm font-bold transition-all shadow-lg shadow-primary/20"
+                                onclick="publishTrack()">
+                                Confirm &amp; Publish
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+                
+                <!-- Quill Rich Text Editor -->
+                <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+                <ai-page-editor-modal></ai-page-editor-modal>
+                <script>
+                    document.addEventListener('DOMContentLoaded', () => {
+                        const urlParams = new URLSearchParams(window.location.search);
+                        const trackId = urlParams.get('id');
+                        
+                        // If no ID is provided, we should probably redirect back to management or show an error
+                        if (!trackId) {
+                            console.error('No track ID provided');
+                            // For backward compatibility or if they just click the sidebar, we might want a default or redirect
+                            // window.location.href = 'admin-tracks.html';
+                            // return;
+                        }
+
+                        const modulesContainer = document.getElementById('modules-container');
+                        if (!modulesContainer) return;
+
+                        let autoSaveTimeout;
+                        let isSaving = false;
+
+                        const performSave = window.performSave = async (manual = false) => {
+                            if (!trackId) return;
+                            
+                            const indicator = document.getElementById('save-indicator');
+                            const dot = document.getElementById('save-status-dot');
+
+                            if (!window.currentTrack) {
+                                console.warn('Cannot save: Track data not loaded yet');
+                                if (indicator) indicator.textContent = 'Data not loaded yet';
+                                if (manual) showToast('Cannot save: track data not loaded', 'error');
+                                return;
+                            }
+
+                            if (isSaving && !manual) return;
+                            
+                            // If manual save is requested but already saving, we should wait or queue? 
+                            // For simplicity, let's just abort if already saving BUT update UI if manual.
+                            if (isSaving && manual) {
+                                console.log('[performSave] Manual save requested while already saving. Waiting...');
+                                // We'll just let the current save finish, or try again in a bit.
+                                setTimeout(() => performSave(true), 500); 
+                                return;
+                            }
+
+                            isSaving = true;
+
+                            const saveBtn = document.querySelector('button[onclick="saveCurriculum(true)"]');
+                            const originalBtnContent = saveBtn ? saveBtn.innerHTML : '';
+                            if (saveBtn && manual) {
+                                saveBtn.disabled = true;
+                                saveBtn.innerHTML = '<span class="material-symbols-outlined animate-spin text-[18px]">sync</span> Saving...';
+                            }
+
+                            if (indicator) indicator.textContent = manual ? 'Saving draft...' : 'Auto-saving...';
+
+                            const modules = Array.from(modulesContainer.querySelectorAll('ai-module'));
+                            const data = modules.map(mod => {
+                                const items = Array.from(mod.querySelectorAll('ai-content-item'));
+                                return {
+                                    step: mod.getAttribute('step'),
+                                    title: mod.getAttribute('title'),
+                                    items: items.map(item => {
+                                        const attrs = {};
+                                        Array.from(item.attributes).forEach(attr => {
+                                            attrs[attr.name] = attr.value;
+                                        });
+                                        return attrs;
+                                    })
+                                };
+                            });
+
+                            // 1. Local Storage fallback/cache
+                            localStorage.setItem(`ai-curriculum-${trackId || 'default'}`, JSON.stringify(data));
+
+                            console.log('[performSave] Data to be sent:', JSON.stringify(data, null, 2));
+
+                            try {
+                                if (!window.currentTrack) {
+                                    console.warn('[performSave] window.currentTrack missing. Attempting to save without metadata.');
+                                }
+                                const response = await fetch(`/api/tracks/${trackId}`, {
+                                    method: 'PUT',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    credentials: 'include',
+                                    body: JSON.stringify({
+                                        ...window.currentTrack,
+                                        curriculumDraft: JSON.stringify(data)
+                                    })
+                                });
+
+                                if (saveBtn && manual) {
+                                    saveBtn.disabled = false;
+                                    saveBtn.innerHTML = originalBtnContent;
+                                }
+
+                                if (response.ok) {
+                                    const result = await response.json();
+                                    // Update window.currentTrack with the latest from server (crucial for updatedAt etc)
+                                    window.currentTrack = result;
+
+                                    if (indicator) {
+                                        indicator.textContent = 'All changes saved';
+                                        dot.className = 'size-2 rounded-full bg-emerald-500';
+                                    }
+                                    if (window.showToast && manual) window.showToast('Draft saved successfully');
+                                    
+                                    // Update lessons count
+                                    updateLessonsCount(data);
+                                    // Update status badge (since we just saved a draft)
+                                    updateStatusBadge(result.status, true);
+                                } else {
+                                    throw new Error('Save failed');
+                                }
+                            } catch (error) {
+                                console.error('Save failed:', error);
+                                if (saveBtn && manual) {
+                                    saveBtn.disabled = false;
+                                    saveBtn.innerHTML = originalBtnContent;
+                                }
+                                if (indicator) {
+                                    indicator.textContent = 'Save failed';
+                                    dot.className = 'size-2 rounded-full bg-red-500';
+                                }
+                                if (window.showToast) window.showToast('Failed to save draft', 'error');
+                            } finally {
+                                isSaving = false;
+                            }
+                        };
+
+                        const previewTrack = window.previewTrack = () => {
+                            console.log('[Preview] Preview button clicked.');
+                            if (!window.currentTrack) {
+                                console.error('[Preview] Track data not loaded yet.');
+                                alert('Track data not loaded yet.');
+                                return;
+                            }
+                            const id = window.currentTrack.id;
+                            const name = window.currentTrack.name || '';
+                            const targetPage = name.toUpperCase().includes('TECHNICAL') ? 'learning-track-technical.html' : 'learning-track-business.html';
+                            const url = `${targetPage}?preview=true&id=${id}`;
+                            console.log('[Preview] Redirecting to:', url);
+                            window.location.href = url;
+                        };
+
+                        const saveCurriculum = window.saveCurriculum = (manual = false) => {
+                            const indicator = document.getElementById('save-indicator');
+                            const dot = document.getElementById('save-status-dot');
+
+                            if (!manual) {
+                                if (indicator && !indicator.textContent.includes('Unsaved')) {
+                                    indicator.textContent = 'Unsaved changes...';
+                                    if (dot) {
+                                        dot.classList.remove('bg-emerald-500');
+                                        dot.classList.add('bg-amber-500');
+                                    }
+                                }
+                                clearTimeout(autoSaveTimeout);
+                                autoSaveTimeout = setTimeout(() => performSave(), 2000);
+                                return;
+                            }
+                            
+                            performSave(true);
+                        };
+
+                        const loadCurriculum = async () => {
+                            if (!trackId) {
+                                return;
+                            }
+
+                            try {
+                                const response = await fetch(`/api/tracks/${trackId}/modules`, { credentials: 'include' });
+                                if (!response.ok) throw new Error('Failed to load track data');
+                                
+                                const data = await response.json();
+                                
+                                // Update Page Header
+                                if (data.track) {
+                                    const titleEl = document.querySelector('h1.font-display');
+                                    if (titleEl) titleEl.textContent = data.track.name + ' TRACK';
+                                    
+                                    const descEl = document.querySelector('p.text-slate-400.max-w-2xl');
+                                    if (descEl) descEl.textContent = data.track.description || '';
+
+                                     const badge = document.getElementById('track-status-badge');
+                                    if (badge) {
+                                        updateStatusBadge(data.track.status, !!data.track.curriculumDraft);
+                                    }
+
+                                    const iconEl = document.getElementById('track-icon-header');
+                                    if (iconEl) iconEl.textContent = data.track.icon || (data.track.name.toUpperCase().includes('TECH') ? 'terminal' : 'trending_up');
+                                    
+                                    // Store current track data for settings modal
+                                    window.currentTrack = data.track;
+                                }
+
+                                // Priority 1: Server-side Draft
+                                if (data.track && data.track.curriculumDraft) {
+                                    try {
+                                        const draft = JSON.parse(data.track.curriculumDraft);
+                                        if (Array.isArray(draft) && draft.length > 0) {
+                                            renderCurriculum(draft);
+                                            updateLessonsCount(draft);
+                                            return;
+                                        }
+                                    } catch (e) {
+                                        console.error('Failed to parse server draft:', e);
+                                    }
+                                }
+
+                                // Priority 2: Published Modules (Transition/Fallback)
+                                const groupedModules = [];
+                                data.modules.forEach(m => {
+                                    const modTitle = m.description || 'Module';
+                                    const modStep = m.order ? m.order.toString().padStart(2, '0') : '01';
+                                    
+                                    let group = groupedModules.find(g => g.title === modTitle);
+                                    if (!group) {
+                                        group = { title: modTitle, step: modStep, items: [] };
+                                        groupedModules.push(group);
+                                    }
+                                    
+                                    group.items.push({
+                                        title: m.title,
+                                        type: m.type,
+                                        'file-id': m.fileId || '',
+                                        'video-id': m.mediaUrl && m.mediaUrl.length < 50 ? m.mediaUrl : '',
+                                        'blob-url': m.mediaUrl && m.mediaUrl.startsWith('blob:') ? m.mediaUrl : ''
+                                    });
+                                });
+
+                                if (groupedModules.length > 0) {
+                                    renderCurriculum(groupedModules);
+                                    updateLessonsCount(groupedModules);
+                                } else {
+                                    // Priority 3: Local Storage fallback
+                                    const saved = localStorage.getItem(`ai-curriculum-${trackId}`);
+                                    if (saved) {
+                                        const parsed = JSON.parse(saved);
+                                        renderCurriculum(parsed);
+                                        updateLessonsCount(parsed);
+                                    }
+                                }
+
+                            } catch (err) {
+                                console.error('Error loading curriculum:', err);
+                            }
+                        };
+
+                        const renderCurriculum = (data) => {
+                            const addModuleBtnArea = document.getElementById('add-module-btn').parentElement;
+                            modulesContainer.querySelectorAll('ai-module').forEach(m => m.remove());
+
+                            data.forEach(modData => {
+                                const mod = document.createElement('ai-module');
+                                mod.setAttribute('step', modData.step);
+                                mod.setAttribute('title', modData.title);
+
+                                modData.items.forEach(itemAttrs => {
+                                    const item = document.createElement('ai-content-item');
+                                    Object.entries(itemAttrs).forEach(([name, value]) => {
+                                        item.setAttribute(name, value);
+                                    });
+                                    mod.appendChild(item);
+                                });
+
+                                modulesContainer.insertBefore(mod, addModuleBtnArea);
+                            });
+                        };
+
+                        const updateLessonsCount = (curriculumData) => {
+                            let count = 0;
+                            curriculumData.forEach(mod => {
+                                count += (mod.items || []).length;
+                            });
+                            const el = document.getElementById('total-lessons-count');
+                            if (el) el.textContent = count;
+                        };
+
+                        const updateStatusBadge = (status, hasDraft) => {
+                            const badge = document.getElementById('track-status-badge');
+                            if (!badge) return;
+
+                            if (status === 'PUBLISHED') {
+                                if (hasDraft) {
+                                    badge.textContent = 'Unpublished Changes';
+                                    badge.className = 'status-badge bg-amber-500/10 text-amber-500 border border-amber-500/20';
+                                } else {
+                                    badge.textContent = 'Published';
+                                    badge.className = 'status-badge bg-emerald-500/10 text-emerald-500 border border-emerald-500/20';
+                                }
+                            } else {
+                                badge.textContent = 'Draft';
+                                badge.className = 'status-badge bg-amber-500/10 text-amber-500 border border-amber-500/20';
+                            }
+                        };
+
+                        // Initial Load
+                        loadCurriculum();
+
+                        const fetchTrackStatus = async () => {
+                            if (!trackId) return;
+                            try {
+                                const response = await fetch(`/api/tracks/${trackId}`, { credentials: 'include' });
+                                const track = await response.json();
+                                if (track) {
+                                    const badge = document.getElementById('track-status-badge');
+                                     if (badge) {
+                                        updateStatusBadge(track.status, !!track.curriculumDraft);
+                                    }
+                                    const iconEl = document.getElementById('track-icon-header');
+                                    if (iconEl && track.icon) iconEl.textContent = track.icon;
+                                    
+                                    // Update store
+                                    window.currentTrack = track;
+                                }
+                            } catch (err) {
+                                console.error('Error fetching track status:', err);
+                            }
+                        };
+
+                        fetchTrackStatus();
+
+                        // Main Sortable (Modules)
+                        new Sortable(modulesContainer, {
+                            animation: 150,
+                            handle: '.drag-handle',
+                            ghostClass: 'bg-slate-800/50',
+                            chosenClass: 'border-[var(--ai-primary)]/50',
+                            dragClass: 'opacity-50',
+                            onEnd: () => saveCurriculum()
+                        });
+
+                        const addModuleBtn = document.getElementById('add-module-btn');
+                        if (addModuleBtn) {
+                            addModuleBtn.addEventListener('click', async () => {
+                                const renameModal = document.querySelector('ai-rename-modal');
+                                if (renameModal) {
+                                    const title = await renameModal.show('', 'Create New Module');
+                                    if (title) {
+                                        const modules = modulesContainer.querySelectorAll('ai-module');
+                                        const nextStepNum = modules.length + 1;
+                                        const nextStep = nextStepNum.toString().padStart(2, '0');
+
+                                        const newModule = document.createElement('ai-module');
+                                        newModule.setAttribute('step', nextStep);
+                                        newModule.setAttribute('title', title);
+
+                                        modulesContainer.insertBefore(newModule, addModuleBtn.parentElement);
+                                        saveCurriculum();
+                                    }
+                                }
+                            });
+                        }
+
+                        // Mutation Observer for internal changes
+                        const observer = new MutationObserver((mutations) => {
+                            let shouldSave = false;
+                            mutations.forEach(m => {
+                                if (m.type === 'childList') shouldSave = true;
+                                if (m.type === 'attributes' && m.attributeName !== 'locked') shouldSave = true;
+                            });
+                            if (shouldSave) saveCurriculum();
+                        });
+
+                        observer.observe(modulesContainer, {
+                            childList: true,
+                            subtree: true,
+                            attributes: true,
+                            attributeFilter: ['title', 'type', 'icon', 'color', 'blob-url', 'success-threshold', 'subtype', 'video-id', 'step', 'file-id']
+                        });
+
+                        // Toast system
+                        window.showToast = (message, type = 'success') => {
+                            const toast = document.createElement('div');
+                            toast.className = `fixed bottom-8 right-8 z-[2000] px-6 py-3 rounded-lg shadow-2xl flex items-center gap-3 animate-bounce-in ${type === 'success' ? 'bg-emerald-600 text-white' : 'bg-slate-800 text-white border border-slate-700'}`;
+                            toast.innerHTML = `
+                                <span class="material-symbols-outlined">${type === 'success' ? 'check_circle' : 'info'}</span>
+                                <span class="text-sm font-bold">${message}</span>
+                            `;
+                            document.body.appendChild(toast);
+                            setTimeout(() => {
+                                toast.classList.add('opacity-0', 'translate-y-2');
+                                toast.style.transition = 'all 0.3s ease';
+                                setTimeout(() => toast.remove(), 300);
+                            }, 3000);
+                        };
+
+                        window.publishTrack = async () => {
+                            const modal = document.getElementById('publish-modal');
+                            const modulesContainer = document.getElementById('modules-container');
+                            
+                            // 0. Collect current state from DOM
+                            const modules = Array.from(modulesContainer.querySelectorAll('ai-module'));
+                            const curriculum = modules.map(mod => {
+                                const items = Array.from(mod.querySelectorAll('ai-content-item'));
+                                return {
+                                    step: mod.getAttribute('step'),
+                                    title: mod.getAttribute('title'),
+                                    items: items.map(item => {
+                                        const attrs = {};
+                                        Array.from(item.attributes).forEach(attr => {
+                                            attrs[attr.name] = attr.value;
+                                        });
+                                        return attrs;
+                                    })
+                                };
+                            });
+
+                            if (!curriculum.length) {
+                                showToast('No curriculum data found to publish.', 'error');
+                                return;
+                            }
+
+                            try {
+                                if (!trackId) {
+                                    showToast('Track ID missing. Cannot publish.', 'error');
+                                    return;
+                                }
+
+                                // 1. Check for local files
+                                const hasLocalFiles = curriculum.some(mod => 
+                                    (mod.items || []).some(item => 
+                                        (item['blob-url'] && item['blob-url'].startsWith('blob:')) || 
+                                        (item.type === 'QUIZ' && (item.fileId || item['file-id']))
+                                    )
+                                );
+
+                                if (hasLocalFiles) {
+                                    const confirmed = await window.confirm(
+                                        "Warning: Some content items use local files. These files will only be accessible in your current session. " +
+                                        "To make them available to learners, they must be hosted on a permanent server. " +
+                                        "Do you want to proceed with publishing anyway?"
+                                    );
+                                    if (!confirmed) return;
+                                }
+
+                                // 2. Publish
+                                const publishRes = await fetch(`/api/tracks/${trackId}/publish`, {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    credentials: 'include',
+                                    body: JSON.stringify({ modules: curriculum })
+                                });
+
+                                if (!publishRes.ok) {
+                                    const err = await publishRes.json();
+                                    throw new Error(err.error || 'Failed to publish');
+                                }
+
+                                modal.classList.add('hidden');
+                                showToast('Curriculum published successfully!');
+                                fetchTrackStatus();
+                            } catch (err) {
+                                console.error('Publish error:', err);
+                                showToast(err.message || 'Error publishing track.', 'error');
+                            }
+                        };
+
+                        // Track Settings Logic
+                        window.openTrackSettings = () => {
+                            if (!window.currentTrack) return;
+                            const t = window.currentTrack;
+                            document.getElementById('setting-name').value = t.name;
+                            document.getElementById('setting-description').value = t.description || '';
+                            document.getElementById('setting-icon').value = t.icon || 'terminal';
+                            document.getElementById('setting-icon-preview').textContent = t.icon || 'terminal';
+                            document.getElementById('setting-status').value = t.status;
+                            document.getElementById('settings-modal').classList.remove('hidden');
+                        };
+
+                        window.closeTrackSettings = () => {
+                            document.getElementById('settings-modal').classList.add('hidden');
+                        };
+
+                        const settingIconInput = document.getElementById('setting-icon');
+                        if (settingIconInput) {
+                            settingIconInput.addEventListener('input', (e) => {
+                                document.getElementById('setting-icon-preview').textContent = e.target.value.trim() || 'question_mark';
+                            });
+                        }
+
+                        window.saveTrackMetadata = async (e) => {
+                            e.preventDefault();
+                            const saveBtn = document.getElementById('save-settings-btn');
+                            saveBtn.disabled = true;
+                            saveBtn.textContent = 'Saving...';
+
+                            const payload = {
+                                name: document.getElementById('setting-name').value,
+                                description: document.getElementById('setting-description').value,
+                                icon: document.getElementById('setting-icon').value,
+                                status: document.getElementById('setting-status').value
+                            };
+
+                            try {
+                                const response = await fetch(`/api/tracks/${trackId}`, {
+                                    method: 'PUT',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    credentials: 'include',
+                                    body: JSON.stringify(payload)
+                                });
+
+                                if (!response.ok) throw new Error('Failed to update settings');
+                                
+                                showToast('Track settings updated successfully!');
+                                closeTrackSettings();
+                                fetchTrackStatus(); // Refresh UI header
+                            } catch (err) {
+                                console.error('Save settings error:', err);
+                                showToast(err.message || 'Error updating settings', 'error');
+                            } finally {
+                                saveBtn.disabled = false;
+                                saveBtn.textContent = 'Save Settings';
+                            }
+                        };
+                    });
+                </script>
+            </div>
+        </main>
+    </div>
+    <!-- Modals -->
+    <ai-confirm-modal></ai-confirm-modal>
+    <ai-quiz-upload-modal></ai-quiz-upload-modal>
+    <ai-quiz-modal></ai-quiz-modal>
+    <ai-rename-modal></ai-rename-modal>
+    <ai-media-upload-modal></ai-media-upload-modal>
+    <ai-media-viewer-modal></ai-media-viewer-modal>
+    <ai-video-insert-modal></ai-video-insert-modal>
+    <ai-link-insert-modal></ai-link-insert-modal>
+    <ai-content-picker-modal></ai-content-picker-modal>
+
+    <script src="video-utils.js"></script>
+    <ai-profile-modal></ai-profile-modal>
+</body>
+
+</html>

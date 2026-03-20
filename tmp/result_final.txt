@@ -1,0 +1,17 @@
+--- USERS ---
+Vincent Martinet (vincent.martinet@4js.com) - Dept: null
+AlexJet Ski (jetski@4js.com) - Dept: null
+Anti Gravity (antigravity@admin.com) - Dept: null
+John Doe (jdoe@test.com) - Dept: Sales
+Admin Admin (admin@4js.com) - Dept: null
+Testing AdminAdmin (testadmin@example.com) - Dept: null
+Admin Four (admin4@example.com) - Dept: null
+Raphaël Martinet (gs.martinet@gmail.com) - Dept: null
+Debug Admin (debugadmin@example.com) - Dept: null
+
+--- TRACKS & MODULES ---
+[PUBLISHED] Track: BUSINESS (Updated) (ID: 8ec8753d-008e-4a0b-b038-cfd3da7c4ab7, Depts: Sales,Other)
+  - [DRAFT] Enterprise Integration (Type: DOCUMENT, Group: Connecting with generic stacks, ID: e745f638-b80c-4bb9-af4e-991b61cdbac4)
+[DRAFT] Track: AI - Technical Track (ID: 138b8490-cd5a-4575-87f0-671ba5a03d78, Depts: null)
+
+--- ENROLLMENTS ---

@@ -1,0 +1,207 @@
+/* Academy Portal - Shared Styles */
+@import url('https://fonts.googleapis.com/css2?family=Michroma&family=Noto+Sans:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap');
+
+:root {
+    --color-primary: 27 95 254;
+    /* #1b5ffe */
+    --color-primary-hover: 37 99 235;
+    /* #2563eb */
+    /* Tailwinds blue-600 approx */
+    --color-primary-glow: rgba(27, 95, 254, 0.35);
+    --color-bg-dark: 15 21 35;
+    /* #0f1523 */
+    --color-text-main: 226 232 240;
+    /* #e2e8f0 */
+
+    --color-glass-bg: rgba(23, 32, 54, 0.7);
+    --color-glass-bg-card: rgba(15, 21, 35, 0.8);
+    --color-glass-border: rgba(255, 255, 255, 0.08);
+    --color-glass-border-card: rgba(255, 255, 255, 0.06);
+    --color-glass-border-hover: rgba(27, 95, 254, 0.4);
+
+    --radius-card: 1rem;
+    --radius-btn: 0.75rem;
+
+    /* Sidebar Variables */
+    --sidebar-width: 240px;
+    --sidebar-collapsed-width: 72px;
+    --sidebar-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+    font-family: 'Noto Sans', sans-serif;
+    background: rgb(var(--color-bg-dark));
+    color: rgb(var(--color-text-main));
+    margin: 0;
+    min-height: 100vh;
+}
+
+.font-display {
+    font-family: 'Michroma', sans-serif;
+}
+
+.apple-blur {
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+}
+
+.glass {
+    background: var(--color-glass-bg);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--color-glass-border);
+}
+
+.glass-card {
+    background: var(--color-glass-bg-card);
+    border: 1px solid var(--color-glass-border-card);
+    border-radius: var(--radius-card);
+    transition: all 0.3s;
+}
+
+.glass-card:hover {
+    border-color: var(--color-glass-border-hover);
+}
+
+.btn-primary {
+    background: rgb(var(--color-primary));
+    color: #fff;
+    font-weight: 700;
+    border-radius: var(--radius-btn);
+    padding: 0.75rem 2rem;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.btn-primary:hover {
+    filter: brightness(1.15);
+    box-shadow: 0 8px 30px var(--color-primary-glow);
+}
+
+.btn-primary:active {
+    transform: scale(0.97);
+}
+
+.btn-secondary {
+    background: #6366f1; /* Indigo 500 */
+    color: #fff;
+    font-weight: 800;
+    border-radius: var(--radius-btn);
+    padding: 0.75rem 2rem;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+    background: #818cf8; /* Indigo 400 */
+    box-shadow: 0 8px 30px rgba(99, 102, 241, 0.3);
+}
+
+.btn-secondary:active {
+    transform: scale(0.97);
+}
+
+.btn-outline {
+    background: transparent;
+    color: #fff;
+    font-weight: 700;
+    border-radius: var(--radius-btn);
+    padding: 0.75rem 2rem;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.btn-outline:hover {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.page-transition {
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes ping {
+    75%,
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+.animate-ping {
+    animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.progress-bar {
+    height: 8px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.1);
+    overflow: hidden;
+}
+
+.progress-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, rgb(var(--color-primary)), #60a5fa);
+    transition: width 0.6s ease;
+}
+
+.status-badge {
+    padding: 0.2rem 0.6rem;
+    border-radius: 999px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Custom Scrollbar Styles */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #0f172a; /* matches bg-dark */
+}
+
+::-webkit-scrollbar-thumb {
+    background: #1e293b; /* matches slate-800 */
+    border-radius: 4px;
+    border: 2px solid #0f172a;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #334155; /* matches slate-700 */
+}
+
+/* Firefox Support */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: #1e293b #0f172a;
+}
+/* Table Controls Visibility */
+.ql-table-controls { display: none !important; }
+.ql-editor .ql-table-controls { display: flex !important; }

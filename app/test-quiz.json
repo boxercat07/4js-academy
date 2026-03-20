@@ -1,0 +1,47 @@
+{
+    "title": "Mixed Quiz",
+    "questions": [
+        {
+            "question": "Does this dynamic unlocking work?",
+            "options": [
+                {
+                    "text": "Yes",
+                    "correct": true
+                },
+                {
+                    "text": "No"
+                },
+                {
+                    "text": "Maybe"
+                },
+                {
+                    "text": "I don't know"
+                }
+            ]
+        },
+        {
+            "question": "Is JSON import integrated?",
+            "options": [
+                {
+                    "option": "Yes"
+                },
+                {
+                    "option": "No"
+                }
+            ],
+            "answer": "Yes"
+        },
+        {
+            "text": "What is 2+2?",
+            "choices": [
+                {
+                    "content": "3"
+                },
+                {
+                    "content": "4",
+                    "isCorrect": true
+                }
+            ]
+        }
+    ]
+}

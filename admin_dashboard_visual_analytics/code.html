@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Michroma&amp;family=Noto+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1b5ffe",
+                        "background-light": "#f5f6f8",
+                        "background-dark": "#0f1523",
+                    },
+                    fontFamily: {
+                        "display": ["Noto Sans", "sans-serif"],
+                        "heading": ["Michroma", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Noto Sans', sans-serif;
+        }
+        h1, h2, h3, h4 {
+            font-family: 'Michroma', sans-serif;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 antialiased">
+<div class="relative flex h-auto min-h-screen w-full flex-col overflow-x-hidden">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-50 flex items-center justify-between border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md px-6 lg:px-10 py-3">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3">
+<div class="size-8 bg-primary rounded flex items-center justify-center">
+<span class="material-symbols-outlined text-white">smart_toy</span>
+</div>
+<h2 class="text-slate-900 dark:text-white text-lg font-heading leading-tight tracking-wider">FOUR JS AI</h2>
+</div>
+<nav class="hidden md:flex items-center gap-6">
+<a class="text-primary text-sm font-medium border-b-2 border-primary pb-1" href="#">Dashboard</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-primary transition-colors text-sm font-medium" href="#">Employees</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-primary transition-colors text-sm font-medium" href="#">Tracks</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-primary transition-colors text-sm font-medium" href="#">Reports</a>
+<a class="text-slate-500 dark:text-slate-400 hover:text-primary transition-colors text-sm font-medium" href="#">Settings</a>
+</nav>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative group">
+<button class="flex items-center justify-center rounded-lg h-10 w-10 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-primary/10 hover:text-primary transition-all">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 flex h-2 w-2">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+</span>
+</button>
+</div>
+<div class="flex items-center gap-3 pl-4 border-l border-slate-200 dark:border-slate-800">
+<div class="hidden sm:block text-right">
+<p class="text-sm font-semibold text-slate-900 dark:text-white">Alex Rivera</p>
+<p class="text-xs text-slate-500 dark:text-slate-400">Head of Analytics</p>
+</div>
+<div class="bg-slate-200 dark:bg-slate-800 aspect-square rounded-full size-10 border-2 border-primary/20 bg-cover bg-center" data-alt="Portrait of the dashboard administrator" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBHzY1NLxXs7hiuwBcg3jzxm_QmUbMfGYOfjTPBDfy8OCRSA0844n45BiZN9u-vyn-Goxzp8888oI8XKyXnMZv7jm4ueD5f9GxDKYd4h4tZFgiyJS5m5t5SATX_m05Lk2plI-jMYKXiSP9iZd_Qh4s47WhHEEfOdBZbJdolw_r0leQ0ZuOR17V02DQo_3vqvx0doBnMew8e4Z3X6L0J3qHSFWbZHSfWoZ28Yn-U63abNXOqj5TfGddH-CsCjv-I2rFJ17FPJAMyPSI')"></div>
+</div>
+</div>
+</header>
+<main class="flex-1 px-6 lg:px-10 py-8 max-w-[1600px] mx-auto w-full">
+<!-- Header Section -->
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8">
+<div>
+<h1 class="text-3xl font-heading text-slate-900 dark:text-white mb-2">Visual Analytics</h1>
+<p class="text-slate-500 dark:text-slate-400 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">calendar_today</span>
+                        Performance Overview • Oct 1 - Oct 31, 2023
+                    </p>
+</div>
+<div class="flex gap-3">
+<button class="flex items-center gap-2 px-4 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-lg text-sm font-medium hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">
+<span class="material-symbols-outlined text-[20px]">file_download</span> Export
+                    </button>
+<button class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary/90 transition-all shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-[20px]">add</span> New Track
+                    </button>
+</div>
+</div>
+<!-- Stats & Charts Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6">
+<!-- Technical vs Business Comparison -->
+<div class="lg:col-span-8 bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm">
+<div class="flex items-center justify-between mb-8">
+<h3 class="text-sm font-heading tracking-tight text-slate-900 dark:text-white">Track Performance Comparison</h3>
+<div class="flex gap-4">
+<div class="flex items-center gap-2">
+<span class="size-2 rounded-full bg-primary"></span>
+<span class="text-xs text-slate-500">Technical</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="size-2 rounded-full bg-slate-400"></span>
+<span class="text-xs text-slate-500">Business</span>
+</div>
+</div>
+</div>
+<div class="space-y-6">
+<!-- Module Comparison Bars -->
+<div class="space-y-4">
+<!-- Mod 1 -->
+<div class="group">
+<div class="flex justify-between text-xs text-slate-500 mb-2">
+<span>Module 01: Foundations</span>
+<span class="font-medium text-slate-700 dark:text-slate-300">88% vs 72%</span>
+</div>
+<div class="flex h-3 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="bg-primary h-full transition-all duration-500" style="width: 88%"></div>
+</div>
+<div class="flex h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden mt-1 opacity-50">
+<div class="bg-slate-400 h-full transition-all duration-500" style="width: 72%"></div>
+</div>
+</div>
+<!-- Mod 2 -->
+<div class="group">
+<div class="flex justify-between text-xs text-slate-500 mb-2">
+<span>Module 02: Advanced Logic</span>
+<span class="font-medium text-slate-700 dark:text-slate-300">94% vs 65%</span>
+</div>
+<div class="flex h-3 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="bg-primary h-full transition-all duration-500" style="width: 94%"></div>
+</div>
+<div class="flex h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden mt-1 opacity-50">
+<div class="bg-slate-400 h-full transition-all duration-500" style="width: 65%"></div>
+</div>
+</div>
+<!-- Mod 3 -->
+<div class="group">
+<div class="flex justify-between text-xs text-slate-500 mb-2">
+<span>Module 03: Strategy &amp; Implementation</span>
+<span class="font-medium text-slate-700 dark:text-slate-300">81% vs 91%</span>
+</div>
+<div class="flex h-3 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+<div class="bg-primary h-full transition-all duration-500" style="width: 81%"></div>
+</div>
+<div class="flex h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden mt-1 opacity-50">
+<div class="bg-slate-400 h-full transition-all duration-500" style="width: 91%"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Quiz Success Distribution (Donut Chart) -->
+<div class="lg:col-span-4 bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm">
+<h3 class="text-sm font-heading tracking-tight text-slate-900 dark:text-white mb-8">Quiz Success Distribution</h3>
+<div class="flex flex-col items-center justify-center">
+<!-- Custom CSS-based Donut chart representation -->
+<div class="relative size-48 rounded-full border-[16px] border-slate-100 dark:border-slate-800 flex items-center justify-center" style="background: conic-gradient(#1b5ffe 0% 65%, #fbbf24 65% 85%, #f43f5e 85% 100%);">
+<div class="absolute size-[calc(100%-1px)] rounded-full bg-white dark:bg-slate-900 flex flex-col items-center justify-center">
+<span class="text-3xl font-bold">1,284</span>
+<span class="text-[10px] uppercase tracking-widest text-slate-500">Total Quizzes</span>
+</div>
+</div>
+<div class="grid grid-cols-3 w-full mt-8 gap-2">
+<div class="text-center">
+<p class="text-[10px] text-slate-500 uppercase font-bold mb-1">Passed</p>
+<p class="text-lg font-semibold text-primary">65%</p>
+</div>
+<div class="text-center border-x border-slate-200 dark:border-slate-800">
+<p class="text-[10px] text-slate-500 uppercase font-bold mb-1">In Progress</p>
+<p class="text-lg font-semibold text-amber-500">20%</p>
+</div>
+<div class="text-center">
+<p class="text-[10px] text-slate-500 uppercase font-bold mb-1">Retake</p>
+<p class="text-lg font-semibold text-rose-500">15%</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+<!-- Leaderboard -->
+<div class="lg:col-span-5 bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-sm font-heading tracking-tight text-slate-900 dark:text-white">Top Performing Modules</h3>
+<span class="material-symbols-outlined text-slate-400 cursor-pointer">more_horiz</span>
+</div>
+<div class="space-y-4">
+<div class="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700/50">
+<div class="flex items-center gap-4">
+<span class="text-lg font-bold text-slate-300 dark:text-slate-600">01</span>
+<div>
+<p class="text-sm font-semibold">Generative AI Core</p>
+<p class="text-xs text-slate-500">482 Enrolled</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-sm font-bold text-primary">98.2%</p>
+<p class="text-[10px] text-green-500">+2.4%</p>
+</div>
+</div>
+<div class="flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<div class="flex items-center gap-4">
+<span class="text-lg font-bold text-slate-300 dark:text-slate-600">02</span>
+<div>
+<p class="text-sm font-semibold">Neural Architecture</p>
+<p class="text-xs text-slate-500">312 Enrolled</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-sm font-bold">94.5%</p>
+<p class="text-[10px] text-green-500">+1.1%</p>
+</div>
+</div>
+<div class="flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<div class="flex items-center gap-4">
+<span class="text-lg font-bold text-slate-300 dark:text-slate-600">03</span>
+<div>
+<p class="text-sm font-semibold">Data Modeling Pro</p>
+<p class="text-xs text-slate-500">225 Enrolled</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-sm font-bold">91.8%</p>
+<p class="text-[10px] text-rose-500">-0.4%</p>
+</div>
+</div>
+<div class="flex items-center justify-between p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+<div class="flex items-center gap-4">
+<span class="text-lg font-bold text-slate-300 dark:text-slate-600">04</span>
+<div>
+<p class="text-sm font-semibold">Prompt Engineering</p>
+<p class="text-xs text-slate-500">518 Enrolled</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-sm font-bold">89.1%</p>
+<p class="text-[10px] text-green-500">+5.2%</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Progress Timeline -->
+<div class="lg:col-span-7 bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-xl p-6 shadow-sm overflow-hidden flex flex-col">
+<div class="flex items-center justify-between mb-6">
+<h3 class="text-sm font-heading tracking-tight text-slate-900 dark:text-white">Recent Employee Progress</h3>
+<div class="flex gap-2">
+<button class="size-8 rounded-full border border-slate-200 dark:border-slate-800 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800"><span class="material-symbols-outlined text-xs">chevron_left</span></button>
+<button class="size-8 rounded-full border border-slate-200 dark:border-slate-800 flex items-center justify-center hover:bg-slate-100 dark:hover:bg-slate-800"><span class="material-symbols-outlined text-xs">chevron_right</span></button>
+</div>
+</div>
+<div class="flex-1 space-y-6 custom-scrollbar overflow-y-auto pr-2">
+<!-- Timeline Item 1 -->
+<div class="relative pl-10">
+<div class="absolute left-0 top-1 size-6 rounded-full bg-primary/20 flex items-center justify-center border-2 border-primary">
+<div class="size-2 rounded-full bg-primary"></div>
+</div>
+<div class="absolute left-3 top-7 bottom-0 w-[2px] bg-slate-100 dark:bg-slate-800 -mb-6"></div>
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="text-xs font-bold text-primary bg-primary/10 px-2 py-0.5 rounded">JUST NOW</span>
+<span class="text-xs text-slate-500">Sarah Jenkins completed Quiz</span>
+</div>
+<div class="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+<div class="size-8 rounded-full bg-cover bg-center" data-alt="Portrait of Sarah Jenkins" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCLe2Iz531Pa9ew-mc-vhwWbFpnoqSs8tkcFFkVIdqs6JoP9Iuk9juxRsc8CI4YkboPcDpf6lHQx8ImHPvYrW35l9YUkxN_bIgC7NDPgD2NTQbquwbtaaxti2ItM7i_zX9H7rRUNxkyhNiBlGGoY4UB7XbzedGh-PFqC1W2P8mwXID_vA2ziPFufKtTxJLcz5jGHkvbaau8cyd_HVtvZYC8HXfXE707WpED2f9DoG5rG8wk8x58k6o7FAGAvlMKchWsQlV6hI7Ztdk')"></div>
+<div class="flex-1">
+<p class="text-sm font-semibold">GenAI Logic Quiz</p>
+<div class="flex items-center gap-4 mt-1">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-green-500">check_circle</span>
+<span class="text-[10px] text-slate-500">100/100 Points</span>
+</div>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-slate-500">timer</span>
+<span class="text-[10px] text-slate-500">12m 45s</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Timeline Item 2 -->
+<div class="relative pl-10">
+<div class="absolute left-0 top-1 size-6 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center">
+<div class="size-2 rounded-full bg-slate-400"></div>
+</div>
+<div class="absolute left-3 top-7 bottom-0 w-[2px] bg-slate-100 dark:bg-slate-800 -mb-6"></div>
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="text-xs text-slate-500 uppercase tracking-tighter">2 HOURS AGO</span>
+<span class="text-xs text-slate-500">Michael Chen unlocked Certificate</span>
+</div>
+<div class="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+<div class="size-8 rounded-full bg-cover bg-center" data-alt="Portrait of Michael Chen" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCw5dfNEtt0HSX-VlRk9wYXQulqlkSjEm6GhK9s5Qd9dngtWUvpWo0WTDk-IJfiUvGOHjNXsSGrRhs_aoZ3H2C1kg38_y4sxaQo2i0jzhxdaWsvjaaH1RfAv-sltHrBeFXvkEP4mL6jsBg8uhfmBvEFH16AXmhJnhCjr3ntY1vQ4G9aJVioFORIDdh3pS-5VEe_xUAZodcJ7lpycqArD7ojM6k8xzbISnUxzZWy0putG2gdPO3bg_YUh0CI-jvnsqXeMzCqK_2C08U')"></div>
+<div class="flex-1">
+<p class="text-sm font-semibold">Technical Track L3</p>
+<p class="text-[10px] text-slate-500 mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-amber-500">workspace_premium</span> Global AI Certification
+                                        </p>
+</div>
+</div>
+</div>
+</div>
+<!-- Timeline Item 3 -->
+<div class="relative pl-10">
+<div class="absolute left-0 top-1 size-6 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center">
+<div class="size-2 rounded-full bg-slate-400"></div>
+</div>
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="text-xs text-slate-500 uppercase tracking-tighter">5 HOURS AGO</span>
+<span class="text-xs text-slate-500">Emma Watson started Module 04</span>
+</div>
+<div class="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800 rounded-lg">
+<div class="size-8 rounded-full bg-cover bg-center" data-alt="Portrait of Emma Watson" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCL_XZOoxXW23u1poF3cZyEoLCZFHpiesfMK0R38wOVlOjfmIvaAodNNO5lwbIo_GX--V_bIluGKcCQIsqFlSh8EfBT6d941NFJBUW8Q-X9Ol2tDq2oZF4SxyTp6qUSJ5BksHwnhlFDgNMLkX9mA8z1kXzZvdBm7XFznIlP8FXztLn8etBzzXLD12MI3pEyvrpLMyq9NR_CwdCozf2ziVkqiUhQ-YhILHQ9_1SQ7Zz2Nooh55faXaHvvYR537QYVoCcgi-zgZPqiDY')"></div>
+<div class="flex-1">
+<p class="text-sm font-semibold">Advanced NLP Techniques</p>
+<div class="w-full bg-slate-200 dark:bg-slate-700 h-1.5 rounded-full mt-2 overflow-hidden">
+<div class="bg-primary h-full w-12 transition-all"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer Stats Bar -->
+<footer class="mt-8 border-t border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-background-dark/50 backdrop-blur-sm p-4 lg:px-10">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-[1600px] mx-auto">
+<div class="flex flex-col">
+<p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Active Learners</p>
+<p class="text-lg font-heading text-slate-900 dark:text-white">1,429 <span class="text-xs text-green-500 font-sans">+12%</span></p>
+</div>
+<div class="flex flex-col">
+<p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Avg. Score</p>
+<p class="text-lg font-heading text-slate-900 dark:text-white">86.4 <span class="text-xs text-rose-500 font-sans">-0.2</span></p>
+</div>
+<div class="flex flex-col">
+<p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Comp. Time</p>
+<p class="text-lg font-heading text-slate-900 dark:text-white">4.2d <span class="text-xs text-green-500 font-sans">-1.1d</span></p>
+</div>
+<div class="flex flex-col">
+<p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">System Load</p>
+<div class="flex items-center gap-2">
+<p class="text-lg font-heading text-slate-900 dark:text-white">Stable</p>
+<span class="size-2 rounded-full bg-green-500 animate-pulse"></span>
+</div>
+</div>
+</div>
+</footer>
+</div>
+</body></html>

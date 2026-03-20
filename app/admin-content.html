@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en" class="dark">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Content Management - Academy Admin</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="shared.css" />
+    <script src="video-utils.js"></script>
+    <script src="components.js"></script>
+    <script src="tailwind-config.js"></script>
+    <style>
+        .text-outline {
+            -webkit-text-stroke: 1px rgba(255, 255, 255, 0.5);
+            color: transparent;
+        }
+    </style>
+</head>
+
+<body class="page-transition">
+    <admin-header></admin-header>
+    <div class="flex h-[calc(100vh-60px)] overflow-hidden">
+        <!-- Sidebar -->
+        <admin-sidebar active-page="content"></admin-sidebar>
+
+        <main class="flex-1 p-8 overflow-y-auto bg-background-dark">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+                <div>
+                    <h1 class="text-[32px] font-extrabold mb-1 font-display tracking-widest uppercase">
+                        <span class="text-white">MANAGE</span>
+                        <span class="text-outline">MODULES</span>
+                    </h1>
+                    <p class="text-slate-400">Configure learning pathways and course curriculum</p>
+                </div>
+                <button class="btn-primary flex items-center gap-2 text-sm px-5 py-2.5 mt-4 md:mt-0 font-bold">
+                    <span class="material-symbols-outlined text-sm">add_circle</span>
+                    Create New Module
+                </button>
+            </div>
+
+            <!-- Track Tabs -->
+            <div class="flex flex-wrap items-center gap-6 border-b border-slate-700/60 pb-0 mb-6 px-2">
+                <button class="text-[#1b5ffe] text-sm font-bold border-b-[3px] border-[#1b5ffe] pb-4 px-1">
+                    All Tracks
+                </button>
+                <button class="text-slate-500 text-sm pb-4 hover:text-white transition-colors flex items-center gap-2">
+                    Technical
+                    <span class="text-slate-600 font-bold hover:text-slate-400">×</span>
+                </button>
+                <button class="text-slate-500 text-sm pb-4 hover:text-white transition-colors flex items-center gap-2">
+                    Business
+                    <span class="text-slate-600 font-bold hover:text-slate-400">×</span>
+                </button>
+                <button class="text-[#1b5ffe] text-sm font-semibold pb-4 ml-2">+ New Track</button>
+
+                <div class="ml-auto flex gap-6 mt-[-16px]">
+                    <button class="text-[11px] font-bold text-slate-400 tracking-wider hover:text-white">
+                        ALL STATUS
+                    </button>
+                    <button class="text-[11px] font-bold text-slate-400 tracking-wider hover:text-white">
+                        DRAFTS
+                    </button>
+                    <button class="text-[11px] font-bold text-slate-400 tracking-wider hover:text-white">
+                        ARCHIVED
+                    </button>
+                </div>
+            </div>
+
+            <div class="flex gap-6">
+                <!-- Module Table -->
+                <div class="flex-1 glass-card overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead>
+                            <tr
+                                class="border-b-[2px] border-[#0f1523] bg-[#131b2c] text-left text-[11px] text-slate-500 font-bold uppercase tracking-widest">
+                                <th class="p-5 font-bold">Module Name</th>
+                                <th class="p-5 font-bold">Track</th>
+                                <th class="p-5 font-bold">Items</th>
+                                <th class="p-5 font-bold">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modules-tbody">
+                            <tr>
+                                <td colspan="4" class="p-5 text-center text-slate-500">
+                                    Loading modules from server...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Right Sidebar: Module Contents -->
+                <div
+                    class="hidden xl:block w-72 glass-card p-6 self-start bg-[#131b2c] border border-slate-700/40 rounded-xl">
+                    <div class="flex justify-between items-start mb-6 w-full">
+                        <span
+                            class="text-[11px] font-extrabold text-white tracking-widest leading-tight uppercase w-1/2">
+                            MODULE
+                            <br />
+                            CONTENTS
+                        </span>
+                        <span
+                            class="text-[9px] font-bold px-2 py-1.5 rounded bg-[#1b5ffe]/20 text-[#1b5ffe] uppercase tracking-wider text-right">
+                            SYSTEM
+                            <br />
+                            FUNDAMENTALS
+                        </span>
+                    </div>
+                    <button
+                        class="w-full py-3 rounded border border-dashed border-slate-600 text-slate-400 text-sm hover:border-primary hover:text-primary transition-colors flex justify-center items-center gap-2 mb-6 font-semibold bg-[#1a243a]/50">
+                        <span class="material-symbols-outlined text-[16px]">add_circle</span>
+                        Add New Content
+                    </button>
+                    <div class="space-y-3">
+                        <!-- Card 1 -->
+                        <div class="flex items-center gap-4 p-4 rounded-lg bg-[#1a233a] border border-slate-700/30">
+                            <div class="w-10 h-10 rounded-lg bg-red-500/10 flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-red-400 text-lg">
+                                    play_circle
+                                </span>
+                            </div>
+                            <div>
+                                <p class="text-white text-[13px] font-bold mb-0.5">01. Architecture ...</p>
+                                <p class="text-slate-500 text-[9px] uppercase tracking-wider font-semibold">
+                                    VIDEO TUTORIAL • 12:45
+                                </p>
+                            </div>
+                        </div>
+                        <!-- Card 2 -->
+                        <div class="flex items-center gap-4 p-4 rounded-lg bg-[#1a233a] border border-slate-700/30">
+                            <div class="w-10 h-10 rounded-lg bg-cyan-500/10 flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-cyan-400 text-lg">picture_as_pdf</span>
+                            </div>
+                            <div>
+                                <p class="text-white text-[13px] font-bold mb-0.5">02. Installation G...</p>
+                                <p class="text-slate-500 text-[9px] uppercase tracking-wider font-semibold">
+                                    DOCUMENT • PDF • 1.4 MB
+                                </p>
+                            </div>
+                        </div>
+                        <!-- Card 3 -->
+                        <div class="flex items-center gap-4 p-4 rounded-lg bg-[#1a233a] border border-slate-700/30">
+                            <div
+                                class="w-10 h-10 rounded-lg bg-purple-500/10 flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-purple-400 text-lg">image</span>
+                            </div>
+                            <div>
+                                <p class="text-white text-[13px] font-bold mb-0.5">03. Logic Flow Ch...</p>
+                                <p class="text-slate-500 text-[9px] uppercase tracking-wider font-semibold">
+                                    INFOGRAPHIC • PNG
+                                </p>
+                            </div>
+                        </div>
+                        <!-- Card 4 -->
+                        <div class="flex items-center gap-4 p-4 rounded-lg bg-[#1a233a] border border-slate-700/30">
+                            <div class="w-10 h-10 rounded-lg bg-teal-500/10 flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-teal-400 text-lg">quiz</span>
+                            </div>
+                            <div>
+                                <p class="text-white text-[13px] font-bold mb-0.5">04. Unit 1 assess...</p>
+                                <p class="text-slate-500 text-[9px] uppercase tracking-wider font-semibold">
+                                    QUIZ • 10 QUESTIONS
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-8 flex justify-between items-center mb-3">
+                        <span class="text-slate-500 text-[11px] font-semibold">
+                            Progress required for completion:
+                        </span>
+                        <span class="text-[#1b5ffe] font-bold text-sm">80%</span>
+                    </div>
+                    <div class="h-1.5 w-full bg-[#1a243a] rounded-full overflow-hidden">
+                        <div class="h-full bg-[#1b5ffe] rounded-full" style="width: 80%"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script>
+        async function fetchModules() {
+            try {
+                const response = await fetch('/api/modules', { credentials: 'include' });
+                if (response.status === 401 || response.status === 403) {
+                    window.location.href = 'login.html'; // Unauthenticated
+                    return;
+                }
+                const data = await response.json();
+                const tbody = document.getElementById('modules-tbody');
+
+                if (data.modules && data.modules.length > 0) {
+                    tbody.innerHTML = '';
+                    data.modules.forEach((mod, index) => {
+                        const trackColor =
+                            mod.track && mod.track.name === 'TECHNICAL'
+                                ? 'text-[#1b5ffe] border-[#1b5ffe]/50 bg-[#1b5ffe]/10'
+                                : 'text-orange-400 border-orange-500/50 bg-orange-500/10';
+                        const statusColor =
+                            mod.status === 'PUBLISHED'
+                                ? 'text-teal-400 bg-teal-500/10'
+                                : 'text-orange-400 bg-orange-500/10';
+                        const trackName = mod.track ? mod.track.name : 'UNASSIGNED';
+
+                        // Active row state mockup helper
+                        const bgClass = index === 0 ? 'bg-[#172033]' : 'bg-[#131b2d]';
+
+                        const row = `
+                            <tr class="border-b-[2px] border-[#0f1523] ${bgClass} hover:bg-[#1a243a] transition-colors cursor-pointer" onclick="showModule(${mod.id})">
+                                <td class="p-5 py-6">
+                                    <p class="text-white font-bold text-[15px] mb-1">Module ${mod.order}:<br />${mod.title}</p>
+                                    <p class="text-slate-500 text-[11px] mb-1">(${trackName.substring(0, 4)})</p>
+                                    <p class="text-slate-500 text-[12px] leading-tight">${mod.description || ''}</p>
+                                </td>
+                                <td class="p-5"><span class="text-[10px] font-bold px-2 py-1 rounded border uppercase tracking-wider ${trackColor}">${trackName}</span></td>
+                                <td class="p-5 text-white font-semibold text-sm">12<br /><span class="text-slate-500 font-normal text-xs">Items</span></td>
+                                <td class="p-5"><span class="px-3 py-1 text-[11px] font-bold rounded-full capitalize ${statusColor}">${mod.status.toLowerCase()}</span></td>
+                            </tr>
+                        `;
+                        tbody.innerHTML += row;
+                    });
+                } else {
+                    tbody.innerHTML =
+                        '<tr><td colspan="4" class="p-5 text-center text-slate-500">No modules found.</td></tr>';
+                }
+            } catch (error) {
+                console.error('Error fetching modules:', error);
+                document.getElementById('modules-tbody').innerHTML =
+                    '<tr><td colspan="4" class="p-5 text-center text-red-500">Failed to connect to the backend server.</td></tr>';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchModules);
+        function showModule(n) {
+            console.log('Show module details for', n);
+        }
+    </script>
+    <!-- Modals -->
+    <ai-confirm-modal></ai-confirm-modal>
+    <ai-quiz-upload-modal></ai-quiz-upload-modal>
+    <ai-quiz-modal></ai-quiz-modal>
+    <ai-rename-modal></ai-rename-modal>
+    <ai-media-upload-modal></ai-media-upload-modal>
+    <ai-media-viewer-modal></ai-media-viewer-modal>
+    <ai-video-insert-modal></ai-video-insert-modal>
+    <ai-link-insert-modal></ai-link-insert-modal>
+    <ai-content-picker-modal></ai-content-picker-modal>
+
+    <script src="video-utils.js"></script>
+    <script src="components.js"></script>
+</body>
+
+</html>

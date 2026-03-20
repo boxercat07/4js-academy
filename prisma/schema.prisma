@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String       @id @default(uuid())
+  email        String       @unique
+  passwordHash String
+  firstName    String
+  lastName     String
+  role         String       @default("LEARNER") // "LEARNER" or "ADMIN"
+  department   String?      // "Sales", "PS", "Marketing", etc.
+  tracks       Track[]
+  enrollments  Enrollment[]
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+}
+
+model Track {
+  id                String   @id @default(uuid())
+  name              String   @unique // "TECHNICAL" or "BUSINESS"
+  slug              String?  @unique // URL-friendly name
+  description       String?
+  icon              String?  // Material icon name
+  targetDepartments String?  // Comma-separated list of departments
+  status            String   @default("DRAFT") // "PUBLISHED" or "DRAFT"
+  curriculumDraft   String?  // JSON string of the draft curriculum
+  users             User[]
+  modules           Module[]
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model Module {
+  id          String       @id @default(uuid())
+  title       String
+  description String
+  trackId     String
+  track       Track        @relation(fields: [trackId], references: [id])
+  duration    Int          // In minutes
+  type        String       // "VIDEO TUTORIAL", "DOCUMENT", "INFOGRAPHIC", "QUIZ"
+  mediaUrl    String?      // Cloudflare R2 URL or placeholder
+  fileId      String?      // Local file reference for IndexedDB restoration
+  status      String       @default("DRAFT") // "PUBLISHED" or "DRAFT"
+  order       Int          @default(0)       // For ordering modules in a track
+  enrollments Enrollment[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Enrollment {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  moduleId  String
+  module    Module   @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  progress  Int      @default(0) // 0-100 percentage
+  completed Boolean  @default(false)
+  attempts  Int      @default(0) // Number of attempts (mainly for quizzes)
+  lastScore Int?     // Last quiz score if applicable
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, moduleId]) // A user can only be enrolled in a module once
+}

@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stitch AI Academy Portal - Preview</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght@100..700,0..1&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1b5ffe",
+                        "background-dark": "#0f1523",
+                        "slate-custom": {
+                            900: "#273a91",
+                            950: "#172036",
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(23, 32, 54, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
+        .card-hover:hover { transform: translateY(-4px); box-shadow: 0 20px 40px -10px rgba(27, 95, 254, 0.3); }
+    </style>
+</head>
+<body class="bg-background-dark text-slate-100 min-h-screen">
+    <header class="sticky top-0 z-50 w-full glass py-4 px-8 mb-12">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-primary rounded-lg">
+                    <span class="material-symbols-outlined text-white">grid_view</span>
+                </div>
+                <h1 class="text-xl font-bold tracking-tight">AI Academy Portal <span class="text-primary font-normal text-sm ml-2">v1.0</span></h1>
+            </div>
+            <div class="text-sm text-slate-400">
+                9 Screens Exported
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 pb-20">
+        <div class="mb-10">
+            <h2 class="text-3xl font-extrabold mb-2">Project Screens</h2>
+            <p class="text-slate-400">Click on any card to open the live view of the exported screen.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="screens-grid">
+            <!-- Screen Card 1 -->
+            <div class="group card-hover transition-all duration-300 rounded-2xl overflow-hidden glass p-4 flex flex-col">
+                <div class="relative aspect-video rounded-xl overflow-hidden mb-4 bg-slate-800">
+                    <img src="landing_page_simplified_layout/screen.png" alt="Landing Page" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <a href="landing_page_simplified_layout/code.html" target="_blank" class="px-6 py-2 bg-primary text-white font-bold rounded-lg shadow-lg">Open View</a>
+                    </div>
+                </div>
+                <h3 class="font-bold text-lg mb-1 capitalize">Landing Page Simplified</h3>
+                <p class="text-sm text-slate-400 mb-6 font-mono text-xs">/landing_page_simplified_layout</p>
+                <div class="mt-auto flex gap-2">
+                    <a href="landing_page_simplified_layout/code.html" target="_blank" class="flex-1 text-center py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm font-semibold transition-colors">Preview HTML</a>
+                </div>
+            </div>
+
+            <!-- Screen Card 2 -->
+            <div class="group card-hover transition-all duration-300 rounded-2xl overflow-hidden glass p-4 flex flex-col">
+                <div class="relative aspect-video rounded-xl overflow-hidden mb-4 bg-slate-800">
+                    <img src="admin_content_management_updated_header/screen.png" alt="Admin Content" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <a href="admin_content_management_updated_header/code.html" target="_blank" class="px-6 py-2 bg-primary text-white font-bold rounded-lg shadow-lg">Open View</a>
+                    </div>
+                </div>
+                <h3 class="font-bold text-lg mb-1 capitalize">Admin Content Management</h3>
+                <p class="text-sm text-slate-400 mb-6 font-mono text-xs">/admin_content_management_updated_header</p>
+                <div class="mt-auto flex gap-2">
+                    <a href="admin_content_management_updated_header/code.html" target="_blank" class="flex-1 text-center py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm font-semibold transition-colors">Preview HTML</a>
+                </div>
+            </div>
+
+            <!-- Screen Card 3 -->
+            <div class="group card-hover transition-all duration-300 rounded-2xl overflow-hidden glass p-4 flex flex-col">
+                <div class="relative aspect-video rounded-xl overflow-hidden mb-4 bg-slate-800">
+                    <img src="admin_dashboard_updated_layout/screen.png" alt="Admin Dashboard" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <a href="admin_dashboard_updated_layout/code.html" target="_blank" class="px-6 py-2 bg-primary text-white font-bold rounded-lg shadow-lg">Open View</a>
+                    </div>
+                </div>
+                <h3 class="font-bold text-lg mb-1 capitalize">Admin Dashboard Layout</h3>
+                <p class="text-sm text-slate-400 mb-6 font-mono text-xs">/admin_dashboard_updated_layout</p>
+                <div class="mt-auto flex gap-2">
+                    <a href="admin_dashboard_updated_layout/code.html" target="_blank" class="flex-1 text-center py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm font-semibold transition-colors">Preview HTML</a>
+                </div>
+            </div>
+
+            <!-- Screen Card 4 -->
+            <div class="group card-hover transition-all duration-300 rounded-2xl overflow-hidden glass p-4 flex flex-col">
+                <div class="relative aspect-video rounded-xl overflow-hidden mb-4 bg-slate-800">
+                    <img src="admin_dashboard_visual_analytics/screen.png" alt="Visual Analytics" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <a href="admin_dashboard_visual_analytics/code.html" target="_blank" class="px-6 py-2 bg-primary text-white font-bold rounded-lg shadow-lg">Open View</a>
+                    </div>
+                </div>
+                <h3 class="font-bold text-lg mb-1 capitalize">Visual Analytics</h3>
+                <p class="text-sm text-slate-400 mb-6 font-mono text-xs">/admin_dashboard_visual_analytics</p>
+                <div class="mt-auto flex gap-2">
+                    <a href="admin_dashboard_visual_analytics/code.html" target="_blank" class="flex-1 text-center py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm font-semibold transition-colors">Preview HTML</a>
+                </div>
+            </div>
+
+            <!-- Screen Card 5 -->
+            <div class="group card-hover transition-all duration-300 rounded-2xl overflow-hidden glass p-4 flex flex-col">
+                <div class="relative aspect-video rounded-xl overflow-hidden mb-4 bg-slate-800">
+                    <img src="curriculum_overview_refined/screen.png" alt="Curriculum Overview" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <a href="curriculum_overview_refined/code.html" target="_blank" class="px-6 py-2 bg-primary text-white font-bold rounded-lg shadow-lg">Open View</a>
+                    </div>
+                </div>
+                <h3 class="font-bold text-lg mb-1 capitalize">Curriculum Overview</h3>
+                <p class="text-sm text-slate-400 mb-6 font-mono text-xs">/curriculum_overview_refined</p>
+                <div class="mt-auto flex gap-2">
+                    <a href="curriculum_overview_refined/code.html" target="_blank" class="flex-1 text-center py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm font-semibold transition-colors">Preview HTML</a>
+                </div>
+            </div>
+
+            <!-- Screen Card 6 -->
+            <div class="group card-hover transition-all duration-300 rounded-2xl overflow-hidden glass p-4 flex flex-col">
+                <div class="relative aspect-video rounded-xl overflow-hidden mb-4 bg-slate-800">
+                    <img src="onboarding_login_sign_up_toggle/screen.png" alt="Onboarding Login" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <a href="onboarding_login_sign_up_toggle/code.html" target="_blank" class="px-6 py-2 bg-primary text-white font-bold rounded-lg shadow-lg">Open View</a>
+                    </div>
+                </div>
+                <h3 class="font-bold text-lg mb-1 capitalize">Onboarding Flow</h3>
+                <p class="text-sm text-slate-400 mb-6 font-mono text-xs">/onboarding_login_sign_up_toggle</p>
+                <div class="mt-auto flex gap-2">
+                    <a href="onboarding_login_sign_up_toggle/code.html" target="_blank" class="flex-1 text-center py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm font-semibold transition-colors">Preview HTML</a>
+                </div>
+            </div>
+
+            <!-- Screen Card 7 -->
+            <div class="group card-hover transition-all duration-300 rounded-2xl overflow-hidden glass p-4 flex flex-col">
+                <div class="relative aspect-video rounded-xl overflow-hidden mb-4 bg-slate-800">
+                    <img src="technical_track_sequential_flow/screen.png" alt="Technical Track" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <a href="technical_track_sequential_flow/code.html" target="_blank" class="px-6 py-2 bg-primary text-white font-bold rounded-lg shadow-lg">Open View</a>
+                    </div>
+                </div>
+                <h3 class="font-bold text-lg mb-1 capitalize">Technical Track Flow</h3>
+                <p class="text-sm text-slate-400 mb-6 font-mono text-xs">/technical_track_sequential_flow</p>
+                <div class="mt-auto flex gap-2">
+                    <a href="technical_track_sequential_flow/code.html" target="_blank" class="flex-1 text-center py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm font-semibold transition-colors">Preview HTML</a>
+                </div>
+            </div>
+
+            <!-- Screen Card 8 -->
+            <div class="group card-hover transition-all duration-300 rounded-2xl overflow-hidden glass p-4 flex flex-col">
+                <div class="relative aspect-video rounded-xl overflow-hidden mb-4 bg-slate-800">
+                    <img src="track_selection_simplified/screen.png" alt="Track Selection" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <a href="track_selection_simplified/code.html" target="_blank" class="px-6 py-2 bg-primary text-white font-bold rounded-lg shadow-lg">Open View</a>
+                    </div>
+                </div>
+                <h3 class="font-bold text-lg mb-1 capitalize">Track Selection</h3>
+                <p class="text-sm text-slate-400 mb-6 font-mono text-xs">/track_selection_simplified</p>
+                <div class="mt-auto flex gap-2">
+                    <a href="track_selection_simplified/code.html" target="_blank" class="flex-1 text-center py-2 bg-white/5 hover:bg-white/10 rounded-lg text-sm font-semibold transition-colors">Preview HTML</a>
+                </div>
+            </div>
+
+            <!-- Screen Card 9 -->
+            <div class="group card-hover transition-all duration-300 rounded-2xl overflow-hidden glass p-4 flex flex-col">
+                <div class="relative aspect-video rounded-xl overflow-hidden mb-4 bg-slate-800">
+                    <img src="onboarding_success_updated_header/screen.png" alt="Onboarding Success" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-primary/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                        <span class="text-white font-bold">Preview Only</span>
+                    </div>
+                </div>
+                <h3 class="font-bold text-lg mb-1 capitalize">Onboarding Success</h3>
+                <p class="text-sm text-slate-400 mb-6 font-mono text-xs">/onboarding_success_updated_header</p>
+                <div class="mt-auto">
+                    <span class="text-xs italic text-slate-500">HTML missing for this screen</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="max-w-7xl mx-auto px-6 py-8 border-t border-slate-800 text-center text-slate-500 text-sm">
+        Stitch Export Viewer • Generated by Antigravity
+    </footer>
+</body>
+</html>

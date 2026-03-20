@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>AI Academy Editor - Technical Track</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Michroma&amp;family=Noto+Sans:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#1b5ffe",
+                        "background-light": "#f5f6f8",
+                        "background-dark": "#0f1523",
+                    },
+                    fontFamily: {
+                        "display": ["Michroma", "Noto Sans", "sans-serif"],
+                        "sans": ["Noto Sans", "sans-serif"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Noto Sans', sans-serif;
+        }
+        h1, h2, .branding-font {
+            font-family: 'Michroma', sans-serif;
+        }
+        .drag-handle {
+            cursor: grab;
+        }
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+    </style>
+<style>
+    .module-content {
+        max-height: 2000px;
+        transition: max-height 0.3s ease-out, padding 0.3s ease;
+    }
+    .module-collapsed .module-content {
+        max-height: 0;
+        padding-top: 0;
+        padding-bottom: 0;
+        overflow: hidden;
+    }
+    .chevron-icon {
+        transition: transform 0.3s ease;
+    }
+    .module-collapsed .chevron-icon {
+        transform: rotate(-90deg);
+    }
+</style></head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-slate-100 min-h-screen">
+<!-- Top Navigation Bar -->
+<header class="sticky top-0 z-50 w-full border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-background-dark/80 backdrop-blur-md px-6 py-3">
+<div class="max-w-7xl mx-auto flex items-center justify-between"><div class="flex items-center gap-4">
+<img alt="Four Js Logo" class="h-8 w-auto object-contain" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAACoAAAAQACAYAAADLbgmEAAAACXBIWXMAAEwZAABMGQGvl4dGAAAgAElEQVR4Aezde7CdZX3o8Xdd9/2SEHYkO1eollPHgglpvFBtO2LRpnV6HOucmVOrlGqLlxSqREXPaZnjcYzcLKJtqTV2tHbUnKMtHgqn2kMVCIUEKFK5JiHkTkj2fa/9rrXedebdyZaIBHLZl/Ws9fnM4CLB0Xc/z8ve/PHl98vUarUIAAAAAAAAAAAAgHBk3RUAAAAAAAAAAABAWASgAAAAAAAAAAAAAIERgAIAAAAAAAAAAAAERgAKAAAAAAAAAAAAEBgBKAAAAAAAAAAAAEBgBKAAAAAAAAAAAAAAgRGAAgAAAAAAAAAAAARGAAoAAAAAAAAAAAAQGAEoAAAAAAAAAAAAQGAEoAAAAAAAAAAAAACBEYACAAAAAAAAAAAABEYACgAAAAAAAAAAABAYASgAAAAAAAAAAABAYASgAAAAAAAAAAAAAIERgAIAAAAAAAAAAAAERgAKAAAAAAAAAAAAEBgBKAAAAAAAAAAAAEBgBKAAAAAAAAAAAAAAgRGAAgAAAAAAAAAAAARGAAoAAAAAAAAAAAAQGAEoAAAAAAAAAAAAQGAEoAAAAAAAAAAAAACBEYACAAAAAAAAAAAABEYACgAAAAAAAAAAABAYASgAAAAAAAAAAABAYASgAAAAAAAAAAAAAIERgAIAAAAAAAAAAAAERgAKAAAAAAAAAAAAEBgBKAAAAAAAAAAAAEBgBKAAAAAAAAAAAAAAgRGAAgAAAAAAAAAAAARGAAoAAAAAAAAAAAAQGAEoAAAAAAAAAAAAQGAEoAAAAAAAAAAAAACBEYACAAAAAAAAAAAABEYACgAAAAAAAAAAABAYASgAAAAAAAAAAABAYASgAAAAAAAAAAAAAIERgAIAAAAAAAAAAAAERgAKAAAAAAAAAAAAEBgBKAAAAAAAAAAAAEBgBKAAAAAAAAAAAAAAgRGAAgAAAAAAAAAAAARGAAoAAAAAAAAAAAAQGAEoAAAAAAAAAAAAQGAEoAAAAAAAAAAAAACBEYACAAAAAAAAAAAABEYACgAAAAAAAAAAABAYASgAAAAAAAAAAABAYASgAAAAAAAAAAAAAIERgAIAAAAAAAAAAAAERgAKAAAAAAAAAAAAEBgBKAAAAAAAAAAAAEBgBKAAAAAAAAAAAAAAgRGAAgAAAAAAAAAAAARGAAoAAAAAAAAAAAAQGAEoAAAAAAAAAAAAQGAEoAAAAAAAAAAAAACBEYACAAAAAAAAAAAABEYACgAAAAAAAAAAABAYASgAAAAAAAAAAABAYASgAAAAAAAAAAAAAIERgAIAAAAAAAAAAAAERgAKAAAAAAAAAAAAEBgBKAAAAAAAAAAAAEBgBKAAAAAAAAAAAAAAgRGAAgAAAAAAAAAAAARGAAoAAAAAAAAAAAAQGAEoAAAAAAAAAAAAQGAEoAAAAAAAAAAAAACBEYACAAAAAAAAAAAABEYACgAAAAAAAAAAABAYASgAAAAAAAAAAABAYASgAAAAAAAAAAAAAIERgAIAAAAAAAAAAAAERgAKAAAAAAAAAAAAEBgBKAAAAAAAAAAAAEBgBKAAAAAAAAAAAAAAgRGAAgAAAAAAAAAAAARGAAoAAAAAAAAAAAAQGAEoAAAAAAAAAAAAQGAEoAAAAAAAAAAAAACBEYACAAAAAAAAAAAABEYACgAAAAAAAAAAABAYASgAAAAAAAAAAABAYASgAAAAAAAAAAAAAIERgAIAAAAAAAAAAAAERgAKAAAAAAAAAAAAEBgBKAAAAAAAAAAAAEBgBKAAAAAAAAAAAAAAgRGAAgAAAAAAAAAAAARGAAoAAAAAAAAAAAAQGAEoAAAAAAAAAAAAQGAEoAAAAAAAAAAAAACBEYACAAAAAAAAAAAABEYACgAAAAAAAAAAABAYASgAAAAAAAAAAABAYASgAAAAAAAAAAAAAIERgAIAAAAAAAAAAAAERgAKAAAAAAAAAAAAEBgBKAAAAAAAAAAAAEBgBKAAAAAAAAAAAAAAgRGAAgAAAAAAAAAAAARGAAoAAAAAAAAAAAAQGAEoAAAAAAAAAAAAQGAEoAAAAAAAAAAAAACBEYACAAAAAAAAAAAABEYACgAAAAAAAAAAABAYASgAAAAAAAAAAABAYASgAAAAAAAAAAAAAIERgAIAAAAAAAAAAAAERgAKAAAAAAAAAAAAEBgBKAAAAAAAAAAAAEBgBKAAAAAAAAAAAAAAgRGAAgAAAAAAAAAAAARGAAoAAAAAAAAAAAAQGAEoAAAAAAAAAAAAQGAEoAAAAAAAAAAAAACBEYACAAAAAAAAAAAABEYACgAAAAAAAAAAABAYASgAAAAAAAAAAABAYASgAAAAAAAAAAAAAIERgAIAAAAAAAAAAAAERgAKAAAAAAAAAAAAEBgBKAAAAAAAAAAAAEBgBKAAAAAAAAAAAAAAgRGAAgAAAAAAAAAAAARGAAoAAAAAAAAAAAAQGAEoAAAAAAAAAAAAQGAEoAAAAAAAAAAAAACBEYACAAAAAAAAAAAABEYACgAAAAAAAAAAABAYASgAAAAAAAAAAABAYASgAAAAAAAAAAAAAIERgAIAAAAAAAAAAAAERgAKAAAAAAAAAAAAEBgBKAAAAAAAAAAAAEBgBKAAAAAAAAAAAAAAgRGAAgAAAAAAAAAAAARGAAoAAAAAAAAAAAAQGAEoAAAAAAAAAAAAQGAEoAAAAAAAAAAAAACBEYACAAAAAAAAAAAABEYACgAAAAAAAAAAABAYASgAAAAAAAAAAABAYASgAAAAAAAAAAAAAIHJuzAAGsHlW3avLuQyr5qOLyVJageuWdl/ixcDAAAAAAAAAIB6lanVai4HgFl3xZZd/flc9ten/n+L2cxrs5nMvKlft+ez5+YzmY5jn6s3n11UzGaKc31bB+Lqjuf/3lC5uuXYX5eqyf+Z+vNytfbQ9av6752t5wMAAAAAAAAAoPEJQAGYVlc+sOeS6HlBZ3cht2ry9zJRe28h19fMJz5SSYbHktqz6Z+PVZN9laS2OzomGBWLAgAAAAAAAABwIgSgAJywqTXr8wq588aTWn9LLru4JZtZ2J7NnNGZz3Y5yekTJ7V4oJLsqdRqo2OV5JHomEh0w/mL/qYxvkoAAAAAAAAAAE6VABSAn/LhrbvXZrOZvtZc9q35TKa7PZ99ucCz/kwFonGSjJSqtUdLleSJKBM9Jg4FAAAAAAAAAGgOAlCAJnTFll39+Vz213OZ6NxCNnt2uqJd5Nk4puLQsUryeKVWG0onh1otDwAAAAAAAADQWASgAA0unehZyGXeIPQkdSCu7ng2ru7JRbX/iJPa3ZVqctt1qxbvdjgAAAAAAAAAAGERgAI0iKmpnsVs5rVt+dyrunKZFb2FXJ/75aWMVJLhoWqyc6ySPDJarm5OatEdpoUCAAAAAAAAANQ3AShAoK58YM8lU7HnvHz2F0z1ZDpNrZEfKle3pFForVb7ukmhAAAAAAAAAAD1QwAKEIDLt+xe3ZrPvKMtlzu/t5A9z2RP5kI6KXSgUn1qrJJsHiknd96wqn+jiwAAAAAAAAAAmBsCUIA6lE73bM1l39qez567oJB7eTGbKbon6tGBuLojnRI6UU3uLVeTr5oSCgAAAAAAAAAwOwSgAHVgKvjsLuRW9RVzy90JoRooVw8MlJMHRyvV7wlCAQAAAAAAAABmjgAUYA4IPmkWglAAAAAAAAAAgJkhAAWYBR/eunttaz77tt5i/k2CT5rZVBA6GFduv3Zl/zVeBgAAAAAAAACAUyMABZgBV2zZ1d+Sz67rLOTfsLCYe3Uxmyk6Z/hZ28fL28rV5PuDE5X/dePqJbc6IgAAAAAAAACAEyMABZgm6ZTP9kLu3QuKuV/uLeT6nCucnJFKMnywXH14tFz99q6ReOPXLly+3xECAAAAAAAAALwwASjAKUqnfBZy2f/aXcz/timfMP32TFQeHoyrd5Uqyc3Xr+q/1xEDAAAAAAAAADxHAApwEi7fsnt1az7zjp5i/q2LWvKvdHYwOwbK1QPPTFTuH68kn79mZf8tjh0AAAAAAAAAaHYCUICXkEafHYXse/ta8r9ltTvMvclV8XF186GJyt/dsKp/oysBAAAAAAAAAJqRABTgBYg+IQylpBbvm6hsfXa8/M3PXbD4OtcGAAAAAAAAADQLASjAUaJPCJsYFAAAAAAAAABoJgJQoKmJPqExTa2JH4orf37Nyv5bXDMAAAAAAAAA0GgEoEDTuWLLrv6WfHbdWa2F3xN9QuNLY9C9pfJdI+Xkk9ev6r/XlQMAAAAAAAAAjUAACjSN9Q/sWT+vJf+7i1ryr3Tr0JwGytUDe0uV70xUqn923arFu70GAAAAAAAAAECoBKBAQ/vw1t1ru4v5Dy1qzb+xmM0U3TYwZVep/KPBuPrVz5y/6DMOBQAAAAAAAAAIjQAUaDjpivf2Qu5P+1ryv2XFO/BSSkkt3leq3PHMeHz9jauX3OrAAAAAAAAAAIAQCECBhpGueO8u5n97SWt+jVsFTsWhuLp//0T5b3cOx9d+7cLl+x0iAAAAAAAAAFCvBKBA0C7fsnt1VzG3/mUt+Td35rNdbhOYDnFSi/dMVLY+MxZfbSooAAAAAAAAAFCPBKBAkK58YM8li9oKl80v5Fa5QWAmmQoKAAAAAAAAANQjASgQjCu27OpvL+T+dFFr4Z2mfQKzbXIqaKlyx+GJylXXr+q/1wUAAAAAAAAAAHNJAArUvXTN+4K2wo0Li7lXF7OZohsD5tq+icqO/ePlm65d2X+NywAAAAAAAAAA5oIAFKhb6x/Ys/7M1sIf9hVzy90SUI9GKsnw0+Plv5+oVP/sulWLd7skAAAAAAAAAGC2CECBumLNOxCidD38rlJly+BEZZ318AAAAAAAAADAbBCAAnUhXfM+ryX/qUWt+Tda8w6EbFep/KMD45Vrb1jVv9FFAgAAAAAAAAAzRQAKzKkPb929dl5r4RNLWvNr3ATQSA7E1R17xuKvX7ey/+MuFgAAAAAAAACYbgJQYE5c+cCeS/paC5/sK+aWuwGgkY1UkuGnx+O/+PR5i6500QAAAAAAAADAdBGAArPqYw/u2XBGS+Edwk+g2ZSSWrx9NP72RKV6xXWrFu/2AgAAAAAAAAAAp0MACsyKNPxc0lb8w858tsuJA80sTmrxzvHyP47ElXVCUAAAAAAAAADgVAlAgRkl/AR4YUJQAAAAAAAAAOB0CECBGSH8BDgxSS2KdoyX7947Gr//L9csud+xAQAAAAAAAAAnQgAKTCvhJ8CpEYICAAAAAAAAACdDAApMC+EnwPSYDEHH4tuH4solVsMDAAAAAAAAAMcjAAVOi/CTEFWSWlR53o+/pFaL4uT4PxNL1en/eZnNRFEx/Y/jSP9aNvPTf/3I7wV57JykOKnFO8fL/zgSV9YJQQEAAAAAAACA5xOAAqdE+Ek9ODbkjKtJlBx9prTjPDbmjJMkepG2M2j5TCbKH1OEHhuIHhuQCkfDNRWCPjlYev/XLly+v9nPAwAAAAAAAAA4QgAKnJQrH9hzSV9r4ZN9xdxyJ8dMiau1yZjzSOB55OfU1ATOl5rUyUtrzWUn/zvHTiCd+r18JvqpoJT6UUpq8fbR+NufPu+sd7oWAAAAAAAAAEAACpwQ4SfTaSrmLFWTo59Hft3IkzpDMzVZdCoSTfPQYi579FMgOpdGKsnwjtH4CxteveijzXsKAAAAAAAAAIAAFHhRl2/ZvXpBW+HGJa35NU6Kk5FGnVPTOqdWtQs8G8dUIDq1Wr5VHDrrDsXV/XtK5Y9vOH/R3zTZlw4AAAAAAAAATS8SgALHc8WWXf29LYUvL28vXOSQOJ6psDOd5JlMBp41kSc/iUNbc89NDp0KRZl++yYqO54embjsxtVLbnW8AAAAAAAAANA8BKDAz/hvD+371tK2wm8Ws5mi0yE1FXemoeex0SecjCPr5I/EoOkfU5Eo02PHeHnz7pH4sr9cs+R+RwoAAAAAAAAAjU8ACvzE+gf2rF/WXryqM5/tcirNK64eXdteq02ucTfRk5mWTgxNV8cXJ4PQbJTPRJNxKCcvTmrxjrHyd7YPlT74tQuX73eEAAAAAAAAANC4BKBA9OGtu9e+rL14Y18xt9xpNJep2HPqD1M9qRdT00Jbj4ahUxNDOTEjlWT4iZGJz1+3sv/jjgwAAAAAAAAAGpMAFJrYFVt29fe2FL68vL1wkfeg8VV+EnmKPQlT2n+mE0KnJoWmn5rQF3cgru54arh02Y2rl9xaz88JAAAAAAAAAJw8ASg0qU/8+96bl7cX31XMZoregcaUhp5p5DkVe1rjTiOamg46FYSmq+T5WdvGyncPTZTfcd2qxbsdDwAAAAAAAAA0BgEoNJkrH9hzyeK2wqd7C7k+d9840rgzjTxN96TZTU0JbZ2MQY+skOeIOKnFT47GX/n0eWe915EAAAAAAAAAQPgEoNAk0nXvZ7QVNy1pza9x5+E7NvicmvIJvLDWoyFoqyB00qG4un/HaPzRG1b1b6yDxwEAAAAAAAAATpEAFJqAde/hE3zC9BGEHmEtPAAAAAAAAACETQAKDezDW3evXdpR/JJ172FKY8+xSiL4hBnWnj+yMj4NQotNFoSWklr8xPDE9RteveijdfA4AAAAAAAAAMBJEIBCA0rXvfe2FL68vL1wkfsNR3x0umcpORJ+ArMvn8n8ZDpoGoZmm6QH3TdR2fH0yMRlN65ecmsdPA4AAAAAAAAAcAIEoNBg1j+wZ/2y9uJVnflsl7utb1Nr3Y9M+axFFd+Poe4Us5nJELS9CaaDpt+TnhiNv/k/fvFlv1MHjwMAAAAAAAAAvAQBKDSIdOpnX3vxtrNa8q90p/WrcnS659jRaZ9AONJpoGkI2ujTQYcrydATQxPrbrigf2MdPA4AAAAAAAAAcBwCUGgAVz249+YVHcV3FbKZovusP+l0z8nos5KY8gkNZDIEzR2ZEJpvwBr0yZH49ieHSu/62oXL99fB4wAAAAAAAAAAzyMAhYBdft+u1Ys6Wr7R15Jb7h7ry1TwOVZNJtcqA40tXRWfBqGd+cZaFT9SSYa3jUxcfe3K/mvq4HEAAAAAAAAAgGMIQCFQ6dTPpe2Fd7XkTP2sB2nkORV8lkSf0NTymSNTQRspBn16rPzQoVLlLddfsHh3HTwOAAAAAAAAADS9SAAK4Tky9bP4jTNN/Zxzx0af6SfA8zVSDDpercWPD5euum7lYtNAAQAAAAAAAKAOCEAhIB9/cO/Ny0z9nFOiT+BUNUoMemQaaPkt11+wxDRQAAAAAAAAAJhDAlAIwB/f+/TqRR0tpn7OoTT2HKmIPoHpMRWDdhSyUUs2vBh0PKnFjw+Vrrp+lWmgAAAAAAAAADBXBKBQ5z72wN6bl3UU3tWSNfVzto0dDT7TaZ+Jb5XADElj0M5CNurIZ6NCYDHok6Px7U8OjL/r6284e38dPA4AAAAAAAAANBUBKNSpP7736f5FHS0/NPVzdk0ktWi0fCT8rPj+CMyyYjYTdRdyUVs+G4WyJX6wkgxtGyqt+/PVSzbWweMAAAAAAAAAQNMQgEId+sjWXevP7mq9umjq56xIp3uOpivey9UoNuoTqBPpivjOfHYyBg3BkyMTt/3P8xZd7P0BAAAAAAAAgNkhAIU68sf/trO/t724aUlbYY17mXnjafR5dM07QL1Kt8J35nNRVyEb5et8RfzhuLp/21DpPV9Ys/TWOngcAAAAAAAAAGhoAlCoE5ff9/Ta5V2tf9eZz3a5k5lTSWrRcDkNP6uRYZ9AaI5dEV+vLWic1OInh0tfvmbl4j+sg8cBAAAAAAAAgIYlAIU6cNWDe7+1orP4dncxM9LQM53yma55L1VN+wTCl8af7bls1FXMTUah9WjvWPlHB8fjiz/3S0t3e+UAAAAAAAAAYPoJQGEOrbtnZ/9ZXS0/XFDML3cP069Sq0WDcXUy/jTtE2hUaQCahqBpEFpvLehYNYkfHxp/342rl26sg8cBAAAAAAAAgIYiAIU58idbdq0/u7v16pZMpugOptdIOu2zbNon0Fwmp4Lms1FXof6mgj4+UvrmZ87v/506eBQAAAAAAAAAaBgCUJgDn/z3vbcvbS9e5OynTzrtc6ScRMPlqmmfQNObmgramc/WzVEcmKjs2D4w9p//+vUr7q+DxwEAAAAAAACA4AlAYRZ96J6nVi/tabulJ5/rc+7To1StRUPlajReMe0T4PnSQaDpRNDOQjbKZ+Z+KmgpSeJHDo997KY1y66b84cBAAAAAAAAgMAJQGGW/MmWp9ev6Gq9uiWbtfL9NKUTPseqSTQYV6OKcZ8AJySNQDvyuag1N/ch6BPDpds+8+r+i+f8QQAAAAAAAAAgYAJQmAVXPbjn9mUdLVa+nyZr3gFOX72shz84Ud6/f2Ri1efWLNvtWgEAAAAAAADg5AlAYQat2/xU/9nz2u5uy+WWOOdTFyfJ5Jr30bI17wDTJZ/NRB357OSK+NwcrYcvVZP40YGx9920ZtlGFwsAAAAAAAAAJ0cACjPk8nt3XnJ2T9sXrXw/dWOVajRcTtJAKNQvAaDuZTNR1JbPRr3FfJSfgxC0WqtFTwyWvnHtBYvf6W0BAAAAAAAAgBMnAIUZcOXWXTef3d12qbM9NaOVajQYV6OKPe8As6qjcGQiaDE7++vh947HP/rxwZE3feNXX77frQMAAAAAAADASxOAwjT60Oan+nvaC5v621rWONeTk0S1aDiuRqOVRPgJMMdac9mop5iLWnKzG4IOVSoHtg2MvfsvXrviVu8AAAAAAAAAALw4AShMkw/d89TaRd2tX+rJ5/uc6YmbCj+Hy9VI9wlQX9IQNJ0K2pHPzdpzlZMkfnRg7Nqb1iz7uNcBAAAAAAAAAI5PAArT4PL7dq5f0dV2dSGbLTrPE1Op1aLRsvATIAT5bGZyIuhshqDbh8dv27By8cVeEAAAAAAAAAB4YQJQOE0f2brr5rO72i51jicmDT8H40o0Wk5CeFwAjjHbIeje8fhHPz44/KZv/tor9rsHAAAAAAAAAPhpAlA4RR/cvKO/p724aVFbyxpn+NKEnwCNYzZD0MFy5cAjB0d+9ytvOOd2rxAAAAAAAAAAPEcACqfgg3dv71/U0761p5Dvc34vTvgJ0LhmKwQtJ0n86KHR933htcs3ep0AAAAAAAAA4AgBKJykD27esfaceR2bitls0dkdn/AToHnMRgiaRLXoycGxm6+/YOl7vVoAAAAAAAAAIACFk3L5fTs3LO1sW1fMiT+PJ6nVosMTwk+AZvSTELQwcyHoU8Pjd29Yufh1XjAAAAAAAAAAmp0AFE7QlVuf/tayrva3O68Xloafw3E1Gi5Xo8S3FYCmNtMh6P6xePuh0dIvf/51K3Y3+1kDAAAAAAAA0LwEoHACrnpgz+ZFHS1rnNXPEn4CcDwtuexkCNqaz077GQ3GlQOPHBz+3b9948/d7gIAAAAAAAAAaEYCUHgR779rW39/T8fWrmK+zzn9rNFyNRqYqAg/AXhRUyFoyzSHoKVqNX5qYPTtn3/NilvcAAAAAAAAAADNRgAKx/GBzdvXntXV9qVu8efPSMPPobgaVZSfAJyEdCV8dzE3uSJ+uqT/LPvQweFP3fy6sz/hLgAAAAAAAABoJgJQeAFp/Lmit3NTMZcpOp/nTFSSaDCuRhPVpF4eCYAAdRVyUU9LLspkpi8EfWJg7ObPrV76Xu8DAAAAAAAAAM1CAArPs+7fntqwpLt9nfjzOemkz3TV+3hF+AnA9EiHgKYhaHdLftr+N3cMjt913QVLXu+KAAAAAAAAAGgGAlA4Rhp/njOv4yPO5IikVouGJqrRcLlaD48DQANK18Gna+HT9fDTYe/oxD2PPTP0tk0X/af93hcAAAAAAAAAGpkAFI66cuuu2xd3tl7kPI4YjqvRUFyJEt8iAJgFLbns5Fr49PN0HSzF+54dHr/gptefs9vdAQAAAAAAANCoBKAQRdH6+3dvXtTRssZZRFGpmkSHS5XJte8AMNvSSaDpRNB0MujpGC5XDjx+cPjir7zx5fe7RAAAAAAAAAAakQCUpvZHP3yyf35X2219bcVXNvtZpMHnoVIlmqgmdfA0ADSztP3sLOSinpb8aZ3CWCWJHz4w8Jtf/ZVX3O6FAgAAAAAAAKDRCEBpWn/0wyf6+3s7t3YV833NfA5JrXZ03Xu1Dp4GAJ6TTgHtbclHbflTXwsfJ0m8/fDI27/w2rNvcbQAAAAAAAAANBIBKE0pjT8XiT+j0XI1GpioRLa9A1DPWnLZaH5r/pTXwpeTJH704PDH/vrCc65z0QAAAAAAAAA0CgEoTeeyu7at7e/t+LuOfK6rWW8/rtYmw0/r3gEISXcxF3UVc1E2c/IhaDrx+uFnhj71pQvP+YRLBwAAAAAAAKARCEBpKpfd9eTaZfO7NrVks8VmvPk0fklXvQ9b9w5AoNIpoD0t+aj9FNbCpz8Htw+MfvbGNcuvdP8AAAAAAAAAhE4AStO47M4j8WehSePP8UoSDU5Uoop97wA0gLZ8NuptyUe5U1gLv31gRAQKAAAAAAAAQPAEoDSFNP5cOr9rU7EJ489qUosOlax7B6DxpO1nZzEXdRfzJ/21bRsY/afPr1n2Fq8FAAAAAAAAAKESgNLwLrtr2yVL53V8sZDNNV38ORRXopG4Ghn6CUAjK2QzUW9rPmrJndxa+O2Do3d+/peWXejlAAAAAAAAACBEAlAa2gfu2bFhRW/HR5rtlsvp1M/x8uQnADSLqWmgJ7MV/kgEulwECgAAAAAAAEBwBKA0rGaMP9Pec2rqJwA0o3w2E/W05KO2/IlPA316aPzuG1YvfZ0XBgAAAAAAAICQCEBpSGn8ubzJ4s+JahIdKlWiqqmfADAZgM5rLZzwNNB9o6V7rlm55DVODgAAAAAAAIBQCEBpOB/YvH3D8nmdTRN/mvoJAC8sjT/TCPREp4GKQAEAAAAAAAAIiQCUhtJs8ed4JYkOl8qRoZ8AcHwnMw1072jpnmtFoAAAAAAAAAAEQABKw3h/E8WfafB5qFSOSpWkDp4GAOrfyUwD3ScCBQAAAAAAACAAAlAawmT82dsc8aepnwBw6lrz2Wj+CUwD3TcmAgUAAAAAAACgvglACd5lm7dtWNHb1fDxZxp8DkxUorFytc+olLkAACAASURBVA6eBgDCdaLTQPeNjd9z7cqlIlAAAAAAAAAA6pIAlKCl8eeyJog/42oSHSpVoqqxnwAwbdIAtPclpoHuHBq966ZfWv56pw4AAAAAAABAvRGAEqzL7t62Ydm8xo4/095zOK5EI7GpnwAwE9L484y2QlTMHX8a6I7BkTu/uGbFhS4AAAAAAAAAgHoiACVI7/vB42sXz+/eVMxli416g+WkFh0eL09+AgAzq7OYi7qK+eNOA90xMHLnF18jAgUAAAAAAACgfghACc57f/D42iXzuzcVGjj+HI6r0dBEpQ6eBACaRy6bmZwGWjhOBbrj0Mg3/uJ1K97plQAAAAAAAACgHghACUqjx5+VWi0aGK9EE9WkDp4GAJpTd0s+6irmXvBr33l46LNfeO05V3o1AAAAAAAAAJhrAlCC8d5/fWzt4jN6Gnbt+3g5iQZK5cjGdwCYey25bNTblo/yLzANdNvBwc/81YU/91HXBAAAAAAAAMBcEoAShEvveHT10gW9P2zEyZ9p8DlYqkRj5WodPA0AMCVtP3tbC1FbIftTZ5L+7H5s/+FPfeVXXvEJhwUAAAAAAADAXBGAUvf+4P890n/m/O6tXcVCX6PdVrlaiw6XypOfAEB96izmoq6WfHTsMNA0An3iwOH3fPmNr9jo2gAAAAAAAACYCwJQ6tpz8We+4eLPkbgaDU9UrHwHgAAUcploXmth8nNKuZrEu54devtfveEVt7hDAAAAAAAAAGabAJS69rEH9+zvamms+DMNPg+Pl6NSJamDpwEATlQ6AbS7pRB1FJ9bCT9RSeIf7zn0m9948y/c7iABAAAAAAAAmE0CUOrWuvt2bl7Y2bqmkW4oXfX+7Hg5qhr7CQDBai/kop7W51bCl8rVeM/BwbP/+lfP3e1WAQAAAAAAAJgtWSdNPVp331MNF3+mK98PjMbiTwAI3Fi5Gh0ciyf/xY5UayFXPHN+99bfuOWBhe4WAAAAAAAAgNliAih157K7t928aF7npY1yM2nvOVSqTMYiAEDjmFoJ3350JfzAWLzvx3sOnv/dtefvd80AAAAAAAAAzLS8E6aevO/OJzYsmd99adQgXXI6GWygVP7JhDAAoHGk/5LHwHg5iiu5qLctH/W2FV/2cwvnfSeKote4ZgAAAAAAAABmmgmg1I1Lf/DYJcsX9H6pUW5krJxEQ6VyZOM7ADS+Qi4TzW8rRLlsJtp5eOTOv3rd2Re6dgAAAAAAAABmkgCUunDpHY+sXbSgd1Mhmy02wo0MlirRaGzlOwA0k3QlfBqBFvPZaNehwc/+5etffqUXAAAAAAAAAICZIgBlzv3+9/+jv3/h/G2NEH+m0z6fHYutfAeAJtbTmo/aCrno8X2HPvXVXzv3E94FAAAAAAAAAGaCAJQ5lcafC87o2dpRLPSFfhNp9JnGn1a+AwCt+WzU2ZKL9z478PYvvfHcW5r+QAAAAAAAAACYdllHylzq6um8rRHiz7FyEj0zKv4EAI4oVZJosFQpzu/p/tY7b3vo1Y4FAAAAAAAAgOkmAGXOfODfnto8v731laHfwMB4JRoYL9fBkwAA9SSdDj4aV1sWzOv+7lv+4f6FLgcAAAAAAACA6ZR3msyFP/jB4xsWL+hZE/LAzHTa56GxchRXkzp4GgCgHlUn/2Ene9YZ3Z13RFF0rksCAAAAAAAAYLqYAMqsu/SORy9ZvKDnIyGffDrRK135Lv4EAE5ER1vrz7/ze49832EBAAAAAAAAMF0ytVrIMxgJzSX/8sjaRWf2bipks8VQL69UqU6ufE/8rQMAnKR9hwf/+3fe8qqrnRsAAAAAAAAAp0sAyqx5zz8/3L/gjN6t7S2FvlBPfTSuREOlSh08CQAQqt0HD/+X76497+9dIAAAAAAAAACnwwp4Zk3v/O4fhhx/Do6XxZ8AwGl72fyeL1/8D1t/0UkCAAAAAAAAcDoEoMyKP9q87fbu1pblIZ52OiX34OhENFau1sHTAAChy2WzrWf2dH/34u9sWegyAQAAAAAAADhVeSfHTLv0B49tWHRG70W1AE+6XE2iwVI5KldDfHoAoF61thQX93Z13hJF0WqXBAAAAAAAAMCpMAGUGfWef/nx2r553etCPOU0/jw0Fos/AYAZ0dXedsFv3/bwRqcLAAAAAAAAwKnIpOutYSa8559/1N975vxtXYV8MbQDHi9Xo4Hxch08CQDQ6PY8e+gD3/2N829y0QAAAAAAAACcDAEoM2bdlp3bu1tbl4d2wqNxJRoqVergSQCAZlBNktLeZw+t/affWvk9Fw4AAAAAAADAibICnhnxvru33R5i/JlO/RR/AgCzKZfNti7o6d745m/ft9DBAwAAAAAAAHCiBKBMu0v+9dENfd2dF4V0skmtNhl/pqvfAQBmW2uxuLi7o+PrDh4AAAAAAACAE2UFPNPq3d//j7ULz5y/qZDNFkM52TT+PDQWR+WqvxcAgLn1zOHBG/7hra+63DUAAAAAAAAA8FIEoEybd//fh/rnnTFva0dLsS+UUxV/AgD1ZveBg2/6p7et/J6LAQAAAAAAAODFWAHPtGnt7twUUvxZTpLomZEJ8ScAUFdetmD+LW/+3/cudCsAAAAAAAAAvJi802E6/P4PHrt54fzeNUkgp1lJkujQaBwl2k8AoM5ks9nWeT09d0RRdK67AQAAAAAAAOB4TADltP3e9x5eu3B+76WhnGRcFX8CAPWto631599260MbXRMAAAAAAMD/Z+9OwOw6yzvBf3Vv7YvqloQlG9mRbDC2MbFEQBgIRDJLOiEGywHaQBYJTw/pTtOx6Z6ZpCcTLJhJJtCZWG4aekkHy50ECAmNnAQI4EUCQggELJklrEbGYLlkrMUq1Xa3ec7VubgstNR27z3L7/c85ym5XMt33u9W1am6//O+AJxJV70uBcfibfvE/WtXrX7KP/X3dI+koYxTs9VwbKqcgJUAAJzbw4/+8PV/e91PfUCpAAAAAAAAADiVAChL8uufP/CV0tDAlWmoovAnAJA21Vpt+geHHl1/1y8+b9zmAQAAAAAAADBXt2qwWDd++ht/tGZl6co0RIiFPwGANCoUCv0rR0f3hhAut4EAAAAAAAAAzFVQDRbjV+76yrVrVpb+RRqKJ/wJAKTZ0ED/Zdf+zf5bbSIAAAAAAAAAcxkBz4L96sf3ry2dt/JLQ329q5NevWOT5TBVriZgJQAAS/P98Udf9snrn3u3MgIAAAAAAAAQBEBZjP/17x/43KoVQ1cnvXjCnwBAlpTLlSPjP/zhFXe9+upxGwsAAAAAAACAEfAsyK/e87XfFP4EAGi/np7useHh4fcrPQAAAAAAAABBB1AW4pc/fv+mNRec95meQqE3yYU7NlUOU7PCnwBANo0/dviWj73q2W+3vQAAAAAAAAD5JgDKvP36Fx787shA//okV0z4EwDIumqtNn3w0KGr73711ffbbAAAAAAAAID8MgKeeXnd3m+8X/gTAKDzioVC/9jo6AdtBQAAAAAAAEC+CYByTr/8yfuvXbeq9LokV0r4EwDIk6GBgcuu/cj+XTYdAAAAAAAAIL+MgOec3vzF740P9PWtTmqlHhf+BABy6uHx8Zfd9YvPu9v+AwAAAAAAAOSPDqCc1Y2f+fYnhD8BAJJpZam062Mf/Wi/7QEAAAAAAADIHwFQzuhX7vrKjatKIy9PaoWEPwGAvOvv67vwPeGi9+e9DgAAAAAAAAB5ZAQ8p/XLf3vf2rE15/1TX0/PSBIrJPwJAPCEg4cOvf6u6zd9QEkAAAAAAAAA8kMAlNN642e+9Ymkdv8U/gQAeLLZ2cqRQ48+esW9//wF40oDAAAAAAAAkA/d9plT/fJdX7nx/DVPeXlIYDY4Cn5OzQh/AgDM1dvTPTY0NPRfQgjXKwwAAAAAAABAPugAypP80seao9+7Ezf6PQp/Rt0/AQA4vYPjj77+7lcbBQ8AAAAAAACQBwW7zFw9w8O3C38CAKTTqpWl92z54GfX2D4AAAAAAACA7DMCnh95wye/fOP555/38qT1hBX+BACYn56eHqPgAQAAAAAAAHJCB1AafumjX1pbWjW2M2nVmK3UhD8BABagNDq69SUf+vzr1AwAAAAAAAAg2wRAaegZGb69P2Gj38vVejg6KfwJALBQq1aOvWfLnxsFDwAAAAAAAJBlRsAT3vCJ+29cfcHql9cSVIpKtR6OnJgN9XrSBtIDACRfNAq+f2DgHSGE7bYLAAAAAAAAIJu6BOz4tS98b3ygr3d1UgoRPSR/eHxG+BMAYIkOPvLIy+597fPvVkcAAAAAAACA7DECPud+Zc/X/zJp4U+dPwEAlsfY2NgupQQAAAAAAADIJh1Ac+yGj9236fy1F3w+KRWo1UM4emI2VKpJGkYPAJBujx1+bOcnrnvOW2wjAAAAAAAAQLboAJpjw2OlDybp7Cemy8KfAADLbKxU+pc/8+efvUpdAQAAAAAAALJFADSn3nDXV945PDiwPiln//hUOUzPVhOwEgCAbCkUiv2jK1b8sW0FAAAAAAAAyBYj4HPo9X/zj2tXrr3ggWKx2JuEs5+crYaJqXICVgIAkF2HDh168z2vft67bTEAAAAAAABANgiA5tCvfOZbnxtbMXx1Es58qlwNxyeFPwEAWq08Wz7y6KHxKz71+hePKzYAAAAAAABA+hkBnzOv+/j+G5MS/qxU62FiqpKAlQAAZF9Pb89Y/+DQO2w1AAAAAAAAQDboAJoz/+LzD44P9Peu7vRZR+HPIydmg8cfAEB7PfyDhzd8+nU/fb+yAwAAAAAAAKRbt/3Ljzfc89U/WvWUlR0Pf9bqITw+WQ71mvAn7XFef3fjAIB2+trR6UTWu1QqfTCEcHkClgIAAAAAAADAEugAmhOv++svrC1d+NQHeoqF3k6f8ZGJ2VCu1PJSelqgGehcP9QbhrqLTwp4Rq8b7C4oOwAdd8OnvpvYTRg/NP7mPa95/rsTsBQAAAAAAAAAFklLvJzoLo1+qFgs9HY6dnl8shxmhT9ZgCtL/eGZowNhdRT4HO4N64Y6nmEGgHlJ8m1WY2Mr/+8Xve9Tf/mZN/zMeAKWAwAAAAAAAMAiCIDmwA1/u+/Gpzx1zdWdPtOpmWqYnq3moeQs0lB3ITxztD9cWLj77xreKDR8KzNfD08v1v8fN7038eYAAAAAAAD8T+3eYI57ZRXH/88f28TGRkgguEAYiG2ZkAmXEmIDV0oYq9IUKBUpW1rLtrS2beM2vOxaC9pSmi2bUrS6lC0F67axG94UuY0YCBASGyYIEMIhIQSyZJatRsZguWRtxSrVdrc7587MHByWnXvPec459/f7fD5At9S1957XmR8z98yZM6d60rV9UuN9Xv/08/9zH8GfAAAAAACAORMAFasOD126UI9YmZ6oBvGfXp2uBvPfAQAAZMD08e7A4X576/q5G6P29517I7u+uD0mAgAAAACAOWIElEGrDg8NLyV6YmX6+p6Z6YmxYv7+XW+9t68V+Hw09eOnXv/Bv7v3lS/+YatjAgAAAACA6SIAZVDmI8/C7Hclm4mxYu79mZ756GvN6O239vffEUJ4pZVxAQAAAABAaxmBZVHmY8/C7Hen08V39Ddr3ZshUCOgAAAAAACQLgNQiVqZl6eVuZf5qD89Xv7988WvP98O/VatSggXN3YyAAAAAACAjBIAldp6Pq8o99P3X64G8+uN6K8YAG0Gf9Yj5qM28ecU8+8H88Z/v+H6v97X6vgAAAAAAGC6CIAiG3o+99P3X+6uRPx6Uu4Hvxz9fS768/R8578fA0Abp9Zf+9T9X737Z60ODAAAAAAAposREIXC7Hdt3vjvXyYV/Cj7S9K/N9/6X/8+6v/Xf/y7f3rv89++u/WxAQAAAADA9BCAQqn8+zH7S9K7N5P+vRnbv0TfO6vUjwGgS7H20qfGnv26XzY7HgAAAAAATBMjIJTezTf6m6Hv6vX/6XQx1iYfT9V//Pq93m+m/t6+L4Swv9X7AQAAAADA9BGAmv3Sre9rXh7uL9T+vVr96/f8+8L90Ruv/58/a3X0AAAAAADA9BGAmv06S/60KvbY6fQBAAAAAABmD0HNVr906/va19M/vS+EcKkVcAAAAAAAAIyeAChGv8f09/beEULY36K7AQAAAACAsREArdp3Z+K7e0t69+Y9m975Z58XAAAAAAAA9BkBaNXO/7R/U7Oen9XqX7+nP8/Vv25vvqN/S7U6AAAAAAAAfUcAWrXr3/7uS63O9V7v2X/LhX/6vTtaHBcAAAAAAEwXI6Cs2pGZ6YmxeZ7481L9fS466P/y6Z6Z6YlxRwQAAAAAANNFACrR7+2/I4SwnfAJAACA9mP8CwBZ5U8Wq8NDw62ODAAAAIB2YvwLAFlmBJRpMvYdAAAAALR6X7699uXfvdHquAAA6DMC0Kr97R/+r/7+6YmxVscFAAAAtBvjXwDIMCOgVfv693mS1fI9H00989EXWxwYAAAAAG3E+BcAMswIKGv278fs9899fH8S+fL9p3rStX1S5f0Xn/7t+19ocWwAAAAAAIB2IQBlzeb7Z6YnKsfYl009Uf7988WvP98O/VatSgiXWx0bAAAAAADQDqyAZ9q0Kud7vX/67/V+8+v3/PvC/Y09f/z680YCAAAAAADQNoALpWv2u/89+939vTq9Y6eN99HUrZ6+L4Swv+U3AgAAAACAqSMAbclXfP73W9vN86M2XvvXf6PFcQEAAAAAwFSxAq7Z6997p6U5p9r9n/ZveueffX5cqmMCAAAAAIBpYgS0arX61+/p92qf+PNSm+NfPvU9M9MTY44JAAAAAACmiRGQKpU/L9Xf56KDPuGof//pnpmpiXEHBAAAAAAA00UAyjQZ+w4AAAAAWj39WfX+T7+t1XEBAJBn7B9mmnT7D/fbWx0XAAAAAO3E+BcAMswIKMv078fs9899fH8S+fL9p3rStX1S5f0Xn/7t+19ocWwAAAAAAIB2IQBlVeb7Z6YnKsfYl009Uf7988WvP98O/VatSgiXWx0bAAAAAADQDqyAZ1W2Y67Z96f/Xu83v37Pvy/c39jzX3z6tw96SgAAAAAAQFsAgGrVof2fCSG80urYAAAAAADAcBCArNr7S3r35j2b3vlnnxcAAAAAAAD0GQEoq9XqX7/n3xfuj954/f/8mXf274ghhLAV8QEAAAAAQDsRgKzas8P9hdq/V6t//Z5/X7g/euP1//NnrY4LAAAAAACmi78IarZ7vWf/LRf+6ffuaHVcAAAAAAAwXYyAAr+n7wsheP0AAAAAAMCs8f9oUGr7Z6YnxuY5D6f+Phcd9H/5dM/M9MS4IwIAAAAAgOkSgBaosX/XW++N/R7V3+eigz5hr3//6Z6Z6YlxBwUAAAAAANPFAFSiUvnzUv19Ljrs7+0/9W+XW70fAAAAAACAXmMEVKmS9O/N9D6bof6O/j7GvAAAAAAAAGaPAFRq/0u3vr9fH/Ond9uN9uS/6vCQ/0YAAAAAAMAs8RdBoXTuDCHsX8C5D3V7Gf8CAAAAAACzRQAKpVfG9/YnZ79v88Z//zKp4EfBvx/MG//9huv/el+LYwMAAAAAgOkSgEL7W9z9PzT8Z6mOCQAAAAAApst2IACl0qofA0CX6uvv/f3H2x0HAAAAAADAnDACKuY7/+zzQgD6zMTY+K37f+fKkxbHBQAAAAAA08UIqFr96+n7Qgghp/f90fV7vvNf9X4z9ff2fSGE/S2+DQAAAAAAmBoCUIn7Z6YnxiIn+r5+9vXv8ySrp7/Pkyr7v3z6u3/29RcbXBsAAAAAAJA3TkClVv+6f9XhIf+NT7V6+L4Qwt4FvV9Pr1S9/vX0fSGEvYsuDQAAAAAAmDq7X9fUqf732W7/4X57uX73x6+ffuYfXvD6AAAAAAAAMI8YAVWqlXl5Wpl7mY/60+Pl3z9f/PrziS3v9vSOnTffp2f/Lrf6PwAAAAAAALPECKhYre3h+B7HPNv99P2XqwVv1D7x56U2x7986ntmpifGOhgXAAAAAABMGz98I1Vf7v5+Wv530pP96fEvX64vV6uT79Ozf/f79jX79Xp6fV/67f0vtnI9AAAAAACA6SIAlXp72/uO/p6/mO1+2u/Z76XfXfL6v6S/P7HzX25pSAAAAAAAQC8QgF6K0vR9PZ8XQli8XqX7Uv9m/7S+HwAAAAAAsA8/fCOrPnn8Yp6v3/PvY/X/e/r9/CGE8P8BAAD//wMAqF6mEOnlPToAAAAASUVORK5CYII=" style=""/>
+<div class="flex flex-col">
+<h2 class="text-slate-900 dark:text-white text-base font-bold leading-tight" style="font-family: 'Michroma', sans-serif;">AI Academy</h2>
+<p class="text-slate-500 dark:text-slate-400 text-xs" style="font-family: 'Noto Sans', sans-serif;">Admin Console</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<button class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors relative">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">notifications</span>
+<span class="absolute top-2 right-2 size-2 bg-red-500 rounded-full border-2 border-white dark:border-background-dark"></span>
+</button>
+<button class="p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors">
+<span class="material-symbols-outlined text-slate-600 dark:text-slate-400">settings</span>
+</button>
+<div class="h-8 w-[1px] bg-slate-200 dark:bg-slate-800 mx-2"></div>
+<button class="flex items-center gap-3 pl-3 pr-2 py-1.5 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-all border border-transparent hover:border-slate-200 dark:hover:border-slate-700">
+<div class="text-right hidden sm:block">
+<p class="text-xs font-bold text-slate-900 dark:text-white leading-tight" style="font-family: 'Noto Sans', sans-serif;">Admin User</p>
+<p class="text-[10px] text-slate-500 font-medium" style="font-family: 'Noto Sans', sans-serif;">Super Admin</p>
+</div>
+<div class="relative">
+<img alt="User avatar" class="size-8 rounded-full border border-slate-200 dark:border-slate-700 object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCUZmHVyol7wCqHhXdIoaJPlb9A0VeEwtaKAvxL4lyg6R1GBGKSRO9RJE2YdqFxyd5vP9bVxXE2WeJQwHVolRO3hmBx3CL94C39F1ldtSXfrjw4GLbjNeFqxbYERk1xxoCGmIeMTrlgQTtncRCNWkxTWhCNn1CLoagsqSYRsa6caJqF53zhy0mXwlt9GbLMaUvJlKRL0v_AqNHpaUDJ9izeERvjJUpYC9bj7UpkIUW-yeBpvdkkO4nIIAa9SAKHT3ek0NPXk7m3Jew"/>
+<div class="absolute -bottom-0.5 -right-0.5 size-2.5 bg-green-500 border-2 border-white dark:border-background-dark rounded-full"></div>
+</div>
+<span class="material-symbols-outlined text-slate-400 text-lg">expand_more</span>
+</button>
+</div></div>
+</header>
+<main class="max-w-5xl mx-auto px-6 py-10">
+<!-- Breadcrumbs & Header -->
+<div class="mb-10">
+<div class="flex items-center gap-2 text-slate-500 text-xs font-bold uppercase tracking-widest mb-4"><a class="hover:text-primary transition-colors" href="#" style="">LEARNING Track</a></div>
+<div class="flex flex-col md:flex-row md:items-end justify-between gap-6 w-full">
+<div>
+<h1 class="text-3xl lg:text-4xl font-black tracking-tight mb-2 branding-font flex items-center" style="">Technical Track </h1>
+<p class="text-slate-400 max-w-2xl" style="">Structure your curriculum with sequential modules containting texts, videos, quizzes, images, slides, PDFs and reports. Drag to reorder content flow.</p>
+</div><div class="flex items-center gap-3 self-center md:self-end mt-4 md:mt-0">
+<span class="branding-font text-xs font-bold uppercase tracking-widest text-slate-400">Edition</span>
+<div class="flex items-center bg-slate-900 border border-slate-800 rounded-full p-1">
+<button class="px-3 py-1 rounded-full text-[10px] font-bold transition-all bg-primary text-white">
+            ON
+        </button>
+<button class="px-3 py-1 rounded-full text-[10px] font-bold transition-all text-slate-500 hover:text-slate-300">
+            OFF
+        </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Navigation Tabs -->
+<div class="border-b border-slate-800 mb-8 flex gap-8">
+<button class="border-b-2 border-primary pb-4 text-sm font-bold text-white flex items-center gap-2" style="">
+<span class="material-symbols-outlined text-sm" style="">account_tree</span>
+                Structure Editor
+            </button>
+<button class="border-b-2 border-transparent pb-4 text-sm font-bold text-slate-500 hover:text-slate-300 transition-colors flex items-center gap-2" style="">
+<span class="material-symbols-outlined text-sm" style="">settings</span>
+                Track Settings
+            </button>
+</div>
+<!-- Sequential Content Flow -->
+<div class="space-y-6">
+<!-- Module 1 -->
+<section class="group relative bg-slate-900/40 border border-slate-800 rounded-xl overflow-hidden module-container">
+<!-- Module Header -->
+<div class="p-5 flex items-center justify-between bg-slate-900/60 border-b border-slate-800">
+<div class="flex items-center gap-4">
+<div class="drag-handle text-slate-600 hover:text-slate-400 transition-colors">
+<span class="material-symbols-outlined" style="">drag_indicator</span>
+</div>
+<div>
+<span class="text-[10px] font-bold text-primary uppercase tracking-[0.2em]" style="">Module 01</span>
+<h3 class="text-lg font-bold" style="">Neural Network Foundations</h3>
+</div>
+</div>
+<div class="flex items-center gap-2 group-hover:opacity-100 transition-opacity opacity-100"><button class="p-2 hover:bg-slate-800 rounded text-slate-400 hover:text-white transition-colors flex items-center justify-center" onclick="this.closest('.module-container').classList.toggle('module-collapsed')">
+<span class="material-symbols-outlined text-2xl chevron-icon">expand_more</span>
+</button>
+<button class="p-2 hover:bg-slate-800 rounded text-slate-400 hover:text-white transition-colors" style="" title="Edit Module Title">
+<span class="material-symbols-outlined text-xl" style="">edit</span>
+</button>
+<button class="p-2 hover:bg-red-900/30 rounded text-slate-400 hover:text-red-400 transition-colors" style="" title="Delete Module">
+<span class="material-symbols-outlined text-xl" style="">delete</span>
+</button>
+</div>
+</div>
+<!-- Lessons/Blocks Container -->
+<div class="p-4 space-y-3 module-content"><!-- 1. Introduction to AI -->
+<div class="flex items-center justify-between bg-background-dark border border-slate-800 p-4 rounded-lg hover:border-slate-600 transition-colors group/item">
+<div class="flex items-center gap-4">
+<div class="drag-handle text-slate-700">
+<span class="material-symbols-outlined text-sm" style="">drag_handle</span>
+</div>
+<div class="size-10 bg-primary/10 rounded flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" style="">description</span>
+</div>
+<div>
+<p class="text-sm font-semibold" style="">Introduction to AI</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-wider font-bold" style="">PAGE</p>
+</div>
+</div>
+<div class="flex items-center gap-1 group-hover/item:opacity-100 transition-opacity opacity-100">
+<button class="p-1.5 hover:bg-slate-800 rounded text-slate-500 hover:text-white" style=""><span class="material-symbols-outlined text-lg" style="">edit</span></button>
+<button class="p-1.5 hover:bg-red-900/20 rounded text-slate-500 hover:text-red-400" style=""><span class="material-symbols-outlined text-lg" style="">delete</span></button>
+</div>
+</div>
+<!-- 2. Neural Network Basics -->
+<div class="flex items-center justify-between bg-background-dark border border-slate-800 p-4 rounded-lg hover:border-slate-600 transition-colors group/item">
+<div class="flex items-center gap-4">
+<div class="drag-handle text-slate-700">
+<span class="material-symbols-outlined text-sm" style="">drag_handle</span>
+</div>
+<div class="size-10 bg-red-500/10 rounded flex items-center justify-center text-red-500">
+<span class="material-symbols-outlined" style="">play_circle</span>
+</div>
+<div>
+<p class="text-sm font-semibold" style="">Neural Network Basics</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-wider font-bold" style="">Video</p>
+</div>
+</div>
+<div class="flex items-center gap-1 group-hover/item:opacity-100 transition-opacity opacity-100">
+<button class="p-1.5 hover:bg-slate-800 rounded text-slate-500 hover:text-white" style=""><span class="material-symbols-outlined text-lg" style="">edit</span></button>
+<button class="p-1.5 hover:bg-red-900/20 rounded text-slate-500 hover:text-red-400" style=""><span class="material-symbols-outlined text-lg" style="">delete</span></button>
+</div>
+</div>
+<!-- 3. System Architecture PDF -->
+<div class="flex items-center justify-between bg-background-dark border border-slate-800 p-4 rounded-lg hover:border-slate-600 transition-colors group/item">
+<div class="flex items-center gap-4">
+<div class="drag-handle text-slate-700">
+<span class="material-symbols-outlined text-sm" style="">drag_handle</span>
+</div>
+<div class="size-10 bg-orange-500/10 rounded flex items-center justify-center text-orange-500">
+<span class="material-symbols-outlined" style="">picture_as_pdf</span>
+</div>
+<div>
+<p class="text-sm font-semibold" style="">System Architecture PDF</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-wider font-bold" style="">PDF</p>
+</div>
+</div>
+<div class="flex items-center gap-1 group-hover/item:opacity-100 transition-opacity opacity-100">
+<button class="p-1.5 hover:bg-slate-800 rounded text-slate-500 hover:text-white" style=""><span class="material-symbols-outlined text-lg" style="">edit</span></button>
+<button class="p-1.5 hover:bg-red-900/20 rounded text-slate-500 hover:text-red-400" style=""><span class="material-symbols-outlined text-lg" style="">delete</span></button>
+</div>
+</div>
+<!-- 4. AI Strategy Podcast -->
+<div class="flex items-center justify-between bg-background-dark border border-slate-800 p-4 rounded-lg hover:border-slate-600 transition-colors group/item">
+<div class="flex items-center gap-4">
+<div class="drag-handle text-slate-700">
+<span class="material-symbols-outlined text-sm" style="">drag_handle</span>
+</div>
+<div class="size-10 bg-purple-500/10 rounded flex items-center justify-center text-purple-500">
+<span class="material-symbols-outlined" style="">mic</span>
+</div>
+<div>
+<p class="text-sm font-semibold" style="">AI Strategy Podcast</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-wider font-bold" style="">Audio</p>
+</div>
+</div>
+<div class="flex items-center gap-1 group-hover/item:opacity-100 transition-opacity opacity-100">
+<button class="p-1.5 hover:bg-slate-800 rounded text-slate-500 hover:text-white" style=""><span class="material-symbols-outlined text-lg" style="">edit</span></button>
+<button class="p-1.5 hover:bg-red-900/20 rounded text-slate-500 hover:text-red-400" style=""><span class="material-symbols-outlined text-lg" style="">delete</span></button>
+</div>
+</div>
+<!-- 5. Process Flow Infographic -->
+<div class="flex items-center justify-between bg-background-dark border border-slate-800 p-4 rounded-lg hover:border-slate-600 transition-colors group/item">
+<div class="flex items-center gap-4">
+<div class="drag-handle text-slate-700">
+<span class="material-symbols-outlined text-sm" style="">drag_handle</span>
+</div>
+<div class="size-10 bg-pink-500/10 rounded flex items-center justify-center text-pink-500">
+<span class="material-symbols-outlined" style="">image</span>
+</div>
+<div>
+<p class="text-sm font-semibold" style="">Process Flow Infographic</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-wider font-bold" style="">Image</p>
+</div>
+</div>
+<div class="flex items-center gap-1 group-hover/item:opacity-100 transition-opacity opacity-100">
+<button class="p-1.5 hover:bg-slate-800 rounded text-slate-500 hover:text-white" style=""><span class="material-symbols-outlined text-lg" style="">edit</span></button>
+<button class="p-1.5 hover:bg-red-900/20 rounded text-slate-500 hover:text-red-400" style=""><span class="material-symbols-outlined text-lg" style="">delete</span></button>
+</div>
+</div>
+<!-- 6. Knowledge Map -->
+<div class="flex items-center justify-between bg-background-dark border border-slate-800 p-4 rounded-lg hover:border-slate-600 transition-colors group/item">
+<div class="flex items-center gap-4">
+<div class="drag-handle text-slate-700">
+<span class="material-symbols-outlined text-sm" style="">drag_handle</span>
+</div>
+<div class="size-10 bg-indigo-500/10 rounded flex items-center justify-center text-indigo-500">
+<span class="material-symbols-outlined" style="">account_tree</span>
+</div>
+<div>
+<p class="text-sm font-semibold" style="">Knowledge Map</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-wider font-bold" style="">Mind Map</p>
+</div>
+</div>
+<div class="flex items-center gap-1 group-hover/item:opacity-100 transition-opacity opacity-100">
+<button class="p-1.5 hover:bg-slate-800 rounded text-slate-500 hover:text-white" style=""><span class="material-symbols-outlined text-lg" style="">edit</span></button>
+<button class="p-1.5 hover:bg-red-900/20 rounded text-slate-500 hover:text-red-400" style=""><span class="material-symbols-outlined text-lg" style="">delete</span></button>
+</div>
+</div>
+<!-- 7. Performance Report -->
+<div class="flex items-center justify-between bg-background-dark border border-slate-800 p-4 rounded-lg hover:border-slate-600 transition-colors group/item">
+<div class="flex items-center gap-4">
+<div class="drag-handle text-slate-700">
+<span class="material-symbols-outlined text-sm" style="">drag_handle</span>
+</div>
+<div class="size-10 bg-cyan-500/10 rounded flex items-center justify-center text-cyan-500">
+<span class="material-symbols-outlined" style="">assessment</span>
+</div>
+<div>
+<p class="text-sm font-semibold" style="">Performance Report</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-wider font-bold" style="">Report</p>
+</div>
+</div>
+<div class="flex items-center gap-1 group-hover/item:opacity-100 transition-opacity opacity-100">
+<button class="p-1.5 hover:bg-slate-800 rounded text-slate-500 hover:text-white" style=""><span class="material-symbols-outlined text-lg" style="">edit</span></button>
+<button class="p-1.5 hover:bg-red-900/20 rounded text-slate-500 hover:text-red-400" style=""><span class="material-symbols-outlined text-lg" style="">delete</span></button>
+</div>
+</div>
+<!-- 8. Fundamentals Quiz -->
+<div class="flex items-center justify-between bg-background-dark border border-slate-800 p-4 rounded-lg hover:border-slate-600 transition-colors group/item">
+<div class="flex items-center gap-4">
+<div class="drag-handle text-slate-700">
+<span class="material-symbols-outlined text-sm" style="">drag_handle</span>
+</div>
+<div class="size-10 bg-emerald-500/10 rounded flex items-center justify-center text-emerald-500">
+<span class="material-symbols-outlined" style="">fact_check</span>
+</div>
+<div>
+<p class="text-sm font-semibold" style="">Fundamentals Quiz</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-wider font-bold" style="">Quiz</p>
+</div>
+</div>
+<div class="flex items-center gap-1 group-hover/item:opacity-100 transition-opacity opacity-100">
+<button class="p-1.5 hover:bg-slate-800 rounded text-slate-500 hover:text-white" style=""><span class="material-symbols-outlined text-lg" style="">edit</span></button>
+<button class="p-1.5 hover:bg-red-900/20 rounded text-slate-500 hover:text-red-400" style=""><span class="material-symbols-outlined text-lg" style="">delete</span></button>
+</div>
+</div>
+<!-- 9. Project Presentation -->
+<div class="flex items-center justify-between bg-background-dark border border-slate-800 p-4 rounded-lg hover:border-slate-600 transition-colors group/item">
+<div class="flex items-center gap-4">
+<div class="drag-handle text-slate-700">
+<span class="material-symbols-outlined text-sm" style="">drag_handle</span>
+</div>
+<div class="size-10 bg-amber-500/10 rounded flex items-center justify-center text-amber-500">
+<span class="material-symbols-outlined" style="">present_to_all</span>
+</div>
+<div>
+<p class="text-sm font-semibold" style="">Project Presentation</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-wider font-bold" style="">Slides</p>
+</div>
+</div>
+<div class="flex items-center gap-1 group-hover/item:opacity-100 transition-opacity opacity-100">
+<button class="p-1.5 hover:bg-slate-800 rounded text-slate-500 hover:text-white" style=""><span class="material-symbols-outlined text-lg" style="">edit</span></button>
+<button class="p-1.5 hover:bg-red-900/20 rounded text-slate-500 hover:text-red-400" style=""><span class="material-symbols-outlined text-lg" style="">delete</span></button>
+</div>
+</div>
+<button class="w-full py-4 border-2 border-dashed border-slate-800 rounded-lg text-slate-600 hover:text-primary hover:border-primary/50 hover:bg-primary/5 transition-all flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest" style=""><button class="p-2 hover:bg-slate-800 rounded text-slate-400 hover:text-white transition-colors flex items-center justify-center" onclick="this.closest('.module-container').classList.toggle('module-collapsed')">
+<span class="material-symbols-outlined text-2xl chevron-icon">expand_more</span>
+</button>
+<span class="material-symbols-outlined text-sm" style="">add_circle</span>
+    Insert Content Item
+</button></div>
+</section>
+<!-- Module 2 -->
+<section class="group relative bg-slate-900/40 border border-slate-800 rounded-xl overflow-hidden module-container module-collapsed">
+<!-- Module Header -->
+<div class="p-5 flex items-center justify-between bg-slate-900/60 border-b border-slate-800">
+<div class="flex items-center gap-4">
+<div class="drag-handle text-slate-600">
+<span class="material-symbols-outlined" style="">drag_indicator</span>
+</div>
+<div>
+<span class="text-[10px] font-bold text-primary uppercase tracking-[0.2em]" style="">Module 02</span>
+<h3 class="text-lg font-bold" style="">Convolutional Architectures</h3>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="p-2 hover:bg-slate-800 rounded text-slate-400 transition-colors" style=""><span class="material-symbols-outlined text-xl" style="">edit</span></button>
+<button class="p-2 hover:bg-red-900/30 rounded text-slate-400 transition-colors" style=""><span class="material-symbols-outlined text-xl" style="">delete</span></button>
+</div>
+</div>
+<div class="p-4 space-y-3">
+<!-- Quiz Item -->
+<div class="flex items-center justify-between bg-background-dark border border-slate-800 p-4 rounded-lg hover:border-slate-600 transition-colors group/item">
+<div class="flex items-center gap-4">
+<div class="drag-handle text-slate-700">
+<span class="material-symbols-outlined text-sm" style="">drag_handle</span>
+</div>
+<div class="size-10 bg-emerald-500/10 rounded flex items-center justify-center text-emerald-500">
+<span class="material-symbols-outlined" style="">fact_check</span>
+</div>
+<div>
+<p class="text-sm font-semibold" style="">CNN Spatial Concepts Quiz</p>
+<p class="text-[10px] text-slate-500 uppercase tracking-wider font-bold" style="">QUIZ</p>
+</div>
+</div>
+<div class="flex items-center gap-1 opacity-0 group-hover/item:opacity-100 transition-opacity">
+<button class="p-1.5 hover:bg-slate-800 rounded text-slate-500 hover:text-white" style=""><span class="material-symbols-outlined text-lg" style="">edit</span></button>
+<button class="p-1.5 hover:bg-red-900/20 rounded text-slate-500 hover:text-red-400" style=""><span class="material-symbols-outlined text-lg" style="">delete</span></button>
+</div>
+</div>
+<button class="w-full py-4 border-2 border-dashed border-slate-800 rounded-lg text-slate-600 hover:text-primary hover:border-primary/50 hover:bg-primary/5 transition-all flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest">
+<button class="p-2 hover:bg-slate-800 rounded text-slate-400 hover:text-white transition-colors flex items-center justify-center" onclick="this.closest('.module-container').classList.toggle('module-collapsed')">
+<span class="material-symbols-outlined text-2xl chevron-icon">expand_more</span>
+</button>
+<span class="material-symbols-outlined text-sm">add_circle</span>
+    Insert Content Item
+</button>
+</div>
+</section>
+<!-- Global Add Module Button -->
+<div class="pt-6">
+<button class="w-full py-8 bg-slate-900/20 border-2 border-dashed border-slate-800 rounded-xl hover:border-primary/50 hover:bg-primary/5 group transition-all" style="">
+<div class="flex flex-col items-center gap-3">
+<div class="size-12 rounded-full bg-slate-800 group-hover:bg-primary group-hover:text-white text-slate-500 flex items-center justify-center transition-all">
+<span class="material-symbols-outlined text-2xl" style="">add_box</span>
+</div>
+<span class="branding-font text-xs font-bold uppercase tracking-widest text-slate-500 group-hover:text-primary transition-colors" style="">Create New Module</span>
+</div>
+</button>
+</div>
+</div>
+<!-- Float Info Panel -->
+<footer class="mt-20 border-t border-slate-800 pt-10 grid grid-cols-1 md:grid-cols-3 gap-8 pb-12">
+<div class="flex flex-col gap-2">
+<span class="text-slate-500 text-[10px] font-bold uppercase tracking-widest" style="">Track Summary</span>
+<div class="flex items-center gap-6">
+<div>
+<p class="text-2xl font-bold" style="">12</p>
+<p class="text-xs text-slate-500 uppercase font-bold tracking-tighter" style="">Lessons</p>
+</div>
+</div>
+</div>
+<div class="md:col-span-2 flex justify-end items-center gap-4">
+</div>
+</footer>
+</main>
+<!-- Floating Action for Quick Add -->
+<!-- Publish Confirmation Modal -->
+<div class="hidden fixed inset-0 z-[200] flex items-center justify-center" id="publish-modal">
+<!-- Backdrop -->
+<div class="absolute inset-0 bg-slate-950/80 backdrop-blur-sm" onclick="document.getElementById('publish-modal').classList.add('hidden')"></div>
+<!-- Modal Card -->
+<div class="relative bg-background-dark border border-slate-800 w-full max-w-md p-8 rounded-xl shadow-2xl mx-4">
+<div class="flex items-center gap-4 mb-6">
+<div class="size-12 rounded-full bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl" style="">upload_file</span>
+</div>
+<h3 class="branding-font text-lg font-bold tracking-tight text-white" style="">Publish Changes</h3>
+</div>
+<p class="text-slate-400 text-sm leading-relaxed mb-8" style="">
+            Are you sure you want to publish these changes? This will update the live technical track curriculum for all enrolled students.
+        </p>
+<div class="flex items-center justify-end gap-3">
+<button class="px-5 py-2.5 rounded-lg text-sm font-bold text-slate-400 hover:text-white hover:bg-slate-800 transition-all" onclick="document.getElementById('publish-modal').classList.add('hidden')" style="">
+                Cancel
+            </button>
+<button class="bg-primary hover:bg-primary/90 text-white px-6 py-2.5 rounded-lg text-sm font-bold transition-all shadow-lg shadow-primary/20" onclick="document.getElementById('publish-modal').classList.add('hidden')" style="">
+                Confirm &amp; Publish
+            </button>
+</div>
+</div>
+</div></body></html>

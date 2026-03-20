@@ -1,0 +1,943 @@
+[2026-03-12T11:06:26.825Z] UPDATING TRACK 8ec8753d-008e-4a0b-b038-cfd3da7c4ab7
+Body: {
+  "name": "BUSINESS (Updated)",
+  "description": "Business strategy pathway",
+  "status": "DRAFT",
+  "icon": "rocket"
+}
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "BUSINESS (Updated)",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "status": "DRAFT",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-12T11:06:26.838Z"
+}
+---
+[2026-03-12T11:10:08.143Z] UPDATING TRACK 138b8490-cd5a-4575-87f0-671ba5a03d78
+Body: {
+  "name": "AI - Technical Track",
+  "description": "",
+  "status": "DRAFT",
+  "icon": "code_blocks"
+}
+Result: {
+  "id": "138b8490-cd5a-4575-87f0-671ba5a03d78",
+  "name": "AI - Technical Track",
+  "description": "",
+  "icon": "code_blocks",
+  "status": "DRAFT",
+  "createdAt": "2026-03-12T10:05:53.282Z",
+  "updatedAt": "2026-03-12T11:10:08.148Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "BUSINESS (Updated)",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-12T13:34:05.500Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-12T14:55:56.778Z"
+}
+---
+Result: {
+  "id": "138b8490-cd5a-4575-87f0-671ba5a03d78",
+  "name": "AI - Technical Track",
+  "description": "",
+  "icon": "code_blocks",
+  "targetDepartments": "PS,R&D,Customer Care,IT & Security,Other",
+  "status": "PUBLISHED",
+  "createdAt": "2026-03-12T10:05:53.282Z",
+  "updatedAt": "2026-03-12T19:43:03.518Z"
+}
+---
+[2026-03-13T20:31:52.746Z] BULK DELETE: Attempt by 6aa4ee7d-3312-480b-8ddb-ef99fcdee2b5 for IDs: 9d3108f3-440d-4072-984e-5fd416d1d1c7
+[2026-03-13T20:31:52.758Z] BULK DELETE: Manual cascade: Deleted 0 enrollments
+[2026-03-13T20:31:52.793Z] BULK DELETE: Successfully deleted 1 users
+[2026-03-13T20:32:13.560Z] BULK DELETE: Attempt by 6aa4ee7d-3312-480b-8ddb-ef99fcdee2b5 for IDs: 2db685ad-edfb-4409-b71c-eac39077a32f, 58c4ed56-e305-4e2a-ab87-2b53467d0524, 48b2d3f3-ebd3-4227-a623-6b132c7103ab, f668a07c-a986-48b4-b7fb-9579519670ac, 9c4b0bd1-db1a-4833-a9d0-7cdcbf3f67b5, 61d50764-1e0e-47a1-aad6-f46b6f7078fd, 3e7a6eb3-3ba7-4c03-9b53-5f216a28881e, 95c765f4-70ef-4467-9df5-9bc273ef8d9a
+[2026-03-13T20:32:13.568Z] BULK DELETE: Manual cascade: Deleted 0 enrollments
+[2026-03-13T20:32:13.604Z] BULK DELETE: Successfully deleted 8 users
+Result: {
+  "id": "70aa2dfe-556a-4fdc-8273-a5e360ad7f3d",
+  "name": "test",
+  "description": "",
+  "icon": "terminal",
+  "targetDepartments": "Other",
+  "status": "DRAFT",
+  "createdAt": "2026-03-14T08:40:14.334Z",
+  "updatedAt": "2026-03-14T08:41:57.618Z"
+}
+---
+[2026-03-14T09:13:05.899Z] BULK DELETE: Attempt by 6aa4ee7d-3312-480b-8ddb-ef99fcdee2b5 for IDs: dc41ff28-ca80-4e56-83c4-6bd3ca6dc8f3, 65fcd1df-d5a8-4ee6-b850-8deadaf4add8, f9267296-6222-4d21-abca-836e26d6d77a
+[2026-03-14T09:13:05.909Z] BULK DELETE: Manual cascade: Deleted 0 enrollments
+[2026-03-14T09:13:05.952Z] BULK DELETE: Successfully deleted 3 users
+[2026-03-14T10:12:41.949Z] BULK DELETE: Attempt by 6aa4ee7d-3312-480b-8ddb-ef99fcdee2b5 for IDs: 9b39f1b8-a785-46ae-a5a7-c9c279f3b2ee, aed249f3-366b-4ccb-a77e-6e8b3261845f, 0271c37a-c892-4ca8-821c-b87cfb885529, c5037294-ea77-4f54-996a-629839a15e10, c6157020-6eb4-4c57-844f-e95cfcf38cd8, 28af9f45-1c22-4b6a-a153-dad8069ec46c, ec49645f-8ceb-4bb3-967c-a0d6726c80a9, 1ef9ef0c-ead8-41eb-ad4a-06bf4f7aa747, 25d60536-74d2-4537-81d9-effed26d3294, 79de3e03-155c-4308-8235-469ac3121463, 24db75d2-1ef1-4c51-879e-436310f7420e, 7ab27f36-d105-44f2-bc70-183779724b16, 33742e51-16a6-4941-a6a4-d4242afeebb5, ab8cc539-006a-4cce-829d-90dc8cc84247, 95abb891-10f9-473a-9f30-7b2ae4285c63, 7faa8882-0c3b-4d97-aa1e-dda0178b849e, 1a705997-3864-402c-a059-6c9cac25a880, b7d97e17-2b85-4973-a80c-99d8c72bd85c, 7dbe23d7-2786-4db9-8ca8-9ce948a2f6b7, 270d2449-c1e9-4d02-a2c4-15ffafb78b94, 92fecb96-bced-4344-80cb-885c2e0f71f6, 37d7cd44-0666-4e13-9e1b-94a7bcbb1c5c, 21335fde-4572-48c9-818e-254f8d877fec, cc0c342a-f768-4d99-bf17-590002002e03, 041271f8-d58d-4bbb-af72-68a1fa6d0021
+[2026-03-14T10:12:41.962Z] BULK DELETE: Manual cascade: Deleted 0 enrollments
+[2026-03-14T10:12:41.990Z] BULK DELETE: Successfully deleted 25 users
+[2026-03-14T10:12:50.716Z] BULK DELETE: Attempt by 6aa4ee7d-3312-480b-8ddb-ef99fcdee2b5 for IDs: e97cedc8-1360-43a6-aec4-12c02ddce872, bd794063-8b1b-435b-976e-9da4ad28a76a
+[2026-03-14T10:12:50.723Z] BULK DELETE: Manual cascade: Deleted 0 enrollments
+[2026-03-14T10:12:50.746Z] BULK DELETE: Successfully deleted 2 users
+Result: {
+  "id": "138b8490-cd5a-4575-87f0-671ba5a03d78",
+  "name": "AI Engineering Fundamentals",
+  "description": "Provide a durable theoretical knowledge base for technical teams to understand, interact with, and design AI-centric solutions, independently of R&D technological choices.",
+  "icon": "code_blocks",
+  "targetDepartments": "PS,R&D,Customer Care,IT & Security,Other",
+  "status": "PUBLISHED",
+  "createdAt": "2026-03-12T10:05:53.282Z",
+  "updatedAt": "2026-03-14T10:25:02.571Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T21:10:40.605Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T21:10:40.642Z"
+}
+---
+Result: {
+  "id": "138b8490-cd5a-4575-87f0-671ba5a03d78",
+  "name": "AI Engineering Fundamentals",
+  "description": "Provide a durable theoretical knowledge base for technical teams to understand, interact with, and design AI-centric solutions, independently of R&D technological choices.",
+  "icon": "code_blocks",
+  "targetDepartments": "PS,R&D,Customer Care,IT & Security,Other",
+  "status": "PUBLISHED",
+  "createdAt": "2026-03-12T10:05:53.282Z",
+  "updatedAt": "2026-03-17T21:11:17.689Z"
+}
+---
+Result: {
+  "id": "138b8490-cd5a-4575-87f0-671ba5a03d78",
+  "name": "AI Engineering Fundamentals",
+  "description": "Provide a durable theoretical knowledge base for technical teams to understand, interact with, and design AI-centric solutions, independently of R&D technological choices.",
+  "icon": "code_blocks",
+  "targetDepartments": "PS,R&D,Customer Care,IT & Security,Other",
+  "status": "PUBLISHED",
+  "createdAt": "2026-03-12T10:05:53.282Z",
+  "updatedAt": "2026-03-17T21:11:17.725Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T21:13:21.569Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T21:13:21.598Z"
+}
+---
+Result: {
+  "id": "99d50866-2eff-4709-863b-4b2bec1a4c39",
+  "name": "Test Track",
+  "description": "Testing the link feature.",
+  "icon": "terminal",
+  "targetDepartments": "Other",
+  "status": "DRAFT",
+  "createdAt": "2026-03-17T20:52:15.064Z",
+  "updatedAt": "2026-03-17T21:13:36.336Z"
+}
+---
+Result: {
+  "id": "99d50866-2eff-4709-863b-4b2bec1a4c39",
+  "name": "Test Track",
+  "description": "Testing the link feature.",
+  "icon": "terminal",
+  "targetDepartments": "Other",
+  "status": "DRAFT",
+  "createdAt": "2026-03-17T20:52:15.064Z",
+  "updatedAt": "2026-03-17T21:13:36.382Z"
+}
+---
+Result: {
+  "id": "99d50866-2eff-4709-863b-4b2bec1a4c39",
+  "name": "Test Track",
+  "description": "Testing the link feature.",
+  "icon": "terminal",
+  "targetDepartments": "Other",
+  "status": "DRAFT",
+  "createdAt": "2026-03-17T20:52:15.064Z",
+  "updatedAt": "2026-03-17T21:15:56.511Z"
+}
+---
+Result: {
+  "id": "99d50866-2eff-4709-863b-4b2bec1a4c39",
+  "name": "Test Track",
+  "description": "Testing the link feature.",
+  "icon": "terminal",
+  "targetDepartments": "Other",
+  "status": "DRAFT",
+  "createdAt": "2026-03-17T20:52:15.064Z",
+  "updatedAt": "2026-03-17T21:15:56.586Z"
+}
+---
+Result: {
+  "id": "138b8490-cd5a-4575-87f0-671ba5a03d78",
+  "name": "AI Engineering Fundamentals",
+  "description": "Provide a durable theoretical knowledge base for technical teams to understand, interact with, and design AI-centric solutions, independently of R&D technological choices.",
+  "icon": "code_blocks",
+  "targetDepartments": "PS,R&D,Customer Care,IT & Security,Other",
+  "status": "PUBLISHED",
+  "createdAt": "2026-03-12T10:05:53.282Z",
+  "updatedAt": "2026-03-17T21:17:37.814Z"
+}
+---
+Result: {
+  "id": "138b8490-cd5a-4575-87f0-671ba5a03d78",
+  "name": "AI Engineering Fundamentals",
+  "description": "Provide a durable theoretical knowledge base for technical teams to understand, interact with, and design AI-centric solutions, independently of R&D technological choices.",
+  "icon": "code_blocks",
+  "targetDepartments": "PS,R&D,Customer Care,IT & Security,Other",
+  "status": "PUBLISHED",
+  "createdAt": "2026-03-12T10:05:53.282Z",
+  "updatedAt": "2026-03-17T21:17:37.906Z"
+}
+---
+Result: {
+  "id": "138b8490-cd5a-4575-87f0-671ba5a03d78",
+  "name": "AI Engineering Fundamentals",
+  "description": "Provide a durable theoretical knowledge base for technical teams to understand, interact with, and design AI-centric solutions, independently of R&D technological choices.",
+  "icon": "code_blocks",
+  "targetDepartments": "PS,R&D,Customer Care,IT & Security,Other",
+  "status": "PUBLISHED",
+  "createdAt": "2026-03-12T10:05:53.282Z",
+  "updatedAt": "2026-03-17T21:18:18.690Z"
+}
+---
+Result: {
+  "id": "138b8490-cd5a-4575-87f0-671ba5a03d78",
+  "name": "AI Engineering Fundamentals",
+  "description": "Provide a durable theoretical knowledge base for technical teams to understand, interact with, and design AI-centric solutions, independently of R&D technological choices.",
+  "icon": "code_blocks",
+  "targetDepartments": "PS,R&D,Customer Care,IT & Security,Other",
+  "status": "PUBLISHED",
+  "createdAt": "2026-03-12T10:05:53.282Z",
+  "updatedAt": "2026-03-17T21:18:18.770Z"
+}
+---
+Result: {
+  "id": "99d50866-2eff-4709-863b-4b2bec1a4c39",
+  "name": "Test Track",
+  "description": "Testing the link feature.",
+  "icon": "terminal",
+  "targetDepartments": "Other",
+  "status": "DRAFT",
+  "createdAt": "2026-03-17T20:52:15.064Z",
+  "updatedAt": "2026-03-17T21:18:38.805Z"
+}
+---
+Result: {
+  "id": "99d50866-2eff-4709-863b-4b2bec1a4c39",
+  "name": "Test Track",
+  "description": "Testing the link feature.",
+  "icon": "terminal",
+  "targetDepartments": "Other",
+  "status": "DRAFT",
+  "createdAt": "2026-03-17T20:52:15.064Z",
+  "updatedAt": "2026-03-17T21:18:38.863Z"
+}
+---
+Result: {
+  "id": "99d50866-2eff-4709-863b-4b2bec1a4c39",
+  "name": "Test Track",
+  "description": "Testing the link feature.",
+  "icon": "terminal",
+  "targetDepartments": "Other",
+  "status": "DRAFT",
+  "createdAt": "2026-03-17T20:52:15.064Z",
+  "updatedAt": "2026-03-17T21:19:18.465Z"
+}
+---
+Result: {
+  "id": "99d50866-2eff-4709-863b-4b2bec1a4c39",
+  "name": "Test Track",
+  "description": "Testing the link feature.",
+  "icon": "terminal",
+  "targetDepartments": "Other",
+  "status": "DRAFT",
+  "createdAt": "2026-03-17T20:52:15.064Z",
+  "updatedAt": "2026-03-17T21:19:18.522Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T21:21:14.343Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T21:21:14.361Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T21:21:23.774Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T21:21:58.980Z"
+}
+---
+Result: {
+  "id": "99d50866-2eff-4709-863b-4b2bec1a4c39",
+  "name": "Test Track",
+  "description": "Testing the link feature.",
+  "icon": "terminal",
+  "targetDepartments": "Other",
+  "status": "DRAFT",
+  "createdAt": "2026-03-17T20:52:15.064Z",
+  "updatedAt": "2026-03-17T21:25:59.836Z"
+}
+---
+Result: {
+  "id": "99d50866-2eff-4709-863b-4b2bec1a4c39",
+  "name": "Test Track",
+  "description": "Testing the link feature.",
+  "icon": "terminal",
+  "targetDepartments": "Other",
+  "status": "DRAFT",
+  "createdAt": "2026-03-17T20:52:15.064Z",
+  "updatedAt": "2026-03-17T21:26:59.323Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T21:27:44.933Z"
+}
+---
+Result: {
+  "id": "99d50866-2eff-4709-863b-4b2bec1a4c39",
+  "name": "Test Track",
+  "description": "Testing the link feature.",
+  "icon": "terminal",
+  "targetDepartments": "Other",
+  "status": "DRAFT",
+  "createdAt": "2026-03-17T20:52:15.064Z",
+  "updatedAt": "2026-03-17T21:29:13.287Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T21:29:17.404Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T21:29:31.395Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T21:30:43.195Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T21:31:04.228Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T21:31:22.194Z"
+}
+---
+Result: {
+  "id": "99d50866-2eff-4709-863b-4b2bec1a4c39",
+  "name": "Test Track",
+  "description": "Testing the link feature.",
+  "icon": "terminal",
+  "targetDepartments": "Other",
+  "status": "DRAFT",
+  "createdAt": "2026-03-17T20:52:15.064Z",
+  "updatedAt": "2026-03-17T21:33:44.666Z"
+}
+---
+Result: {
+  "id": "99d50866-2eff-4709-863b-4b2bec1a4c39",
+  "name": "Test Track",
+  "description": "Testing the link feature.",
+  "icon": "terminal",
+  "targetDepartments": "Other",
+  "status": "DRAFT",
+  "createdAt": "2026-03-17T20:52:15.064Z",
+  "updatedAt": "2026-03-17T21:34:45.119Z"
+}
+---
+Result: {
+  "id": "99d50866-2eff-4709-863b-4b2bec1a4c39",
+  "name": "Test Track",
+  "description": "Testing the link feature.",
+  "icon": "terminal",
+  "targetDepartments": "Other",
+  "status": "DRAFT",
+  "createdAt": "2026-03-17T20:52:15.064Z",
+  "updatedAt": "2026-03-17T21:38:56.434Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T21:39:48.816Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T21:39:51.274Z"
+}
+---
+Result: {
+  "id": "99d50866-2eff-4709-863b-4b2bec1a4c39",
+  "name": "Test Track",
+  "description": "Testing the link feature.",
+  "icon": "terminal",
+  "targetDepartments": "Other",
+  "status": "DRAFT",
+  "createdAt": "2026-03-17T20:52:15.064Z",
+  "updatedAt": "2026-03-17T21:39:59.247Z"
+}
+---
+Result: {
+  "id": "99d50866-2eff-4709-863b-4b2bec1a4c39",
+  "name": "Test Track",
+  "description": "Testing the link feature.",
+  "icon": "terminal",
+  "targetDepartments": "Other",
+  "status": "DRAFT",
+  "createdAt": "2026-03-17T20:52:15.064Z",
+  "updatedAt": "2026-03-17T21:41:48.966Z"
+}
+---
+Result: {
+  "id": "99d50866-2eff-4709-863b-4b2bec1a4c39",
+  "name": "Test Track",
+  "description": "Testing the link feature.",
+  "icon": "terminal",
+  "targetDepartments": "Other",
+  "status": "DRAFT",
+  "createdAt": "2026-03-17T20:52:15.064Z",
+  "updatedAt": "2026-03-17T21:42:44.118Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T21:43:11.652Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T21:43:15.953Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T21:43:24.531Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T21:43:28.118Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T21:43:37.848Z"
+}
+---
+Result: {
+  "id": "99d50866-2eff-4709-863b-4b2bec1a4c39",
+  "name": "Test Track",
+  "description": "Testing the link feature.",
+  "icon": "terminal",
+  "targetDepartments": "Other",
+  "status": "DRAFT",
+  "createdAt": "2026-03-17T20:52:15.064Z",
+  "updatedAt": "2026-03-17T21:44:28.470Z"
+}
+---
+Result: {
+  "id": "99d50866-2eff-4709-863b-4b2bec1a4c39",
+  "name": "Test Track",
+  "description": "Testing the link feature.",
+  "icon": "terminal",
+  "targetDepartments": "Other",
+  "status": "DRAFT",
+  "createdAt": "2026-03-17T20:52:15.064Z",
+  "updatedAt": "2026-03-17T21:45:49.047Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T21:46:27.625Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T21:46:30.454Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T21:46:38.744Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "curriculumDraft": "[{\"step\":\"01\",\"title\":\"Connecting with generic stacks\",\"items\":[{\"title\":\"Enterprise Integration\",\"type\":\"DOCUMENT\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"}]},{\"step\":\"01\",\"title\":\"AI Strategy Fundamentals\",\"items\":[{\"title\":\"AI Strategy Quiz\",\"type\":\"QUIZ\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\",\"draggable\":\"false\",\"class\":\"\",\"style\":\"\"},{\"title\":\"Intro to AI Strategy\",\"type\":\"VIDEO TUTORIAL\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\",\"style\":\"\"}]}]",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T21:56:46.453Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "curriculumDraft": "[{\"step\":\"01\",\"title\":\"Connecting with generic stacks\",\"items\":[{\"title\":\"Enterprise Integration\",\"type\":\"DOCUMENT\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"}]},{\"step\":\"01\",\"title\":\"AI Strategy Fundamentals\",\"items\":[{\"title\":\"Intro to AI Strategy\",\"type\":\"VIDEO TUTORIAL\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"AI Strategy Quiz\",\"type\":\"QUIZ\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"}]}]",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T21:56:54.297Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "curriculumDraft": "[{\"step\":\"01\",\"title\":\"Connecting with generic stacks\",\"items\":[{\"title\":\"Enterprise Integration\",\"type\":\"DOCUMENT\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"test\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"https://en.morisawafonts.com/?utm_source=ZeBrand&utm_medium=referral&utm_campaign=zebrand_redirect\"}]},{\"step\":\"01\",\"title\":\"AI Strategy Fundamentals\",\"items\":[{\"title\":\"Intro to AI Strategy\",\"type\":\"VIDEO TUTORIAL\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"AI Strategy Quiz\",\"type\":\"QUIZ\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"}]}]",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T21:59:11.227Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "curriculumDraft": "[{\"step\":\"01\",\"title\":\"Connecting with generic stacks\",\"items\":[{\"title\":\"Enterprise Integration\",\"type\":\"DOCUMENT\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"}]},{\"step\":\"01\",\"title\":\"AI Strategy Fundamentals\",\"items\":[{\"title\":\"Intro to AI Strategy\",\"type\":\"VIDEO TUTORIAL\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"AI Strategy Quiz\",\"type\":\"QUIZ\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"}]}]",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T21:59:24.797Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "curriculumDraft": "[{\"step\":\"01\",\"title\":\"Connecting with generic stacks\",\"items\":[{\"title\":\"Enterprise Integration\",\"type\":\"DOCUMENT\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"}]},{\"step\":\"01\",\"title\":\"AI Strategy Fundamentals\",\"items\":[{\"title\":\"AI Strategy Quiz\",\"type\":\"QUIZ\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"Intro to AI Strategy\",\"type\":\"VIDEO TUTORIAL\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\",\"locked\":\"true\"},{\"title\":\"Persistence Test Link\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"https://google.com\",\"locked\":\"true\"}]}]",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T22:20:20.653Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "curriculumDraft": "[{\"step\":\"01\",\"title\":\"Connecting with generic stacks\",\"items\":[{\"title\":\"Enterprise Integration\",\"type\":\"DOCUMENT\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"hjg\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"https://en.morisawafonts.com/?utm_source=ZeBrand&utm_medium=referral&utm_campaign=zebrand_redirect\"}]},{\"step\":\"01\",\"title\":\"AI Strategy Fundamentals\",\"items\":[{\"title\":\"AI Strategy Quiz\",\"type\":\"QUIZ\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"Intro to AI Strategy\",\"type\":\"VIDEO TUTORIAL\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\",\"locked\":\"true\"},{\"title\":\"Persistence Test Link\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"https://google.com\",\"locked\":\"true\"}]}]",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T22:20:31.768Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "curriculumDraft": "[{\"step\":\"01\",\"title\":\"Connecting with generic stacks\",\"items\":[{\"title\":\"Enterprise Integration\",\"type\":\"DOCUMENT\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"hjg\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"https://en.morisawafonts.com/?utm_source=ZeBrand&utm_medium=referral&utm_campaign=zebrand_redirect\"}]},{\"step\":\"01\",\"title\":\"AI Strategy Fundamentals\",\"items\":[{\"title\":\"AI Strategy Quiz\",\"type\":\"QUIZ\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"Intro to AI Strategy\",\"type\":\"VIDEO TUTORIAL\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\",\"locked\":\"true\"},{\"title\":\"Persistence Test Link\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"https://google.com\",\"locked\":\"true\"}]}]",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T22:21:03.232Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "curriculumDraft": "[{\"step\":\"01\",\"title\":\"Connecting with generic stacks\",\"items\":[{\"title\":\"Enterprise Integration\",\"type\":\"DOCUMENT\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"hjg\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"https://en.morisawafonts.com/?utm_source=ZeBrand&utm_medium=referral&utm_campaign=zebrand_redirect\"}]},{\"step\":\"01\",\"title\":\"AI Strategy Fundamentals\",\"items\":[{\"title\":\"AI Strategy Quiz\",\"type\":\"QUIZ\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"Intro to AI Strategy\",\"type\":\"VIDEO TUTORIAL\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"Persistence Test Link\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"https://google.com\"}]}]",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T22:24:37.953Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "curriculumDraft": "[{\"step\":\"01\",\"title\":\"Connecting with generic stacks\",\"items\":[{\"title\":\"Enterprise Integration\",\"type\":\"DOCUMENT\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"hjg\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"https://en.morisawafonts.com/?utm_source=ZeBrand&utm_medium=referral&utm_campaign=zebrand_redirect\"}]},{\"step\":\"01\",\"title\":\"AI Strategy Fundamentals\",\"items\":[{\"title\":\"AI Strategy Quiz\",\"type\":\"QUIZ\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"Intro to AI Strategy\",\"type\":\"VIDEO TUTORIAL\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"Persistence Test Link\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"https://google.com\"}]}]",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T22:27:57.057Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "curriculumDraft": "[{\"step\":\"01\",\"title\":\"Connecting with generic stacks\",\"items\":[{\"title\":\"Enterprise Integration\",\"type\":\"DOCUMENT\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"hjg\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"https://en.morisawafonts.com/?utm_source=ZeBrand&utm_medium=referral&utm_campaign=zebrand_redirect\"}]},{\"step\":\"01\",\"title\":\"AI Strategy Fundamentals\",\"items\":[{\"title\":\"AI Strategy Quiz\",\"type\":\"QUIZ\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"Intro to AI Strategy\",\"type\":\"VIDEO TUTORIAL\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"Persistence Test Link\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"https://google.com\"}]}]",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T22:28:06.332Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "curriculumDraft": "[{\"step\":\"01\",\"title\":\"Connecting with generic stacks\",\"items\":[{\"title\":\"hjg\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"https://en.morisawafonts.com/?utm_source=ZeBrand&utm_medium=referral&utm_campaign=zebrand_redirect\",\"draggable\":\"false\",\"class\":\"\",\"style\":\"\"},{\"title\":\"Enterprise Integration\",\"type\":\"DOCUMENT\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\",\"style\":\"\"}]},{\"step\":\"01\",\"title\":\"AI Strategy Fundamentals\",\"items\":[{\"title\":\"AI Strategy Quiz\",\"type\":\"QUIZ\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"Intro to AI Strategy\",\"type\":\"VIDEO TUTORIAL\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"Persistence Test Link\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"https://google.com\"}]}]",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T22:28:37.546Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "curriculumDraft": "[{\"step\":\"01\",\"title\":\"Connecting with generic stacks\",\"items\":[{\"title\":\"hjg\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"https://en.morisawafonts.com/?utm_source=ZeBrand&utm_medium=referral&utm_campaign=zebrand_redirect\",\"draggable\":\"false\",\"class\":\"\",\"style\":\"\"},{\"title\":\"Enterprise Integration\",\"type\":\"DOCUMENT\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\",\"style\":\"\"}]},{\"step\":\"01\",\"title\":\"AI Strategy Fundamentals\",\"items\":[{\"title\":\"AI Strategy Quiz\",\"type\":\"QUIZ\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"Intro to AI Strategy\",\"type\":\"VIDEO TUTORIAL\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"Persistence Test Link\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"https://google.com\"}]}]",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T22:31:50.516Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "curriculumDraft": "[{\"step\":\"01\",\"title\":\"Connecting with generic stacks\",\"items\":[{\"title\":\"hjg\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"https://en.morisawafonts.com/?utm_source=ZeBrand&utm_medium=referral&utm_campaign=zebrand_redirect\",\"draggable\":\"false\",\"class\":\"\",\"style\":\"\"},{\"title\":\"Enterprise Integration\",\"type\":\"DOCUMENT\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\",\"style\":\"\"}]},{\"step\":\"01\",\"title\":\"AI Strategy Fundamentals\",\"items\":[{\"title\":\"AI Strategy Quiz\",\"type\":\"QUIZ\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"Intro to AI Strategy\",\"type\":\"VIDEO TUTORIAL\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"Persistence Test Link\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"https://google.com\"}]}]",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T22:32:11.527Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "curriculumDraft": "[{\"step\":\"01\",\"title\":\"Connecting with generic stacks\",\"items\":[{\"title\":\"hjg\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"https://en.morisawafonts.com/?utm_source=ZeBrand&utm_medium=referral&utm_campaign=zebrand_redirect\",\"draggable\":\"false\",\"class\":\"\",\"style\":\"\"},{\"title\":\"Enterprise Integration\",\"type\":\"DOCUMENT\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\",\"style\":\"\"}]},{\"step\":\"01\",\"title\":\"AI Strategy Fundamentals\",\"items\":[{\"title\":\"AI Strategy Quiz\",\"type\":\"QUIZ\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"Intro to AI Strategy\",\"type\":\"VIDEO TUTORIAL\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"Persistence Test Link\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"https://google.com\"}]}]",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T22:32:53.172Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "curriculumDraft": "[{\"step\":\"01\",\"title\":\"Connecting with generic stacks\",\"items\":[{\"title\":\"hjg\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"https://en.morisawafonts.com/?utm_source=ZeBrand&utm_medium=referral&utm_campaign=zebrand_redirect\",\"draggable\":\"false\",\"class\":\"\",\"style\":\"\"},{\"title\":\"Enterprise Integration\",\"type\":\"DOCUMENT\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\",\"style\":\"\"}]},{\"step\":\"01\",\"title\":\"AI Strategy Fundamentals\",\"items\":[{\"title\":\"AI Strategy Quiz\",\"type\":\"QUIZ\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"Intro to AI Strategy\",\"type\":\"VIDEO TUTORIAL\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"Persistence Test Link\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"https://google.com\"}]}]",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T22:38:48.896Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "curriculumDraft": "[{\"step\":\"01\",\"title\":\"Connecting with generic stacks\",\"items\":[{\"title\":\"hjg\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"https://en.morisawafonts.com/?utm_source=ZeBrand&utm_medium=referral&utm_campaign=zebrand_redirect\",\"draggable\":\"false\",\"class\":\"\",\"style\":\"\"},{\"title\":\"Enterprise Integration\",\"type\":\"DOCUMENT\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\",\"style\":\"\"}]},{\"step\":\"01\",\"title\":\"AI Strategy Fundamentals\",\"items\":[{\"title\":\"AI Strategy Quiz\",\"type\":\"QUIZ\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"Intro to AI Strategy\",\"type\":\"VIDEO TUTORIAL\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"Persistence Test Link\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"https://google.com\"}]}]",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T22:39:12.856Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "curriculumDraft": "[{\"step\":\"01\",\"title\":\"Connecting with generic stacks\",\"items\":[{\"title\":\"hjg\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"https://en.morisawafonts.com/?utm_source=ZeBrand&utm_medium=referral&utm_campaign=zebrand_redirect\",\"draggable\":\"false\",\"class\":\"\",\"style\":\"\"},{\"title\":\"Enterprise Integration\",\"type\":\"DOCUMENT\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\",\"style\":\"\"}]},{\"step\":\"01\",\"title\":\"AI Strategy Fundamentals\",\"items\":[{\"title\":\"AI Strategy Quiz\",\"type\":\"QUIZ\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"Intro to AI Strategy\",\"type\":\"VIDEO TUTORIAL\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"Persistence Test Link\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"https://google.com\"}]}]",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T22:49:09.876Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "curriculumDraft": "[{\"step\":\"01\",\"title\":\"Connecting with generic stacks\",\"items\":[{\"title\":\"hjg\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"https://en.morisawafonts.com/?utm_source=ZeBrand&utm_medium=referral&utm_campaign=zebrand_redirect\",\"draggable\":\"false\",\"class\":\"\",\"style\":\"\"},{\"title\":\"Enterprise Integration\",\"type\":\"DOCUMENT\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\",\"style\":\"\"}]},{\"step\":\"01\",\"title\":\"AI Strategy Fundamentals\",\"items\":[{\"title\":\"AI Strategy Quiz\",\"type\":\"QUIZ\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"Intro to AI Strategy\",\"type\":\"VIDEO TUTORIAL\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"Persistence Test Link\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"https://google.com\"}]}]",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T22:49:43.424Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "curriculumDraft": "[{\"step\":\"01\",\"title\":\"Connecting with generic stacks\",\"items\":[{\"title\":\"hjg\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"https://en.morisawafonts.com/?utm_source=ZeBrand&utm_medium=referral&utm_campaign=zebrand_redirect\",\"draggable\":\"false\",\"class\":\"\",\"style\":\"\"},{\"title\":\"Enterprise Integration\",\"type\":\"DOCUMENT\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\",\"style\":\"\"}]},{\"step\":\"01\",\"title\":\"AI Strategy Fundamentals\",\"items\":[{\"title\":\"AI Strategy Quiz\",\"type\":\"QUIZ\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"Intro to AI Strategy\",\"type\":\"VIDEO TUTORIAL\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"Persistence Test Link\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"https://google.com\"}]}]",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T22:49:52.524Z"
+}
+---
+Result: {
+  "id": "138b8490-cd5a-4575-87f0-671ba5a03d78",
+  "name": "AI Engineering Fundamentals",
+  "description": "Provide a durable theoretical knowledge base for technical teams to understand, interact with, and design AI-centric solutions, independently of R&D technological choices.",
+  "icon": "code_blocks",
+  "targetDepartments": "PS,R&D,Customer Care,IT & Security,Other",
+  "status": "PUBLISHED",
+  "curriculumDraft": "[{\"step\":\"01\",\"title\":\"The Evolution of Assistance.\",\"items\":[{\"title\":\"The Evolution of Assistance\",\"type\":\"VIDEO\",\"file-id\":\"\",\"video-id\":\"https://youtu.be/izsJ0_ly7L4\",\"blob-url\":\"\"}]}]",
+  "createdAt": "2026-03-12T10:05:53.282Z",
+  "updatedAt": "2026-03-17T22:50:05.233Z"
+}
+---
+Result: {
+  "id": "138b8490-cd5a-4575-87f0-671ba5a03d78",
+  "name": "AI Engineering Fundamentals",
+  "description": "Provide a durable theoretical knowledge base for technical teams to understand, interact with, and design AI-centric solutions, independently of R&D technological choices.",
+  "icon": "code_blocks",
+  "targetDepartments": "PS,R&D,Customer Care,IT & Security,Other",
+  "status": "PUBLISHED",
+  "curriculumDraft": "[{\"step\":\"01\",\"title\":\"The Evolution of Assistance.\",\"items\":[{\"title\":\"The Evolution of Assistance\",\"type\":\"VIDEO\",\"file-id\":\"\",\"video-id\":\"https://youtu.be/izsJ0_ly7L4\",\"blob-url\":\"\"},{\"title\":\"hh\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"http://localhost:3000/learning-track-business.html?preview=true&id=8ec8753d-008e-4a0b-b038-cfd3da7c4ab7\"}]}]",
+  "createdAt": "2026-03-12T10:05:53.282Z",
+  "updatedAt": "2026-03-17T22:50:30.588Z"
+}
+---
+Result: {
+  "id": "138b8490-cd5a-4575-87f0-671ba5a03d78",
+  "name": "AI Engineering Fundamentals",
+  "description": "Provide a durable theoretical knowledge base for technical teams to understand, interact with, and design AI-centric solutions, independently of R&D technological choices.",
+  "icon": "code_blocks",
+  "targetDepartments": "PS,R&D,Customer Care,IT & Security,Other",
+  "status": "PUBLISHED",
+  "curriculumDraft": "[{\"step\":\"01\",\"title\":\"The Evolution of Assistance.\",\"items\":[{\"title\":\"The Evolution of Assistance\",\"type\":\"VIDEO\",\"file-id\":\"\",\"video-id\":\"https://youtu.be/izsJ0_ly7L4\",\"blob-url\":\"\"},{\"title\":\"hh\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"http://localhost:3000/learning-track-business.html?preview=true&id=8ec8753d-008e-4a0b-b038-cfd3da7c4ab7\"}]}]",
+  "createdAt": "2026-03-12T10:05:53.282Z",
+  "updatedAt": "2026-03-17T22:50:36.925Z"
+}
+---
+Result: {
+  "id": "138b8490-cd5a-4575-87f0-671ba5a03d78",
+  "name": "AI Engineering Fundamentals",
+  "description": "Provide a durable theoretical knowledge base for technical teams to understand, interact with, and design AI-centric solutions, independently of R&D technological choices.",
+  "icon": "code_blocks",
+  "targetDepartments": "PS,R&D,Customer Care,IT & Security,Other",
+  "status": "PUBLISHED",
+  "curriculumDraft": "[{\"step\":\"01\",\"title\":\"The Evolution of Assistance.\",\"items\":[{\"title\":\"The Evolution of Assistance\",\"type\":\"VIDEO\",\"file-id\":\"\",\"video-id\":\"https://youtu.be/izsJ0_ly7L4\",\"blob-url\":\"\"},{\"title\":\"hh\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"http://localhost:3000/learning-track-business.html?preview=true&id=8ec8753d-008e-4a0b-b038-cfd3da7c4ab7\"}]}]",
+  "createdAt": "2026-03-12T10:05:53.282Z",
+  "updatedAt": "2026-03-17T22:50:37.760Z"
+}
+---
+Result: {
+  "id": "8ec8753d-008e-4a0b-b038-cfd3da7c4ab7",
+  "name": "AI Business Track",
+  "description": "Business strategy pathway",
+  "icon": "rocket",
+  "targetDepartments": "Sales,Other",
+  "status": "PUBLISHED",
+  "curriculumDraft": "[{\"step\":\"01\",\"title\":\"Connecting with generic stacks\",\"items\":[{\"title\":\"hjg\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"https://en.morisawafonts.com/?utm_source=ZeBrand&utm_medium=referral&utm_campaign=zebrand_redirect\",\"draggable\":\"false\",\"class\":\"\",\"style\":\"\"},{\"title\":\"Enterprise Integration\",\"type\":\"DOCUMENT\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\",\"style\":\"\"}]},{\"step\":\"01\",\"title\":\"AI Strategy Fundamentals\",\"items\":[{\"title\":\"AI Strategy Quiz\",\"type\":\"QUIZ\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"Intro to AI Strategy\",\"type\":\"VIDEO TUTORIAL\",\"file-id\":\"\",\"video-id\":\"\",\"blob-url\":\"\"},{\"title\":\"Persistence Test Link\",\"type\":\"LINK\",\"icon\":\"link\",\"color\":\"indigo\",\"blob-url\":\"https://google.com\"}]}]",
+  "createdAt": "2026-03-05T23:00:55.810Z",
+  "updatedAt": "2026-03-17T22:53:30.235Z"
+}
+---
+Result: {
+  "id": "99d50866-2eff-4709-863b-4b2bec1a4c39",
+  "name": "Test Track",
+  "description": "Testing the link feature.",
+  "icon": "terminal",
+  "targetDepartments": "Other",
+  "status": "PUBLISHED",
+  "curriculumDraft": "[{\"step\":\"01\",\"title\":\"Test Module\",\"items\":[{\"title\":\"Google Search\",\"type\":\"LINK\",\"file-id\":\"\",\"video-id\":\"https://google.com\",\"blob-url\":\"\"}]}]",
+  "createdAt": "2026-03-17T20:52:15.064Z",
+  "updatedAt": "2026-03-17T23:04:17.227Z"
+}
+---
