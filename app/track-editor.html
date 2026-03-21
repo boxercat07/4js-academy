@@ -540,7 +540,7 @@
                                         type: m.type,
                                         'file-id': m.fileId || '',
                                         'video-id': m.mediaUrl && m.mediaUrl.length < 50 ? m.mediaUrl : '',
-                                        'blob-url': m.mediaUrl && m.mediaUrl.startsWith('blob:') ? m.mediaUrl : ''
+                                        'blob-url': m.mediaUrl || ''
                                     });
                                 });
 

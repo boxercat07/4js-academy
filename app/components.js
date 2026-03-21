@@ -1675,8 +1675,8 @@ class AiContentItem extends HTMLElement {
                         if (url.startsWith('blob:')) {
                             const res = await fetch(url);
                             if (!res.ok) throw new Error();
-                        } else if (url === '#') {
-                            throw new Error();
+                        } else if (url === '#' || !url) {
+                            throw new Error('MISSING_URL');
                         }
                         
                         this._openViewer(type, url);
@@ -1692,6 +1692,7 @@ class AiContentItem extends HTMLElement {
                                 return;
                             } else {
                                 console.error(`[AiContentItem] File ${fileId} NOT found in IndexedDB`);
+                                if (url === '#') throw new Error('NOT_FOUND_RECOVERY_FAILED');
                             }
                         }
 
@@ -1749,7 +1750,7 @@ class AiContentItem extends HTMLElement {
                     icon: config.icon,
                     color: config.color,
                     moduleId: this.getAttribute('module-id'),
-                    isPlaceholder: type === 'SLIDES' // No inline viewer for these yet
+                    isPlaceholder: type === 'SLIDES' && (!url || url === '#' || url.startsWith('blob:')) // Use Office Viewer for server URLs
                 });
             }
         } else if (type === 'LINK') {
@@ -2333,6 +2334,11 @@ class AiMediaViewerModal extends HTMLElement {
                                 <span class="material-symbols-outlined text-xl">download</span> Download
                              </button>
                         </div>
+                        <div id="viewer-slides-download" class="hidden absolute bottom-4 right-4 z-10">
+                            <button id="viewer-slides-download-btn" class="flex items-center gap-2 px-4 py-2 bg-amber-500/90 hover:bg-amber-500 text-white rounded-[var(--ai-radius-lg)] text-xs font-bold transition-all shadow-lg">
+                                <span class="material-symbols-outlined text-base">download</span> Download
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -2367,6 +2373,8 @@ class AiMediaViewerModal extends HTMLElement {
         this.audioForward = this.querySelector('#audio-forward');
         this.audioPing = this.querySelector('#audio-ping');
         this.audioFilenameEl = this.querySelector('#audio-filename');
+        this.slidesDownloadOverlay = this.querySelector('#viewer-slides-download');
+        const slidesDownloadBtn = this.querySelector('#viewer-slides-download-btn');
 
         this.closeBtn.addEventListener('click', () => this.close());
         this.container.querySelector('.absolute').addEventListener('click', () => this.close());
@@ -2411,6 +2419,18 @@ class AiMediaViewerModal extends HTMLElement {
                 document.body.removeChild(a);
             }
         });
+        if (slidesDownloadBtn) {
+            slidesDownloadBtn.addEventListener('click', () => {
+                if (this.currentUrl && this.currentUrl !== '#') {
+                    const a = document.createElement('a');
+                    a.href = this.currentUrl;
+                    a.download = this.titleEl.textContent || 'presentation';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                }
+            });
+        }
     }
 
     setupAudioEvents() {
@@ -2513,12 +2533,13 @@ class AiMediaViewerModal extends HTMLElement {
             if (this.image) this.image.classList.add('hidden'); 
             if (this.audioPlayer) this.audioPlayer.classList.add('hidden'); 
             if (this.video) this.video.classList.add('hidden');
+            if (this.slidesDownloadOverlay) this.slidesDownloadOverlay.classList.add('hidden');
             
             if (this.placeholder) {
                 this.placeholder.classList.remove('hidden');
                 if (this.placeholderTitle) this.placeholderTitle.textContent = type === 'SLIDES' ? 'Presentation Ready' : (type === 'PAGE' ? 'Page Content' : 'Preview Not Available');
                 if (this.placeholderIcon) this.placeholderIcon.textContent = type === 'SLIDES' ? 'present_to_all' : (type === 'PAGE' ? 'description' : 'visibility_off');
-                if (this.placeholderText) this.placeholderText.textContent = type === 'SLIDES' ? 'Presentation available for download.' : (type === 'PAGE' ? 'This page is available for download.' : `This ${type.toLowerCase()} is stored securely.`);
+                if (this.placeholderText) this.placeholderText.textContent = type === 'SLIDES' ? 'This file is stored locally. Download to view the presentation.' : (type === 'PAGE' ? 'This page is available for download.' : `This ${type.toLowerCase()} is stored securely.`);
             }
             if (this.loading) this.loading.classList.add('hidden');
             if (this.downloadBtn) this.downloadBtn.classList.toggle('hidden', !url || url === '#');
@@ -2530,8 +2551,22 @@ class AiMediaViewerModal extends HTMLElement {
             if (this.image) this.image.classList.add('hidden'); 
             if (this.audioPlayer) this.audioPlayer.classList.add('hidden'); 
             if (this.video) this.video.classList.add('hidden');
-            
-            if (type === 'PDF' || type === 'DOCUMENT') { 
+            if (this.slidesDownloadOverlay) this.slidesDownloadOverlay.classList.add('hidden');
+            if (type === 'SLIDES') {
+                // Embed via Microsoft Office Online Viewer
+                const absoluteUrl = url.startsWith('http') ? url : `${window.location.origin}${url}`;
+                const officeViewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(absoluteUrl)}`;
+                if (this.frame) {
+                    this.frame.src = officeViewerUrl;
+                    this.frame.classList.remove('hidden');
+                    this.frame.classList.add('opacity-0');
+                }
+                // Show the floating download overlay button
+                if (this.slidesDownloadOverlay) {
+                    this.slidesDownloadOverlay.classList.remove('hidden');
+                }
+            }
+            else if (type === 'PDF' || type === 'DOCUMENT') { 
                 if (this.frame) {
                     this.frame.src = url; 
                     this.frame.classList.remove('hidden'); 
@@ -2876,8 +2911,9 @@ class AiQuiz extends HTMLElement {
             }
         } else if (src) {
             try {
+                if (!src || src === '#') throw new Error('Quiz source URL is missing or invalid.');
                 const response = await fetch(src, { credentials: 'include' });
-                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                if (!response.ok) throw new Error(`Could not access the quiz file (HTTP ${response.status}).`);
                 this.quizData = await response.json();
                 this.renderStart();
             } catch (e) {

@@ -216,6 +216,7 @@ router.get('/dashboard', verifyToken, async (req, res) => {
                     pendingQuizzes.push({
                         trackId: track.id,
                         trackName: track.name,
+                        trackSlug: track.slug,
                         moduleTitle: title,
                         quizId: quiz.id,
                         quizTitle: quiz.title

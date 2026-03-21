@@ -426,7 +426,7 @@
                         <div class="glass-card p-5 border-amber-500/30 bg-amber-500/5 hover:border-amber-500 transition-all group">
                             <h3 class="text-white font-bold text-sm tracking-wide line-clamp-1">${pq.moduleTitle || 'Untitled Quiz'}</h3>
                             <p class="text-[10px] text-amber-500 uppercase tracking-widest font-extrabold mt-1">${tName}</p>
-                            <button onclick="jumpToQuiz('${pq.trackId || ''}', '${tName.replace(/'/g, "\\'")}')" class="w-full mt-4 py-2 bg-amber-500 text-slate-900 text-xs font-bold rounded-lg transition-all">Take Quiz Now</button>
+                            <button onclick="jumpToQuiz('${pq.trackSlug || ''}', '${pq.trackId || ''}', '${pq.quizId || ''}', '${tName.replace(/'/g, "\\'")}')" class="w-full mt-4 py-2 bg-amber-500 text-slate-900 text-xs font-bold rounded-lg transition-all">Take Quiz Now</button>
                         </div>
                     `;
                 }).join('');
@@ -469,6 +469,42 @@
             // Hide overall no-tracks message if any section has content
             const totalTracksAvailable = continueTracks.length + recommendedTracks.length + completedTracks.length + catalogueTracks.length;
             noTracksMessage.classList.toggle('hidden', totalTracksAvailable > 0);
+        }
+
+        // Navigate to the track page and auto-open the specific quiz
+        function jumpToQuiz(trackSlug, trackId, quizId, trackName) {
+            // Build the URL - prefer slug if available
+            let url;
+            if (trackSlug) {
+                url = `learning-track-business.html?slug=${encodeURIComponent(trackSlug)}`;
+            } else if (trackId) {
+                url = `learning-track-business.html?id=${encodeURIComponent(trackId)}`;
+            } else {
+                console.error('jumpToQuiz: no slug or trackId provided');
+                return;
+            }
+            // Append quiz deep-link param
+            if (quizId) {
+                url += `&quiz=${encodeURIComponent(quizId)}`;
+            }
+            window.location.href = url;
+        }
+
+        // Navigate to the track page and auto-open the specific quiz
+        function jumpToQuiz(trackSlug, trackId, quizId, trackName) {
+            let url;
+            if (trackSlug) {
+                url = `learning-track-business.html?slug=${encodeURIComponent(trackSlug)}`;
+            } else if (trackId) {
+                url = `learning-track-business.html?id=${encodeURIComponent(trackId)}`;
+            } else {
+                console.error('jumpToQuiz: no slug or trackId provided');
+                return;
+            }
+            if (quizId) {
+                url += `&quiz=${encodeURIComponent(quizId)}`;
+            }
+            window.location.href = url;
         }
 
         document.addEventListener('DOMContentLoaded', fetchTracks);

@@ -81,6 +81,7 @@
                 const isPreview = urlParams.get('preview') === 'true';
                 const previewTrackId = urlParams.get('id');
                 const previewTrackSlug = urlParams.get('slug');
+                const autoOpenQuizId = urlParams.get('quiz');
 
                 if (isPreview) {
                     const banner = document.getElementById('preview-banner');
@@ -264,6 +265,17 @@
                     progressPercent.textContent = `${overallPercent}%`;
                     progressBar.style.width = `${overallPercent}%`;
                     progressContainer.classList.remove('hidden');
+
+                    // Auto-open quiz if deep-linked
+                    if (autoOpenQuizId) {
+                        setTimeout(() => {
+                            const quizItem = document.querySelector(`ai-content-item[module-id="${autoOpenQuizId}"]`);
+                            if (quizItem) {
+                                quizItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                quizItem.click();
+                            }
+                        }, 500); // Small delay to let custom elements render fully
+                    }
 
                     // 6. Listen for real-time updates to update track progress
                     window.addEventListener('ai-progress-update', (e) => {

@@ -324,9 +324,18 @@ router.post('/:id/publish', verifyToken, verifyAdmin, async (req, res) => {
                 publishedTitles.push(title);
 
                 const type = (item.type || 'DOCUMENT').toUpperCase().replace(/-/g, '_');
-                const mediaUrl = (item['file-id'] || item.fileId) 
-                    ? `local:${item['file-id'] || item.fileId}${item['success-threshold'] ? `|${item['success-threshold']}` : ''}` 
-                    : (item['video-id'] || item['blob-url'] || '');
+                const blobUrl = item['blob-url'] || item.blobUrl || '';
+                const fileId = item['file-id'] || item.fileId || '';
+                
+                // Prioritize permanent URLs (relative or external) over local file IDs
+                let mediaUrl = '';
+                if (blobUrl && !blobUrl.startsWith('blob:') && blobUrl !== '#') {
+                    mediaUrl = blobUrl;
+                } else if (fileId) {
+                    mediaUrl = `local:${fileId}${item['success-threshold'] ? `|${item['success-threshold']}` : ''}`;
+                } else {
+                    mediaUrl = item['video-id'] || blobUrl || '';
+                }
 
                 
                 // Let's use finding and manual update/create
