@@ -77,9 +77,16 @@ router.post('/', (req, res, next) => {
         // Upload to R2
         await s3Client.send(command);
 
-        // Generate the public URL
-        const publicUrlBase = process.env.R2_PUBLIC_URL.replace(/\/$/, ""); // Remove trailing slash if any
-        const fileUrl = `${publicUrlBase}/${finalFilename}`;
+        // Generate the public URL safely
+        const publicUrlBase = (process.env.R2_PUBLIC_URL || '').replace(/\/$/, ""); // Remove trailing slash if any
+        let fileUrl;
+        
+        if (publicUrlBase) {
+            fileUrl = `${publicUrlBase}/${finalFilename}`;
+        } else {
+            console.warn('[Upload Route] R2_PUBLIC_URL is not set! Returning a placeholder URL.');
+            fileUrl = `https://render-missing-public-url.com/${finalFilename}`;
+        }
         
         console.log(`[Upload Route] Successfully uploaded: ${fileUrl}`);
 
@@ -92,7 +99,7 @@ router.post('/', (req, res, next) => {
         });
     } catch (error) {
         console.error('[Upload Route] R2 Upload error:', error);
-        res.status(500).json({ error: 'Failed to upload file to Cloudflare R2' });
+        res.status(500).json({ error: `Failed to upload file to Cloudflare R2: ${error.message}` });
     }
 });
 
