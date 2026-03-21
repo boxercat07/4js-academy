@@ -2082,7 +2082,14 @@ class AiMediaUploadModal extends HTMLElement {
                     credentials: 'include'
                 });
 
-                if (!response.ok) throw new Error('Upload failed');
+                if (!response.ok) {
+                    let errorMessage = 'Upload failed';
+                    try {
+                        const errData = await response.json();
+                        errorMessage = errData.error || errorMessage;
+                    } catch(e) {}
+                    throw new Error(errorMessage);
+                }
                 const result = await response.json();
 
                 // 2. Backup to IndexedDB (as requested by plan, optional but good for offline)
@@ -2098,7 +2105,7 @@ class AiMediaUploadModal extends HTMLElement {
                 });
             } catch (err) {
                 console.error('Upload error:', err);
-                window.alert('Failed to upload file to server. Local storage used as fallback.');
+                window.alert(`Failed to upload file to server. Error: ${err.message}`);
                 
                 // Fallback to local only
                 const fileId = `${Date.now()}-${this.currentFile.name}`;
@@ -3365,7 +3372,14 @@ class AiQuizUploadModal extends HTMLElement {
                     credentials: 'include'
                 });
 
-                if (!response.ok) throw new Error('Upload failed');
+                if (!response.ok) {
+                    let errorMessage = 'Upload failed';
+                    try {
+                        const errData = await response.json();
+                        errorMessage = errData.error || errorMessage;
+                    } catch(e) {}
+                    throw new Error(errorMessage);
+                }
                 const uploadResult = await response.json();
 
                 const fileId = `${Date.now()}-${file.name}`;
