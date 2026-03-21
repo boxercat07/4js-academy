@@ -1599,12 +1599,10 @@ class AiContentItem extends HTMLElement {
                     });
                     if (result && result.title) {
                         this.setAttribute('title', result.title);
-                        if (result.file) {
-                            const fileId = `${Date.now()}-${result.file.name}`;
-                            await aiFileStore.save(fileId, result.file);
-                            const blobUrl = URL.createObjectURL(result.file);
+                        if (result.file || result.url) {
+                            if (result.fileId) this.setAttribute('file-id', result.fileId);
+                            const blobUrl = result.url || (result.file ? URL.createObjectURL(result.file) : '#');
                             this.setAttribute('blob-url', blobUrl);
-                            this.setAttribute('file-id', fileId);
                         }
                     }
                 }
@@ -1676,7 +1674,9 @@ class AiContentItem extends HTMLElement {
                             const res = await fetch(url);
                             if (!res.ok) throw new Error();
                         } else if (url === '#' || !url) {
-                            throw new Error('MISSING_URL');
+                            if (type !== 'QUIZ' && type !== 'PAGE') {
+                                throw new Error('MISSING_URL');
+                            }
                         }
                         
                         this._openViewer(type, url);
