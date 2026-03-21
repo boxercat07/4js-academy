@@ -1778,11 +1778,13 @@ class AiContentItem extends HTMLElement {
         } else if (type === 'QUIZ') {
             const quizModal = document.querySelector('ai-quiz-modal');
             if (quizModal) {
+                const quizSrc = (url && url !== '#') ? url : this.getAttribute('src');
                 quizModal.show(
                     this.getAttribute('title'),
                     this.getAttribute('success-threshold') || 80,
-                    url || this.getAttribute('src'),
-                    this.getAttribute('module-id') // Pass moduleId here!
+                    quizSrc,
+                    this.getAttribute('module-id'),
+                    this.getAttribute('file-id')
                 );
             }
         }
@@ -3470,7 +3472,7 @@ class AiQuizModal extends HTMLElement {
         this.close();
     }
 
-    show(title, threshold, src, moduleId) {
+    show(title, threshold, src, moduleId, fileId) {
         if (this.container) {
             this.container.classList.remove('opacity-0', 'pointer-events-none');
         }
@@ -3479,7 +3481,7 @@ class AiQuizModal extends HTMLElement {
             this.card.classList.add('scale-100');
         }
         if (this.content) {
-            this.content.innerHTML = `<ai-quiz title="${title}" success-threshold="${threshold}" ${src ? `src="${src}"` : ''} module-id="${moduleId || ''}"></ai-quiz>`;
+            this.content.innerHTML = `<ai-quiz title="${title}" success-threshold="${threshold}" ${src ? `src="${src}"` : ''} module-id="${moduleId || ''}" ${fileId ? `file-id="${fileId}"` : ''}></ai-quiz>`;
         }
     }
 
