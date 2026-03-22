@@ -271,4 +271,108 @@ router.get('/analytics', verifyToken, verifyAdmin, async (req, res) => {
     }
 });
 
+// ====================================================================
+// AUDIT LOG ENDPOINTS
+// ====================================================================
+
+/**
+ * GET /api/admin/audit-logs
+ * Retrieve audit logs (admin only)
+ */
+router.get('/audit-logs', verifyToken, verifyAdmin, async (req, res) => {
+    try {
+        const days = parseInt(req.query.days) || 30;
+        const limit = Math.min(parseInt(req.query.limit) || 100, 1000);
+        const { action, userId, status } = req.query;
+
+        const since = new Date();
+        since.setDate(since.getDate() - days);
+
+        const where = { createdAt: { gte: since } };
+        if (action) where.action = action.toUpperCase();
+        if (userId) where.userId = userId;
+        if (status) where.status = status.toUpperCase();
+
+        const logs = await prisma.auditLog.findMany({
+            where,
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        email: true,
+                        firstName: true,
+                        lastName: true,
+                        role: true
+                    }
+                }
+            },
+            orderBy: { createdAt: 'desc' },
+            take: limit
+        });
+
+        res.json({
+            count: logs.length,
+            days,
+            filters: { action, userId, status },
+            logs
+        });
+    } catch (error) {
+        console.error('[ADMIN] Audit logs fetch error:', error);
+        res.status(500).json({ error: 'Failed to retrieve audit logs' });
+    }
+});
+
+/**
+ * GET /api/admin/audit-logs/user/:userId
+ * Get audit history for specific user
+ */
+router.get('/audit-logs/user/:userId', verifyToken, verifyAdmin, async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const limit = Math.min(parseInt(req.query.limit) || 50, 500);
+
+        const logs = await prisma.auditLog.findMany({
+            where: { userId },
+            orderBy: { createdAt: 'desc' },
+            take: limit
+        });
+
+        res.json({ userId, count: logs.length, logs });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to retrieve user history' });
+    }
+});
+
+/**
+ * GET /api/admin/audit-logs/statistics
+ * Get audit log statistics
+ */
+router.get('/audit-logs/statistics', verifyToken, verifyAdmin, async (req, res) => {
+    try {
+        const days = parseInt(req.query.days) || 30;
+        const since = new Date();
+        since.setDate(since.getDate() - days);
+
+        const byAction = await prisma.auditLog.groupBy({
+            by: ['action'],
+            where: { createdAt: { gte: since } },
+            _count: true
+        });
+
+        const byStatus = await prisma.auditLog.groupBy({
+            by: ['status'],
+            where: { createdAt: { gte: since } },
+            _count: true
+        });
+
+        const totalLogs = await prisma.auditLog.count({
+            where: { createdAt: { gte: since } }
+        });
+
+        res.json({ days, totalLogs, byAction, byStatus });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to retrieve statistics' });
+    }
+});
+
 module.exports = router;
