@@ -748,9 +748,10 @@
 
                                 if (hasLocalFiles) {
                                     const confirmed = await window.confirm(
-                                        "Warning: Some content items use local files. These files will only be accessible in your current session. " +
-                                        "To make them available to learners, they must be hosted on a permanent server. " +
-                                        "Do you want to proceed with publishing anyway?"
+                                        "🛑 ATTENTION: Some content items are using LOCAL files (marked with a blob: URL or file-id). \n\n" +
+                                        "These files ARE NOT yet uploaded to the server and will be INACCESSIBLE to your learners. \n\n" +
+                                        "To fix this, please use 'Replace File' on each problematic item before publishing. \n\n" +
+                                        "Do you want to proceed with publishing anyway? (Learners will see an error for these items)"
                                     );
                                     if (!confirmed) return;
                                 }

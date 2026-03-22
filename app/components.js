@@ -1698,8 +1698,8 @@ class AiContentItem extends HTMLElement {
 
                         const isLearner = sessionStorage.getItem('userRole') !== 'ADMIN';
                         const message = isLearner 
-                            ? 'The resource is currently unavailable. Please contact the administrator for assistance.' 
-                            : `Content item missing. FileID [${fileId || 'None'}] not found in your browser storage.`;
+                            ? 'This resource is currently unavailable. It looks like it was not properly uploaded to the server yet. Please contact your administrator.' 
+                            : `Content item missing. FileID [${fileId || 'None'}] is a local reference and was not found in your browser storage. You must re-upload this file to make it public.`;
                         
                         if (window.showToast) {
                             window.showToast(message, isLearner ? 'error' : 'info');
