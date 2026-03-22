@@ -1,4 +1,4 @@
-generator client {
+﻿generator client {
   provider = "prisma-client-js"
 }
 
@@ -91,4 +91,25 @@ model UserMilestone {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, trackId, milestone])
+}
+
+model AuditLog {
+  id            String   @id @default(cuid())
+  userId        String
+  action        String   // 'LOGIN', 'LOGOUT', 'UPDATE_PROFILE', 'CHANGE_PASSWORD', etc.
+  resourceType  String?  // 'USER', 'TRACK', 'MODULE', 'ENROLLMENT', etc.
+  resourceId    String?  // ID of the affected resource
+  details       String?  // JSON string with additional context
+  ipAddress     String?  // Client IP for security tracking
+  userAgent     String?  // Browser/client info
+  status        String   @default("SUCCESS") // 'SUCCESS', 'FAILED', 'BLOCKED'
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@index([resourceType])
 }

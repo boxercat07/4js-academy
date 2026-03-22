@@ -1,10 +1,11 @@
-const express = require('express');
+﻿const express = require('express');
 const rateLimit = require('express-rate-limit');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { PrismaClient } = require('@prisma/client');
 const { verifyToken, JWT_SECRET } = require('../middleware/auth');
 const { validateEmail, validatePassword } = require('../utils/validation');
+const { auditLog } = require('../utils/auditLog');
 
 const router = express.Router();
 
@@ -86,7 +87,7 @@ router.post('/login', loginLimiter, async (req, res) => {
 });
 
 // POST /api/logout
-router.post('/logout', (req, res) => {
+router.post('/logout', async (req, res) => {
     res.clearCookie('token');
     res.json({ message: 'Logged out successfully' });
 });
@@ -112,4 +113,5 @@ router.get('/me', verifyToken, async (req, res) => {
 });
 
 module.exports = router;
+
 
