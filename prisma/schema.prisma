@@ -1,4 +1,4 @@
-﻿generator client {
+generator client {
   provider = "prisma-client-js"
 }
 
@@ -21,6 +21,7 @@ model User {
   notifications Notification[]
   milestones    UserMilestone[]
   tracks        Track[]         @relation("TrackToUser")
+  auditLogs     AuditLog[]
 }
 
 model Track {
@@ -96,13 +97,13 @@ model UserMilestone {
 model AuditLog {
   id            String   @id @default(cuid())
   userId        String
-  action        String   // 'LOGIN', 'LOGOUT', 'UPDATE_PROFILE', 'CHANGE_PASSWORD', etc.
-  resourceType  String?  // 'USER', 'TRACK', 'MODULE', 'ENROLLMENT', etc.
+  action        String   // LOGIN, LOGOUT, UPDATE_PROFILE, CHANGE_PASSWORD, etc.
+  resourceType  String?  // USER, TRACK, MODULE, ENROLLMENT, etc.
   resourceId    String?  // ID of the affected resource
   details       String?  // JSON string with additional context
   ipAddress     String?  // Client IP for security tracking
   userAgent     String?  // Browser/client info
-  status        String   @default("SUCCESS") // 'SUCCESS', 'FAILED', 'BLOCKED'
+  status        String   @default("SUCCESS") // SUCCESS, FAILED, BLOCKED
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
