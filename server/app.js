@@ -1,4 +1,4 @@
-require('dotenv').config();
+﻿require('dotenv').config();
 console.log('=========================================');
 console.log('   SERVER STARTING V2 - ' + new Date().toISOString());
 console.log('=========================================');
@@ -13,7 +13,25 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors()); // In production, configure origins
+// CORS Configuration - Restrict to allowed origins
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+    ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+    : ['http://localhost:3000', 'http://localhost:5173'];
+
+const corsOptions = {
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('CORS policy violation'));
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+};
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 
@@ -133,7 +151,20 @@ app.post('/api/seed', async (req, res) => {
 
 // Start Server
 if (require.main === module && process.env.NODE_ENV !== 'test') {
-    app.listen(port, () => {
+    // Global Error Handling Middleware (MUST be last)
+app.use((err, req, res, next) => {
+    console.error('[Global Error Handler]', err);
+    
+    // Don't expose internal error details to client
+    const statusCode = err.statusCode || 500;
+    const isDev = process.env.NODE_ENV === 'development';
+    
+    res.status(statusCode).json({
+        error: isDev ? err.message : 'An error occurred. Please try again later.',
+        ...(isDev && { stack: err.stack })
+    });
+});
+app.listen(port, () => {
         console.log(`AI Academy backend listening at http://localhost:${port}`);
     });
 }
@@ -145,4 +176,6 @@ process.on('SIGINT', async () => {
 });
 
 module.exports = app;
+
+
 
