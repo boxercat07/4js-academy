@@ -1,0 +1,46 @@
+[
+  {
+    "id": "f4833b0f-c554-4cba-b80e-9e2602a3f620",
+    "email": "vincent@4js.com",
+    "passwordHash": "$2b$10$YBh1pY4kEhsqRJaRy5AcxuGHDhJuSdTapgSmtnNgyoqRxr4IAjjFa",
+    "firstName": "Vincent",
+    "lastName": "Martinet",
+    "role": "LEARNER",
+    "department": "Marketing",
+    "createdAt": "2026-03-17T20:21:49.559Z",
+    "updatedAt": "2026-03-20T21:13:28.126Z"
+  },
+  {
+    "id": "6aa4ee7d-3312-480b-8ddb-ef99fcdee2b5",
+    "email": "vincent.martinet@4js.com",
+    "passwordHash": "$2b$10$EBTgW3npTyoPUcYqkUMh6ujOUpbHJ2D4IpjSlJGwAjGI6hZ8BfceS",
+    "firstName": "Vincent",
+    "lastName": "Martinet",
+    "role": "ADMIN",
+    "department": null,
+    "createdAt": "2026-03-05T22:59:01.308Z",
+    "updatedAt": "2026-03-20T22:39:11.248Z"
+  },
+  {
+    "id": "7c9eb5dd-d322-4a3d-8ce2-bdf0101dd2f4",
+    "email": "vincent.martinet@volarisgroup.com",
+    "passwordHash": "$2b$10$NKLsgELdKFC6FWpF2k9Qheqep/YivOTrOGiofOXnB.YHFzEwX/Jju",
+    "firstName": "Vincent",
+    "lastName": "Martinet",
+    "role": "ADMIN",
+    "department": "IT",
+    "createdAt": "2026-03-20T23:32:31.860Z",
+    "updatedAt": "2026-03-20T23:32:31.860Z"
+  },
+  {
+    "id": "4c5fefdf-51fb-442d-95b2-6e52e5d61a74",
+    "email": "jdoe@test.com",
+    "passwordHash": "$2b$10$Fzl3YA7buaV.EIYuE80GbOKwKW.IWGgQ3ge1sjx9pHMFXarc8YxBy",
+    "firstName": "John",
+    "lastName": "Doe",
+    "role": "LEARNER",
+    "department": "Sales",
+    "createdAt": "2026-03-10T17:59:19.343Z",
+    "updatedAt": "2026-03-21T00:07:37.827Z"
+  }
+]

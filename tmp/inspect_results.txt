@@ -1,0 +1,18 @@
+﻿
+=== Track: Genero Enterprise Fundamentals I - FR (ID: 8ec8753d-008e-4a0b-b038-cfd3da7c4ab7) ===
+Status: PUBLISHED
+Modules: 20
+CRITICAL: Found 7 modules using LOCAL references!
+  [LOCAL] TEMPLATE - GENERO POWERPOINT - 2025 -> local:1774105076632-TEMPLATE - GENERO POWERPOINT - 2025-VINCENT.pptx
+  [LOCAL] dilemma-quiz -> local:1774047695809-dilemma-quiz.json|80
+  [LOCAL] Four Js Dictionnary -> local:1774049310991-Four Js Dictionnary.pdf
+  [LOCAL] Ma mal├⌐diction -> local:1774105889906-audio.mp3
+  [LOCAL] unnamed (4) -> local:1774105188923-Gemini_Generated_Image_nlcbbinlcbbinlcb.png
+  [LOCAL] rewrite_quiz -> local:1774048480477-rewrite_quiz.json|80
+  [LOCAL] Gemini_Generated_Image_nlcbbinlcbbinlcb -> local:1774105206637-Gemini_Generated_Image_nlcbbinlcbbinlcb.png
+  - TEMPLATE - GENERO POWERPOINT - 2025: local:1774105076632-TEMPLATE - GENERO POWERPOINT - 2025-VINCENT.pptx
+  - 3.2 Le cycle de vie d'une application: https://youtu.be/8DLIRzvVXN4
+  - 4.1 Quand l'├⌐chec n'est pas permis: https://youtu.be/i7CWFMRxxhU
+  - dilemma-quiz: local:1774047695809-dilemma-quiz.json|80
+  - 2.1 La promesse : "Develop Once, Deploy Anywhere": https://youtu.be/ti-yQZormNc
+  ...

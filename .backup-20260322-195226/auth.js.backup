@@ -1,5 +1,4 @@
 const express = require('express');
-const rateLimit = require('express-rate-limit');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { PrismaClient } = require('@prisma/client');
@@ -7,13 +6,6 @@ const { verifyToken, JWT_SECRET } = require('../middleware/auth');
 const { validateEmail, validatePassword } = require('../utils/validation');
 
 const router = express.Router();
-
-const loginLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 5,
-    message: 'Too many login attempts',
-    skipSuccessfulRequests: true
-});
 const prisma = new PrismaClient();
 
 // POST /api/register (DISABLED)
@@ -22,7 +14,7 @@ router.post('/register', async (req, res) => {
 });
 
 // POST /api/login
-router.post('/login', loginLimiter, async (req, res) => {
+router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
 
@@ -112,4 +104,3 @@ router.get('/me', verifyToken, async (req, res) => {
 });
 
 module.exports = router;
-
