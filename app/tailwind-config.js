@@ -10,6 +10,7 @@ tailwind.config = {
                 primary: 'rgb(var(--color-primary) / <alpha-value>)',
                 primaryHover: 'rgb(var(--color-primary-hover) / <alpha-value>)',
                 bgDark: 'rgb(var(--color-bg-dark) / <alpha-value>)',
+                'background-dark': 'rgb(var(--color-bg-dark) / <alpha-value>)',
                 glassBg: 'var(--color-glass-bg)',
                 glassBorder: 'var(--color-glass-border)',
                 glassBorderHover: 'var(--color-glass-border-hover)'
