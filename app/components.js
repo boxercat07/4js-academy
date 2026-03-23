@@ -1721,7 +1721,7 @@ class AiContentItem extends HTMLElement {
                         const isLearner = sessionStorage.getItem('userRole') !== 'ADMIN';
                         const message = isLearner 
                             ? 'This resource is currently unavailable. It looks like it was not properly uploaded to the server yet. Please contact your administrator.' 
-                            : `Content item missing. FileID [${fileId || 'None'}] is a local reference and was not found in your browser storage. You must re-upload this file to make it public.`;
+                            : `CRITICAL: This content only exists in another browser's local storage. FileID [${fileId || 'None'}]. You MUST re-upload this file to Cloudflare R2 to make it accessible to everyone.`;
                         
                         if (window.showToast) {
                             window.showToast(message, isLearner ? 'error' : 'info');
@@ -2113,30 +2113,17 @@ class AiMediaUploadModal extends HTMLElement {
                     throw new Error(errorMessage);
                 }
                 const result = await response.json();
-
-                // 2. Backup to IndexedDB (as requested by plan, optional but good for offline)
-                const fileId = `${Date.now()}-${this.currentFile.name}`;
-                await aiFileStore.save(fileId, this.currentFile);
-
-                // 3. Return both server URL and fallback info
+                
+                // Return only the server URL. Local IndexedDB storage is disabled to ensure global access.
                 this.close({ 
-                    file: this.currentFile, 
                     title: this.titleInput.value, 
-                    fileId,
-                    url: result.url // Server URL
+                    url: result.url
                 });
             } catch (err) {
                 console.error('Upload error:', err);
-                window.alert(`Failed to upload file to server. Error: ${err.message}`);
-                
-                // Fallback to local only
-                const fileId = `${Date.now()}-${this.currentFile.name}`;
-                await aiFileStore.save(fileId, this.currentFile);
-                this.close({ 
-                    file: this.currentFile, 
-                    title: this.titleInput.value, 
-                    fileId 
-                });
+                window.alert(`CRITICAL ERROR: Failed to upload file to Cloudflare R2. ${err.message}. Content must be hosted on R2 for global accessibility. Please check server credentials.`);
+                this.confirmBtn.disabled = false;
+                this.confirmBtn.textContent = originalText;
             } finally {
                 this.confirmBtn.disabled = false;
                 this.confirmBtn.textContent = originalText;
@@ -2809,9 +2796,44 @@ class AiVideoInsertModal extends HTMLElement {
             this.close({ type: 'VIDEO', subtype: vd.type, url, videoId: vd.id, title: this.urlTitleInput.value.trim() || `${vd.type} Video` });
         } else {
             if (!this.file) return window.alert('Select file');
-            const fileId = `${Date.now()}-${this.file.name}`;
-            await aiFileStore.save(fileId, this.file);
-            this.close({ type: 'VIDEO', subtype: 'LOCAL', file: this.file, fileId, title: this.uploadTitleInput.value.trim() || this.file.name });
+            
+            // Show loading state
+            const originalText = this.confirmBtn.textContent;
+            this.confirmBtn.disabled = true;
+            this.confirmBtn.textContent = 'Uploading...';
+
+            try {
+                const formData = new FormData();
+                formData.append('file', this.file);
+                
+                const response = await fetch('/api/upload', {
+                    method: 'POST',
+                    body: formData,
+                    credentials: 'include'
+                });
+
+                if (!response.ok) {
+                    let errorMessage = 'Upload failed';
+                    try {
+                        const errData = await response.json();
+                        errorMessage = errData.error || errorMessage;
+                    } catch(e) {}
+                    throw new Error(errorMessage);
+                }
+                const result = await response.json();
+
+                this.close({ 
+                    type: 'VIDEO', 
+                    subtype: 'R2', 
+                    url: result.url, 
+                    title: this.uploadTitleInput.value.trim() || this.file.name 
+                });
+            } catch (err) {
+                console.error('Video upload error:', err);
+                window.alert(`CRITICAL ERROR: Failed to upload video to Cloudflare R2. ${err.message}. Videos must be hosted on R2 for global accessibility.`);
+                this.confirmBtn.disabled = false;
+                this.confirmBtn.textContent = originalText;
+            }
         }
     }
 
@@ -3403,28 +3425,17 @@ class AiQuizUploadModal extends HTMLElement {
                     throw new Error(errorMessage);
                 }
                 const uploadResult = await response.json();
-
-                const fileId = `${Date.now()}-${file.name}`;
-                await aiFileStore.save(fileId, file);
                 
                 this.close({
                     title: this.titleInput.value || file.name.split('.').shift(),
                     threshold: this.thresholdInput.value,
-                    blobUrl: uploadResult.url, // Use Server URL
-                    fileId
+                    blobUrl: uploadResult.url
                 });
             } catch (err) {
                 console.error('Quiz upload error:', err);
-                window.alert('Upload failed. Using local storage fallback.');
-                
-                const fileId = `${Date.now()}-${file.name}`;
-                await aiFileStore.save(fileId, file);
-                this.close({
-                    title: this.titleInput.value || file.name.split('.').shift(),
-                    threshold: this.thresholdInput.value,
-                    blobUrl: URL.createObjectURL(file),
-                    fileId
-                });
+                window.alert(`CRITICAL ERROR: Failed to upload quiz to Cloudflare R2. ${err.message}. Content must be hosted on R2 for global accessibility.`);
+                this.confirmBtn.disabled = false;
+                this.confirmBtn.textContent = originalText;
             } finally {
                 this.confirmBtn.disabled = false;
                 this.confirmBtn.textContent = originalText;
