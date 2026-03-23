@@ -1,7 +1,5 @@
-/**
- * Centralized logic for parsing and validating video URLs (YouTube and Vimeo).
- */
-class VideoUtils {
+if (typeof VideoUtils === 'undefined') {
+    class VideoUtils {
     /**
      * Parses a video URL and returns its type, ID, and embed URL.
      * @param {string} url - The YouTube or Vimeo URL to parse.
@@ -58,4 +56,5 @@ class VideoUtils {
 // Export for Node environment (testing)
 if (typeof module !== 'undefined' && module.exports) {
     module.exports = VideoUtils;
+}
 }

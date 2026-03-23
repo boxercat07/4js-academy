@@ -1,13 +1,12 @@
 const express = require('express');
 const path = require('path');
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../prisma');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { verifyToken, verifyAdmin, JWT_SECRET } = require('../middleware/auth');
 const { validateEmail, validatePassword } = require('../utils/validation');
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // GET /api/employees - List all employees and their stats (Admin only)
 router.get('/', verifyToken, verifyAdmin, async (req, res) => {

@@ -1,10 +1,9 @@
 const express = require('express');
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../prisma');
 const { verifyToken, verifyAdmin } = require('../middleware/auth');
 const { deleteFileByUrl } = require('../utils/fileCleanup');
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 function slugify(text) {
     return text

@@ -24,10 +24,9 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('./prisma');
 const path = require('path');
 
-const prisma = new PrismaClient();
 const app = express();
 const port = process.env.PORT || 3000;
 
@@ -61,33 +60,57 @@ const corsOptions = {
 };
 
 // Helmet Configuration - Security Headers
+// Note: We DON'T pass contentSecurityPolicy to helmet because helmet v8 ignores `false`.
+// Instead we handle CSP manually below.
+const currentEnv = process.env.NODE_ENV || 'development';
+const isDev = currentEnv === 'development';
+
+console.log(`[SECURITY] Applying Helmet configuration for ${currentEnv} (CSP disabled: ${isDev})`);
+
 app.use(helmet({
-    contentSecurityPolicy: {
-        directives: {
-            defaultSrc: ["'self'"],
-            styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com"],
-            scriptSrc: ["'self'", "'unsafe-inline'", "https://cdn.tailwindcss.com"],
-            imgSrc: ["'self'", "data:", "https:"],
-            connectSrc: ["'self'", "https://cdn.tailwindcss.com", "https://fonts.googleapis.com", "https://fonts.gstatic.com"],
-            fontSrc: ["'self'", "https://fonts.gstatic.com"],
-            frameSrc: ["'none'"],
-            objectSrc: ["'none'"]
-        }
-    },
+    contentSecurityPolicy: false, // Disable helmet's own CSP so we can set it manually below
+    crossOriginEmbedderPolicy: false,
+    crossOriginResourcePolicy: false,
     hsts: {
         maxAge: 31536000,
         includeSubDomains: true,
         preload: true
     },
-    frameguard: { action: 'deny' },
+    frameguard: { action: 'sameorigin' },
     noSniff: true,
     xssFilter: true
 }));
 
+// Custom CSP Middleware - applied AFTER helmet
+app.use((req, res, next) => {
+    if (isDev) {
+        // In development: remove any CSP header to allow all local testing
+        res.removeHeader('Content-Security-Policy');
+        res.removeHeader('Content-Security-Policy-Report-Only');
+    } else {
+        // In production: apply a secure, permissive CSP that allows YouTube embeds
+        const csp = [
+            "default-src 'self'",
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.quilljs.com",
+            "style-src-attr 'unsafe-inline'",
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://*.youtube.com https://*.youtube-nocookie.com https://*.google.com https://*.gstatic.com https://cdn.quilljs.com https://cdn.jsdelivr.net",
+            "script-src-attr 'unsafe-inline'",
+            "img-src 'self' data: https:",
+            "connect-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://*.youtube.com https://*.google.com",
+            "font-src 'self' https://fonts.gstatic.com",
+            "frame-src 'self' https://*.youtube.com https://*.youtube-nocookie.com https://*.google.com",
+            "media-src 'self' blob: https://*.googlevideo.com https://*.youtube.com",
+            "object-src 'none'"
+        ].join('; ');
+        res.setHeader('Content-Security-Policy', csp);
+    }
+    next();
+});
+
 // Custom Security Headers
 app.use((req, res, next) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
-    res.setHeader('X-Frame-Options', 'DENY');
+    res.setHeader('X-Frame-Options', 'SAMEORIGIN');
     res.setHeader('X-XSS-Protection', '1; mode=block');
     res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
     res.setHeader('Permissions-Policy', 'geolocation=(), microphone=(), camera=()');

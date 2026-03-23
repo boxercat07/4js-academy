@@ -1,9 +1,8 @@
 const express = require('express');
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../prisma');
 const { verifyToken, verifyAdmin } = require('../middleware/auth');
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // GET /api/admin/analytics - Global analytics for the dashboard
 router.get('/analytics', verifyToken, verifyAdmin, async (req, res) => {

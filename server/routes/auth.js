@@ -2,15 +2,14 @@ const express = require('express');
 const rateLimit = require('express-rate-limit');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../prisma');
 const { verifyToken, JWT_SECRET } = require('../middleware/auth');
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 const loginLimiter = rateLimit({
-    windowMs: 15 * 60 * 1000,
-    max: 5,
+    windowMs: process.env.NODE_ENV === 'production' ? 15 * 60 * 1000 : 1000, 
+    max: process.env.NODE_ENV === 'production' ? 5 : 10,
     message: { error: 'Too many login attempts. Please try again later.' },
     skipSuccessfulRequests: true
 });
@@ -33,42 +32,40 @@ router.post('/login', loginLimiter, async (req, res) => {
         const user = await prisma.user.findUnique({ where: { email }, include: { tracks: true } });
         console.log('User found:', user ? 'yes' : 'no');
         if (!user) {
-            console.log('User not found for email:', email);
-            return res.status(401).json({ error: 'Invalid email or password.' });
+            console.log(`[AUTH_DEBUG] Invalid credentials for ${email}`);
+            return res.status(401).json({ error: 'Invalid credentials' });
         }
 
         if (!user.passwordHash) {
             console.log('User has no password hash');
-            return res.status(401).json({ error: 'Invalid email or password.' });
+            return res.status(401).json({ error: 'Invalid credentials' }); // Changed error message for consistency
         }
 
-        console.log('Password hash type:', user.passwordHash.startsWith('$') ? 'hashed' : 'plain');
-
-        // Check password - handle both hashed and plain text
-        let isValidPassword = false;
-        if (user.passwordHash.startsWith('$')) {
-            isValidPassword = await bcrypt.compare(password, user.passwordHash);
-            console.log('Hashed password check result:', isValidPassword);
+        // Handle both hashed and plain text passwords
+        let isPasswordValid = false;
+        const isHashed = user.passwordHash.startsWith('$');
+        
+        if (isHashed) {
+            isPasswordValid = await bcrypt.compare(password, user.passwordHash);
         } else {
-            isValidPassword = (password === user.passwordHash);
-            console.log('Plain password check result:', isValidPassword);
-
-            // If login successful, hash the password
-            if (isValidPassword) {
-                console.log('Hashing plain text password for user:', email);
+            isPasswordValid = (password === user.passwordHash);
+            // If plain text match, we should hash it for the future
+            if (isPasswordValid) {
+                console.log(`[AUTH] Hashing legacy plain-text password for ${email}`);
                 const salt = await bcrypt.genSalt(10);
-                const hashedPassword = await bcrypt.hash(user.passwordHash, salt);
+                const hashedPassword = await bcrypt.hash(password, salt);
                 await prisma.user.update({
                     where: { id: user.id },
                     data: { passwordHash: hashedPassword }
-                });
-                console.log('Password hashed successfully');
+                }).catch(err => console.error('[AUTH] Failed to upgrade password hash:', err));
             }
         }
 
-        if (!isValidPassword) {
-            console.log('Invalid password for user:', email);
-            return res.status(401).json({ error: 'Invalid email or password.' });
+        console.log(`[AUTH_DEBUG] Password valid (${isHashed ? 'hashed' : 'plain'}): ${isPasswordValid}`);
+
+        if (!isPasswordValid) {
+            console.log(`[AUTH_DEBUG] Invalid password for ${email}`);
+            return res.status(401).json({ error: 'Invalid credentials' });
         }
 
         // Create JWT token

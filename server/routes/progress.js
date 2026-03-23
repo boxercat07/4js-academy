@@ -1,9 +1,8 @@
 const express = require('express');
-const { PrismaClient } = require('@prisma/client');
+const prisma = require('../prisma');
 const { verifyToken } = require('../middleware/auth');
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // POST /api/progress/complete - Mark a module (content item) as completed or update attempt context
 router.post('/complete', verifyToken, async (req, res) => {
