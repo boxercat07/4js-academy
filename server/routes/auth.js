@@ -33,6 +33,11 @@ router.post('/login', loginLimiter, async (req, res) => {
             return res.status(401).json({ error: 'Invalid email or password.' });
         }
 
+        if (!user.passwordHash) {
+            console.log('User has no password hash');
+            return res.status(401).json({ error: 'Invalid email or password.' });
+        }
+
         console.log('Password hash type:', user.passwordHash.startsWith('$') ? 'hashed' : 'plain');
 
         // Check password - handle both hashed and plain text
@@ -85,7 +90,7 @@ router.post('/login', loginLimiter, async (req, res) => {
                 firstName: user.firstName,
                 lastName: user.lastName,
                 department: user.department,
-                tracks: user.tracks.map(t => ({ id: t.id, name: t.name }))
+                tracks: user.tracks ? user.tracks.map(t => ({ id: t.id, name: t.name })) : []
             }
         });
 
