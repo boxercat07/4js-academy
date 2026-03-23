@@ -91,12 +91,12 @@ app.use((req, res, next) => {
         // In production: apply a secure, permissive CSP that allows YouTube embeds
         const csp = [
             "default-src 'self'",
-            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.quilljs.com",
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.quilljs.com https://cdn.jsdelivr.net",
             "style-src-attr 'unsafe-inline'",
             "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://*.youtube.com https://*.youtube-nocookie.com https://*.google.com https://*.gstatic.com https://cdn.quilljs.com https://cdn.jsdelivr.net",
             "script-src-attr 'unsafe-inline'",
-            "img-src 'self' data: https:",
-            "connect-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com https://*.youtube.com https://*.google.com",
+            "img-src 'self' data: https: blob: https://fourjs-academy.onrender.com",
+            "connect-src 'self' blob: https://fonts.googleapis.com https://fonts.gstatic.com https://*.youtube.com https://*.google.com https://fourjs-academy.onrender.com",
             "font-src 'self' https://fonts.gstatic.com",
             "frame-src 'self' https://*.youtube.com https://*.youtube-nocookie.com https://*.google.com",
             "media-src 'self' blob: https://*.googlevideo.com https://*.youtube.com",
