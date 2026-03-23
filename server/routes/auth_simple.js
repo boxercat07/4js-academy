@@ -19,46 +19,35 @@ const loginLimiter = rateLimit({
 router.post('/login', loginLimiter, async (req, res) => {
     try {
         const { email, password } = req.body;
-        console.log('Login attempt for:', email);
 
         if (!email || !password) {
-            console.log('Missing email or password');
             return res.status(400).json({ error: 'Email and password are required.' });
         }
 
         const user = await prisma.user.findUnique({ where: { email }, include: { tracks: true } });
-        console.log('User found:', user ? 'yes' : 'no');
         if (!user) {
-            console.log('User not found for email:', email);
             return res.status(401).json({ error: 'Invalid email or password.' });
         }
-
-        console.log('Password hash type:', user.passwordHash.startsWith('$') ? 'hashed' : 'plain');
 
         // Check password - handle both hashed and plain text
         let isValidPassword = false;
         if (user.passwordHash.startsWith('$')) {
             isValidPassword = await bcrypt.compare(password, user.passwordHash);
-            console.log('Hashed password check result:', isValidPassword);
         } else {
             isValidPassword = (password === user.passwordHash);
-            console.log('Plain password check result:', isValidPassword);
 
             // If login successful, hash the password
             if (isValidPassword) {
-                console.log('Hashing plain text password for user:', email);
                 const salt = await bcrypt.genSalt(10);
                 const hashedPassword = await bcrypt.hash(user.passwordHash, salt);
                 await prisma.user.update({
                     where: { id: user.id },
                     data: { passwordHash: hashedPassword }
                 });
-                console.log('Password hashed successfully');
             }
         }
 
         if (!isValidPassword) {
-            console.log('Invalid password for user:', email);
             return res.status(401).json({ error: 'Invalid email or password.' });
         }
 
@@ -91,7 +80,6 @@ router.post('/login', loginLimiter, async (req, res) => {
 
     } catch (error) {
         console.error('Login error:', error.message);
-        console.error('Stack trace:', error.stack);
         res.status(500).json({ error: 'Internal server error during login.' });
     }
 });
