@@ -175,6 +175,33 @@ router.get('/me', verifyToken, async (req, res) => {
     }
 });
 
+// Test auth endpoint
+router.get('/test', (req, res) => {
+    try {
+        console.log('[AUTH TEST] Testing auth imports...');
+        console.log('[AUTH TEST] JWT_SECRET available:', !!JWT_SECRET);
+        console.log('[AUTH TEST] JWT_SECRET length:', JWT_SECRET ? JWT_SECRET.length : 'N/A');
+        
+        // Test Prisma connection
+        console.log('[AUTH TEST] Testing Prisma...');
+        
+        res.json({
+            status: 'ok',
+            message: 'Auth module loaded successfully',
+            jwt_secret: !!JWT_SECRET,
+            jwt_length: JWT_SECRET ? JWT_SECRET.length : 0,
+            timestamp: new Date().toISOString()
+        });
+    } catch (error) {
+        console.error('[AUTH TEST] Error:', error);
+        res.status(500).json({
+            status: 'error',
+            message: error.message,
+            stack: error.stack
+        });
+    }
+});
+
 module.exports = router;
 
 
