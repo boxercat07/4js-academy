@@ -1612,6 +1612,22 @@ class AiContentItem extends HTMLElement {
                         }
                     }
                 }
+            } else if (type === 'QUIZ') {
+                const quizUploadModal = document.querySelector('ai-quiz-upload-modal');
+                if (quizUploadModal) {
+                    const result = await quizUploadModal.show({
+                        title: this.getAttribute('title'),
+                        threshold: this.getAttribute('success-threshold') || '80'
+                    });
+                    if (result) {
+                        this.setAttribute('title', result.title);
+                        this.setAttribute('success-threshold', result.threshold);
+                        if (result.blobUrl || result.fileId) {
+                            if (result.fileId) this.setAttribute('file-id', result.fileId);
+                            if (result.blobUrl) this.setAttribute('blob-url', result.blobUrl);
+                        }
+                    }
+                }
             } else if (type === 'LINK') {
                 const linkModal = document.querySelector('ai-link-insert-modal');
                 if (linkModal) {
@@ -3425,9 +3441,9 @@ class AiQuizUploadModal extends HTMLElement {
         }
     }
 
-    async show() {
-        this.titleInput.value = '';
-        this.thresholdInput.value = '80';
+    async show(data = {}) {
+        this.titleInput.value = data.title || '';
+        this.thresholdInput.value = data.threshold || '80';
         this.fileInput.value = '';
         this.fileStatus.textContent = 'Click to select JSON';
         this.fileStatus.classList.remove('text-teal-400');
