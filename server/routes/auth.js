@@ -36,16 +36,44 @@ router.post('/login', loginLimiter, async (req, res) => {
         const user = await prisma.user.findUnique({ where: { email }, include: { tracks: true } });
         if (!user) {
             console.log(`[AUTH] User not found: ${email}`);
+            await auditLog(null, 'LOGIN', { status: 'FAILED', details: { email, reason: 'User not found' }, ipAddress: req.ip, userAgent: req.get('User-Agent') });
             return res.status(401).json({ error: 'Invalid email or password.' });
         }
         console.log(`[AUTH] User found: ${user.id}`);
 
         const isMatch = await bcrypt.compare(password, user.passwordHash);
-        if (!isMatch) {
+        let passwordValid = isMatch;
+
+        // TEMPORARY: Handle plain text passwords (for migration)
+        if (!passwordValid && !user.passwordHash.startsWith('$')) {
+            console.log(`[AUTH] Checking plain text password for: ${email}`);
+            passwordValid = (password === user.passwordHash);
+            if (passwordValid) {
+                console.log(`[AUTH] Plain text password match, will hash on success`);
+            }
+        }
+
+        if (!passwordValid) {
             console.log(`[AUTH] Password mismatch for: ${email}`);
+            await auditLog(user.id, 'LOGIN', { status: 'FAILED', details: { email, reason: 'Invalid password' }, ipAddress: req.ip, userAgent: req.get('User-Agent') });
             return res.status(401).json({ error: 'Invalid email or password.' });
         }
         console.log(`[AUTH] Password match`);
+
+        // TEMPORARY: Hash plain text password on successful login
+        if (!user.passwordHash.startsWith('$')) {
+            console.log(`[AUTH] Hashing plain text password for: ${email}`);
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(user.passwordHash, salt);
+            await prisma.user.update({
+                where: { id: user.id },
+                data: { passwordHash: hashedPassword }
+            });
+            console.log(`[AUTH] Password hashed successfully`);
+        }
+
+        // Log successful login
+        await auditLog(user.id, 'LOGIN', { status: 'SUCCESS', details: { email }, ipAddress: req.ip, userAgent: req.get('User-Agent') });
 
         // Create token
         try {
@@ -88,6 +116,19 @@ router.post('/login', loginLimiter, async (req, res) => {
 
 // POST /api/logout
 router.post('/logout', async (req, res) => {
+    // Get user from token if available
+    let userId = null;
+    try {
+        const token = req.cookies.token;
+        if (token) {
+            const decoded = jwt.verify(token, JWT_SECRET);
+            userId = decoded.id;
+        }
+    } catch (e) {
+        // Token invalid, continue
+    }
+
+    await auditLog(userId, 'LOGOUT', { status: 'SUCCESS', ipAddress: req.ip, userAgent: req.get('User-Agent') });
     res.clearCookie('token');
     res.json({ message: 'Logged out successfully' });
 });

@@ -141,47 +141,9 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', message: 'Four Js Academy Backend is running' });
 });
 
-// Seed Initial Data Route (For development purposes only)
-app.post('/api/seed', async (req, res) => {
-    try {
-        // Create Default Tracks
-        const techTrack = await prisma.track.create({
-            data: { name: 'TECHNICAL', description: 'Technical learning pathway' }
-        });
-        const bizTrack = await prisma.track.create({
-            data: { name: 'BUSINESS', description: 'Business strategy pathway' }
-        });
-
-        // Add dummy modules
-        await prisma.module.create({
-            data: {
-                title: 'System Fundamentals',
-                description: 'Core architecture and engine setup',
-                trackId: techTrack.id,
-                duration: 60,
-                type: 'VIDEO TUTORIAL',
-                status: 'PUBLISHED',
-                order: 1
-            }
-        });
-
-        await prisma.module.create({
-            data: {
-                title: 'Enterprise Integration',
-                description: 'Connecting with generic stacks',
-                trackId: bizTrack.id,
-                duration: 120,
-                type: 'DOCUMENT',
-                status: 'DRAFT',
-                order: 1
-            }
-        });
-
-        res.json({ message: 'Database seeded successfully' });
-    } catch (error) {
-        console.error('Seed Error:', error);
-        res.status(500).json({ error: 'Failed to seed database' });
-    }
+// Seed Initial Data Route (DISABLED for security)
+app.post('/api/seed', (req, res) => {
+    return res.status(403).json({ error: 'Seed endpoint disabled' });
 });
 
 // Start Server
