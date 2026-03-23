@@ -1586,16 +1586,22 @@ class AiContentItem extends HTMLElement {
 
         this.querySelector('.edit-content')?.addEventListener('click', async () => {
             const type = this.getAttribute('type');
-            const mediaTypes = ['PDF', 'IMAGE', 'AUDIO', 'SLIDES'];
+            const mediaTypes = ['PDF', 'IMAGE', 'AUDIO', 'SLIDES', 'QUIZ'];
 
             if (mediaTypes.includes(type)) {
                 const uploadModal = document.querySelector('ai-media-upload-modal');
                 if (uploadModal) {
+                    let acceptAttr = 'image/*';
+                    if (type === 'PDF') acceptAttr = '.pdf';
+                    else if (type === 'AUDIO') acceptAttr = '.mp3,.wav';
+                    else if (type === 'SLIDES') acceptAttr = '.ppt,.pptx';
+                    else if (type === 'QUIZ') acceptAttr = '.json';
+
                     const result = await uploadModal.show({
                         title: `Edit ${type}`,
                         currentTitle: this.getAttribute('title'),
                         icon: this.getAttribute('icon'),
-                        accept: type === 'PDF' ? '.pdf' : (type === 'AUDIO' ? '.mp3,.wav' : (type === 'SLIDES' ? '.ppt,.pptx' : 'image/*'))
+                        accept: acceptAttr
                     });
                     if (result && result.title) {
                         this.setAttribute('title', result.title);
