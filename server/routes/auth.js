@@ -39,15 +39,17 @@ router.post('/login', loginLimiter, async (req, res) => {
             await auditLog(null, 'LOGIN', { status: 'FAILED', details: { email, reason: 'User not found' }, ipAddress: req.ip, userAgent: req.get('User-Agent') });
             return res.status(401).json({ error: 'Invalid email or password.' });
         }
-        console.log(`[AUTH] User found: ${user.id}`);
+        console.log(`[AUTH] User found: ${user.id}, passwordHash starts with $: ${user.passwordHash.startsWith('$')}`);
 
         const isMatch = await bcrypt.compare(password, user.passwordHash);
+        console.log(`[AUTH] bcrypt.compare result: ${isMatch}`);
         let passwordValid = isMatch;
 
         // TEMPORARY: Handle plain text passwords (for migration)
         if (!passwordValid && !user.passwordHash.startsWith('$')) {
             console.log(`[AUTH] Checking plain text password for: ${email}`);
             passwordValid = (password === user.passwordHash);
+            console.log(`[AUTH] Plain text comparison result: ${passwordValid}`);
             if (passwordValid) {
                 console.log(`[AUTH] Plain text password match, will hash on success`);
             }

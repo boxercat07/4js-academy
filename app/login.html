@@ -114,14 +114,22 @@
         }
 
         function togglePasswordVisibility(inputId, buttonEl) {
+            console.log('Toggle called for', inputId);
             const input = document.getElementById(inputId);
             const icon = buttonEl.querySelector('.material-symbols-outlined');
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.textContent = 'visibility_off';
+            console.log('Input found:', !!input, 'Icon found:', !!icon);
+            if (input && icon) {
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.textContent = 'visibility_off';
+                    console.log('Changed to text');
+                } else {
+                    input.type = 'password';
+                    icon.textContent = 'visibility';
+                    console.log('Changed to password');
+                }
             } else {
-                input.type = 'password';
-                icon.textContent = 'visibility';
+                console.error('Input or icon not found');
             }
         }
 
