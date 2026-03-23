@@ -1692,7 +1692,7 @@ class AiContentItem extends HTMLElement {
                                 return;
                             } else {
                                 console.error(`[AiContentItem] File ${fileId} NOT found in IndexedDB`);
-                                if (url === '#') throw new Error('NOT_FOUND_RECOVERY_FAILED');
+                                // Don't throw, just fall through to the error message handling below
                             }
                         }
 
