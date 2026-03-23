@@ -131,4 +131,17 @@ router.get('/test', (req, res) => {
     });
 });
 
+// GET /api/users - List users (for debugging)
+router.get('/users', async (req, res) => {
+    try {
+        const users = await prisma.user.findMany({
+            select: { email: true, role: true, firstName: true, lastName: true }
+        });
+        res.json({ users });
+    } catch (error) {
+        console.error('Users list error:', error.message);
+        res.status(500).json({ error: 'Failed to fetch users' });
+    }
+});
+
 module.exports = router;
