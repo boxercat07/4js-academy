@@ -2292,7 +2292,7 @@ class AiMediaViewerModal extends HTMLElement {
                         <div id="viewer-loading" class="absolute inset-0 flex items-center justify-center bg-slate-900 z-10">
                             <div class="size-12 border-4 border-[var(--ai-primary)] border-t-transparent rounded-full animate-spin"></div>
                         </div>
-                        <iframe id="viewer-frame" class="w-full h-full border-none hidden" allow="autoplay; fullscreen" allowfullscreen></iframe>
+                        <iframe id="viewer-frame" class="w-full h-full border-none hidden" allow="autoplay; fullscreen"></iframe>
                         <img id="viewer-image" class="w-full h-full object-contain hidden transition-opacity duration-500" src="">
                         <video id="viewer-video" class="w-full h-full hidden" controls playsinline></video>
                         <div id="viewer-audio-player" class="w-full h-full hidden flex flex-col items-center justify-center p-8 bg-gradient-to-b from-slate-900 to-slate-950">
