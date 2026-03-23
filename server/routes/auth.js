@@ -11,12 +11,16 @@ const prisma = new PrismaClient();
 const loginLimiter = rateLimit({
     windowMs: 15 * 60 * 1000,
     max: 5,
-    message: 'Too many login attempts',
+    message: { error: 'Too many login attempts. Please try again later.' },
     skipSuccessfulRequests: true
 });
 
 // POST /api/login
 router.post('/login', loginLimiter, async (req, res) => {
+    console.log('=== LOGIN ROUTE STARTED ===');
+    console.log('Request body:', req.body);
+    console.log('Request headers:', req.headers);
+    
     try {
         const { email, password } = req.body;
         console.log('Login attempt for:', email);
@@ -68,19 +72,24 @@ router.post('/login', loginLimiter, async (req, res) => {
         }
 
         // Create JWT token
+        console.log('Creating JWT token for user:', user.id);
         const token = jwt.sign(
             { id: user.id, email: user.email, role: user.role, firstName: user.firstName, lastName: user.lastName },
             JWT_SECRET,
             { expiresIn: '24h' }
         );
+        console.log('JWT token created successfully');
 
         // Set HttpOnly cookie
+        console.log('Setting cookie');
         res.cookie('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             maxAge: 24 * 60 * 60 * 1000
         });
+        console.log('Cookie set successfully');
 
+        console.log('Sending success response');
         res.json({
             message: 'Login successful',
             user: {
@@ -93,6 +102,7 @@ router.post('/login', loginLimiter, async (req, res) => {
                 tracks: user.tracks ? user.tracks.map(t => ({ id: t.id, name: t.name })) : []
             }
         });
+        console.log('Response sent successfully');
 
     } catch (error) {
         console.error('Login error:', error.message);

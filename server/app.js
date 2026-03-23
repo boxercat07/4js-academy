@@ -177,6 +177,15 @@ app.post('/api/seed', (req, res) => {
     return res.status(403).json({ error: 'Seed endpoint disabled' });
 });
 
+// Global error handler for API routes - ensures JSON responses
+app.use('/api', (err, req, res, next) => {
+    console.error('API Error:', err.message);
+    console.error('Stack:', err.stack);
+    if (!res.headersSent) {
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
 // Start Server
 if (require.main === module && process.env.NODE_ENV !== 'test') {
     // Global Error Handling Middleware (MUST be last)
