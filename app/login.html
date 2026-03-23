@@ -38,8 +38,7 @@
 
             <!-- Sign In Form -->
             <form id="form-signin"
-                class="text-left space-y-5 absolute top-0 left-0 w-full block opacity-100 transition-opacity duration-300"
-                onsubmit="handleAuth(event, 'signin')">
+                class="text-left space-y-5 absolute top-0 left-0 w-full block opacity-100 transition-opacity duration-300">
                 <div>
                     <label class="block text-sm font-semibold text-slate-300 mb-2">Work Email</label>
                     <input type="email" id="signin-email" placeholder="email@4js.com"
@@ -50,7 +49,7 @@
                     <div class="relative">
                         <input type="password" id="signin-password" placeholder="••••••••"
                             class="w-full px-4 py-3 rounded-lg bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-primary transition-colors pr-12" />
-                        <button type="button" onclick="togglePasswordVisibility('signin-password', this)" 
+                        <button type="button" id="toggle-password-btn"
                             class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors flex items-center justify-center w-8 h-8">
                             <span class="material-symbols-outlined text-xl">visibility</span>
                         </button>
@@ -113,11 +112,12 @@
             // Registration disabled
         }
 
-        function togglePasswordVisibility(inputId, buttonEl) {
+        function togglePasswordVisibility(inputId, buttonId) {
             console.log('Toggle called for', inputId);
             const input = document.getElementById(inputId);
-            const icon = buttonEl.querySelector('.material-symbols-outlined');
-            console.log('Input found:', !!input, 'Icon found:', !!icon);
+            const button = document.getElementById(buttonId);
+            const icon = button.querySelector('.material-symbols-outlined');
+            console.log('Input found:', !!input, 'Button found:', !!button, 'Icon found:', !!icon);
             if (input && icon) {
                 if (input.type === 'password') {
                     input.type = 'text';
@@ -129,7 +129,7 @@
                     console.log('Changed to password');
                 }
             } else {
-                console.error('Input or icon not found');
+                console.error('Input, button or icon not found');
             }
         }
 
@@ -142,6 +142,28 @@
             if (signinForm) {
                 signinForm.classList.remove('hidden', 'opacity-0');
                 signinForm.classList.add('block', 'opacity-100');
+            }
+
+            // Add event listener for password toggle button
+            const toggleBtn = document.getElementById('toggle-password-btn');
+            if (toggleBtn) {
+                toggleBtn.addEventListener('click', () => {
+                    togglePasswordVisibility('signin-password', 'toggle-password-btn');
+                });
+                console.log('Password toggle event listener added');
+            } else {
+                console.error('Toggle password button not found');
+            }
+
+            // Add event listener for form submit
+            const signinForm = document.getElementById('form-signin');
+            if (signinForm) {
+                signinForm.addEventListener('submit', (event) => {
+                    handleAuth(event, 'signin');
+                });
+                console.log('Form submit event listener added');
+            } else {
+                console.error('Signin form not found');
             }
         });
 
