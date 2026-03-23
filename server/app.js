@@ -1,4 +1,4 @@
-﻿require('dotenv').config();
+require('dotenv').config();
 console.log('=========================================');
 console.log('   SERVER STARTING V2 - ' + new Date().toISOString());
 console.log('=========================================');
@@ -35,14 +35,24 @@ const port = process.env.PORT || 3000;
 // CORS Configuration - Restrict to allowed origins
 const allowedOrigins = process.env.ALLOWED_ORIGINS
     ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
-    : ['http://localhost:3000', 'http://localhost:5173'];
+    : ['http://localhost:3000', 'http://localhost:5173', 'https://fourjs-academy.onrender.com'];
 
 const corsOptions = {
     origin: (origin, callback) => {
+        // Log for debugging (ensure it's visible in Render logs)
+        if (origin) {
+            console.log(`CORS check for origin: ${origin}`);
+        }
+        
+        // Allow requests with no origin (same-origin, mobile apps, or curl)
+        // or explicitly allowed origins
         if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
-            callback(new Error('CORS policy violation'));
+            console.error('❌ CORS Blocked Origin:', origin);
+            console.log('Allowed Origins List:', allowedOrigins);
+            // Include the blocked origin in the error message for easier debugging
+            callback(new Error(`CORS policy violation: ${origin} is not allowed`));
         }
     },
     credentials: true,
