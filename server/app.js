@@ -2,6 +2,24 @@
 console.log('=========================================');
 console.log('   SERVER STARTING V2 - ' + new Date().toISOString());
 console.log('=========================================');
+
+// Critical environment variable checks
+console.log('🔍 Checking environment variables...');
+console.log('JWT_SECRET:', process.env.JWT_SECRET ? '✅ Set (' + process.env.JWT_SECRET.length + ' chars)' : '❌ MISSING');
+console.log('DATABASE_URL:', process.env.DATABASE_URL ? '✅ Set' : '❌ MISSING');
+console.log('NODE_ENV:', process.env.NODE_ENV || 'development');
+console.log('ALLOWED_ORIGINS:', process.env.ALLOWED_ORIGINS || 'default');
+
+if (!process.env.JWT_SECRET) {
+    console.error('❌ CRITICAL: JWT_SECRET is not set! Server will not start properly.');
+    process.exit(1);
+}
+
+if (!process.env.DATABASE_URL) {
+    console.error('❌ CRITICAL: DATABASE_URL is not set! Server will not start properly.');
+    process.exit(1);
+}
+
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -141,6 +159,19 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', message: 'Four Js Academy Backend is running' });
 });
 
+// Test route for debugging
+app.get('/api/test', (req, res) => {
+    res.json({
+        status: 'ok',
+        timestamp: new Date().toISOString(),
+        env: {
+            NODE_ENV: process.env.NODE_ENV,
+            JWT_SECRET: !!process.env.JWT_SECRET,
+            DATABASE_URL: !!process.env.DATABASE_URL
+        }
+    });
+});
+
 // Seed Initial Data Route (DISABLED for security)
 app.post('/api/seed', (req, res) => {
     return res.status(403).json({ error: 'Seed endpoint disabled' });
@@ -164,6 +195,23 @@ app.use((err, req, res, next) => {
 app.listen(port, () => {
         console.log(`AI Academy backend listening at http://localhost:${port}`);
     });
+}
+
+// Test database connection before starting server (only in production-like environments)
+if (require.main === module && process.env.NODE_ENV !== 'test') {
+    console.log('🔍 Testing database connection...');
+    prisma.$connect()
+        .then(() => {
+            console.log('✅ Database connection successful');
+            return prisma.user.count();
+        })
+        .then((userCount) => {
+            console.log(`✅ Database contains ${userCount} users`);
+        })
+        .catch((error) => {
+            console.error('❌ Database connection failed:', error.message);
+            console.error('❌ This may cause login issues. Check DATABASE_URL.');
+        });
 }
 
 // Graceful shutdown
