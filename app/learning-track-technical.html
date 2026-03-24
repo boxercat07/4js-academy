@@ -388,6 +388,16 @@
                                 progressPercent.textContent = `${newPercent}%`;
                                 progressBar.style.width = `${newPercent}%`;
                                 console.log(`[Track] Recalculated progress: ${newPercent}% (${completed}/${total})`);
+
+                                // Show rating prompt if 100% complete
+                                if (newPercent === 100 && !isPreview) {
+                                    const ratingPrompt = document.getElementById('rating-prompt');
+                                    if (ratingPrompt) {
+                                        ratingPrompt.classList.remove('hidden');
+                                        const starEl = document.getElementById('completion-rating');
+                                        if (starEl) starEl.setAttribute('track-id', techTrack.id);
+                                    }
+                                }
                             }, 100);
                         });
                     } catch (error) {
