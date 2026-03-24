@@ -3168,6 +3168,19 @@ class AiQuiz extends HTMLElement {
                 </div>
                 
                 ${this.showingFeedback ? `
+                    <div class="mb-8 p-6 rounded-xl bg-slate-900/40 border border-slate-800 animate-in fade-in slide-in-from-top-4 duration-500">
+                        <div class="flex items-start gap-4">
+                            <div class="size-8 rounded-full bg-teal-500/10 text-teal-500 flex items-center justify-center shrink-0">
+                                <span class="material-symbols-outlined text-xl">info</span>
+                            </div>
+                            <div class="text-left">
+                                <p class="text-[10px] font-bold text-teal-400 uppercase tracking-widest mb-1.5 opacity-80">Explanation</p>
+                                <div class="text-sm text-slate-300 leading-relaxed font-medium">
+                                    ${this.getRationale(q, this.selectedAnswer)}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="flex justify-end gap-4 animate-in fade-in-up duration-300">
                         <button class="btn-primary next-btn px-8 py-3 flex items-center gap-2">
                             ${this.currentQuestionIndex < this.quizData.questions.length - 1 ? 'Next Question' : 'Finish Quiz'}
@@ -3185,6 +3198,31 @@ class AiQuiz extends HTMLElement {
         if (this.showingFeedback) {
             this.querySelector('.next-btn').addEventListener('click', () => this.nextQuestion());
         }
+    }
+
+    getRationale(q, selectedIndex) {
+        // 1. Check for a general rationale for the whole question
+        let rationale = q.rationale || q.explanation || q.feedback || q.rationale_text || q.explanation_text;
+        
+        // 2. Check for per-option rationale
+        const options = q.options || q.choices || [];
+        const selectedOption = options[selectedIndex];
+        if (selectedOption && typeof selectedOption === 'object') {
+            const optRationale = selectedOption.rationale || selectedOption.explanation || selectedOption.feedback || selectedOption.rationale_text;
+            if (optRationale) rationale = optRationale;
+        }
+        
+        // 3. If still no rationale, check if the question has a general rationale for the correct answer
+        if (!rationale) {
+            const correctIndex = this.getCorrectAnswerIndex(q);
+            const correctOption = options[correctIndex];
+            if (correctOption && typeof correctOption === 'object') {
+                const correctRationale = correctOption.rationale || correctOption.explanation || correctOption.feedback;
+                if (correctRationale) rationale = correctRationale;
+            }
+        }
+
+        return rationale || "Aucune explication supplémentaire n'est fournie pour cette question.";
     }
 
     handleAnswer(originalIndex) {
