@@ -319,7 +319,7 @@
                             ${track.description || 'Access dedicated expert training for this specialized track.'}
                         </p>
                         <div class="mb-4">
-                             <ai-rating track-id="${track.id}"></ai-rating>
+                             <ai-rating track-id="${track.id}" readonly="true" show-count="false"></ai-rating>
                         </div>
                         ${
                             prog.status !== 'NOT_STARTED'
@@ -365,7 +365,7 @@
                     const targetPage = trackName.toUpperCase().includes('TECHNICAL')
                         ? 'learning-track-technical.html'
                         : 'learning-track-business.html';
-                    window.location.href = targetPage;
+                    window.location.href = `${targetPage}?id=${trackId}`;
                 } catch (err) {
                     console.error('Track selection error:', err);
                     alert('Could not save your track selection. Please try again.');

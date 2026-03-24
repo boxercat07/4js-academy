@@ -4818,42 +4818,76 @@ class AiRating extends HTMLElement {
         super();
         this.stars = 0;
         this.trackId = this.getAttribute('track-id');
+        this.readonly = this.hasAttribute('readonly') && this.getAttribute('readonly') !== 'false';
+        this.showCount = this.hasAttribute('show-count') && this.getAttribute('show-count') !== 'false';
         this.currentRating = 0;
         this.totalRatings = 0;
     }
 
     async connectedCallback() {
         this.render();
-        this.fetchStats();
+        await this.fetchStats();
+    }
+
+    static get observedAttributes() {
+        return ['track-id', 'stars', 'readonly', 'show-count'];
+    }
+
+    attributeChangedCallback(name, oldVal, newVal) {
+        if (name === 'track-id') {
+            this.trackId = newVal;
+            this.fetchStats();
+        } else if (name === 'stars') {
+            this.stars = parseInt(newVal) || 0;
+            this.render();
+        } else if (name === 'readonly') {
+            this.readonly = newVal !== 'false';
+            this.render();
+        } else if (name === 'show-count') {
+            this.showCount = newVal !== 'false';
+            this.render();
+        }
     }
 
     async fetchStats() {
         if (!this.trackId) return;
         try {
-            const res = await fetch(`/api/ratings/admin/stats?trackId=${this.trackId}`);
+            // Use the public stats endpoint for learners
+            const res = await fetch(`/api/ratings/${this.trackId}/stats`, { credentials: 'include' });
             if (res.ok) {
-                const data = await res.json();
-                const stats = data.find(s => s.id === this.trackId);
-                if (stats) {
-                    this.currentRating = stats.averageRating;
-                    this.totalRatings = stats.totalRatings;
-                    this.render();
+                const stats = await res.json();
+                this.currentRating = stats.averageRating;
+                this.totalRatings = stats.totalRatings;
+
+                // If readonly, we show the average as the filled stars
+                if (this.readonly) {
+                    this.stars = Math.round(this.currentRating);
+                    this.addEventListener('click', () => {
+                        this.dispatchEvent(new CustomEvent('rating-click', { bubbles: true }));
+                    });
                 }
+                this.render();
             }
         } catch (e) {
-            /* ignore quiet errors */
+            console.warn('[AiRating] Stats fetch failed:', e);
         }
     }
 
     render() {
+        const starSize = this.readonly ? 'text-sm' : 'text-lg';
+        const containerClass = this.readonly ? 'gap-1' : 'gap-2';
+
         this.innerHTML = `
-            <div class="flex items-center gap-2">
+            <div class="flex items-center ${containerClass}">
                 <div class="flex text-amber-500">
                     ${[1, 2, 3, 4, 5]
                         .map(
                             i => `
-                        <button class="star-btn cursor-pointer transition-transform hover:scale-110" data-star="${i}">
-                            <span class="material-symbols-outlined ${i <= this.stars ? 'fill-current' : 'text-slate-600'} text-lg leading-none" style="font-variation-settings: 'FILL' ${i <= this.stars ? 1 : 0}">
+                        <button class="star-btn ${this.readonly ? 'cursor-default' : 'cursor-pointer transition-transform hover:scale-110'}" 
+                                data-star="${i}" 
+                                ${this.readonly ? 'disabled' : ''}>
+                            <span class="material-symbols-outlined ${i <= this.stars ? 'fill-current' : 'text-slate-600'} ${starSize} leading-none" 
+                                  style="font-variation-settings: 'FILL' ${i <= this.stars ? 1 : 0}">
                                 star
                             </span>
                         </button>
@@ -4861,27 +4895,30 @@ class AiRating extends HTMLElement {
                         )
                         .join('')}
                 </div>
-                ${this.totalRatings > 0 ? `<span class="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">(${this.currentRating}/5)</span>` : ''}
+                ${this.showCount && this.totalRatings > 0 ? `<span class="text-[9px] font-bold text-slate-500 uppercase tracking-tighter">(${this.currentRating}/5 · ${this.totalRatings} ${this.totalRatings > 1 ? 'votes' : 'vote'})</span>` : ''}
+                ${!this.showCount && this.readonly && this.totalRatings > 0 ? `<span class="text-[9px] font-bold text-slate-500">${this.currentRating}</span>` : ''}
             </div>
         `;
 
-        this.querySelectorAll('.star-btn').forEach(btn => {
-            btn.addEventListener('click', e => {
-                e.preventDefault();
-                e.stopPropagation();
-                this.stars = parseInt(btn.dataset.star);
-                this.submitRating();
-            });
+        if (!this.readonly) {
+            this.querySelectorAll('.star-btn').forEach(btn => {
+                btn.addEventListener('click', e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    this.stars = parseInt(btn.dataset.star);
+                    this.submitRating();
+                });
 
-            btn.addEventListener('mouseenter', () => {
-                const star = parseInt(btn.dataset.star);
-                this.highlightStars(star);
-            });
+                btn.addEventListener('mouseenter', () => {
+                    const star = parseInt(btn.dataset.star);
+                    this.highlightStars(star);
+                });
 
-            btn.addEventListener('mouseleave', () => {
-                this.highlightStars(this.stars);
+                btn.addEventListener('mouseleave', () => {
+                    this.highlightStars(this.stars);
+                });
             });
-        });
+        }
     }
 
     highlightStars(n) {
@@ -4903,16 +4940,19 @@ class AiRating extends HTMLElement {
             const res = await fetch(`/api/ratings/${this.trackId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ stars: this.stars })
+                body: JSON.stringify({ stars: this.stars }),
+                credentials: 'include'
             });
             if (res.ok) {
                 this.render();
+                // Refresh stats after voting
+                await this.fetchStats();
                 this.dispatchEvent(
                     new CustomEvent('rated', { detail: { trackId: this.trackId, stars: this.stars }, bubbles: true })
                 );
             }
         } catch (e) {
-            console.error(e);
+            console.error('[AiRating] Submit failed:', e);
         }
     }
 }

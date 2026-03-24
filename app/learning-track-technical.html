@@ -49,9 +49,12 @@
                     Back to Track Selection
                 </a>
             </div>
-            <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-3 font-display tracking-wider uppercase">
-                Technical Track
-            </h1>
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-3">
+                <h1 class="text-4xl md:text-5xl font-extrabold text-white font-display tracking-wider uppercase">
+                    Technical Track
+                </h1>
+                <ai-rating id="header-rating" readonly="true" show-count="true"></ai-rating>
+            </div>
             <p class="text-slate-400 text-lg mb-10">
                 Welcome to your specialized technical learning journey.
                 <br />
@@ -179,7 +182,20 @@
                         }
 
                         // Update Hero Metadata
-                        document.querySelector('h1').textContent = techTrack.name + ' TRACK';
+                        const titleEl = document.querySelector('h1');
+                        titleEl.textContent = techTrack.name + ' TRACK';
+
+                        const headerRating = document.getElementById('header-rating');
+                        if (headerRating) {
+                            headerRating.setAttribute('track-id', techTrack.id);
+                            headerRating.addEventListener('rating-click', () => {
+                                const prompt = document.getElementById('rating-prompt');
+                                if (prompt) {
+                                    prompt.classList.remove('hidden');
+                                    prompt.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                }
+                            });
+                        }
                         const descPara = document.querySelector('h1 + p');
                         if (descPara) {
                             descPara.innerHTML =

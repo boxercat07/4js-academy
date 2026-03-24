@@ -10,9 +10,9 @@ function slugify(text) {
         .toString()
         .toLowerCase()
         .trim()
-        .replace(/\s+/g, '-')     // Replace spaces with -
+        .replace(/\s+/g, '-') // Replace spaces with -
         .replace(/[^\w\-]+/g, '') // Remove all non-word chars
-        .replace(/\-\-+/g, '-');   // Replace multiple - with single -
+        .replace(/\-\-+/g, '-'); // Replace multiple - with single -
 }
 
 // GET /api/tracks - Get available tracks (with optional status filter)
@@ -26,10 +26,26 @@ router.get('/', verifyToken, async (req, res) => {
 
         const tracks = await prisma.track.findMany({
             where,
+            include: {
+                ratings: {
+                    select: { stars: true }
+                }
+            },
             orderBy: { createdAt: 'desc' }
         });
 
-        res.json(tracks);
+        const tracksWithStats = tracks.map(t => {
+            const count = t.ratings.length;
+            const avg = count > 0 ? t.ratings.reduce((acc, r) => acc + r.stars, 0) / count : 0;
+            const { ratings, ...trackData } = t;
+            return {
+                ...trackData,
+                averageRating: parseFloat(avg.toFixed(1)),
+                ratingCount: count
+            };
+        });
+
+        res.json(tracksWithStats);
     } catch (error) {
         console.error('Error fetching tracks:', error);
         res.status(500).json({ error: 'Failed to fetch tracks' });
@@ -40,7 +56,7 @@ router.get('/', verifyToken, async (req, res) => {
 router.post('/', verifyToken, verifyAdmin, async (req, res) => {
     try {
         const { name, description, icon, targetDepartments } = req.body;
-        
+
         if (!name) {
             return res.status(400).json({ error: 'Track name is required.' });
         }
@@ -50,10 +66,7 @@ router.post('/', verifyToken, verifyAdmin, async (req, res) => {
         // Check for duplicates
         const existing = await prisma.track.findFirst({
             where: {
-                OR: [
-                    { name: { equals: name } },
-                    { slug: { equals: slug } }
-                ]
+                OR: [{ name: { equals: name } }, { slug: { equals: slug } }]
             }
         });
 
@@ -66,7 +79,7 @@ router.post('/', verifyToken, verifyAdmin, async (req, res) => {
                 name,
                 slug,
                 description: description || '',
-                icon: icon || 'terminal', 
+                icon: icon || 'terminal',
                 targetDepartments: targetDepartments || 'Other',
                 status: 'DRAFT'
             }
@@ -84,14 +97,27 @@ router.get('/slug/:slug', verifyToken, async (req, res) => {
     try {
         const { slug } = req.params;
         const track = await prisma.track.findUnique({
-            where: { slug }
+            where: { slug },
+            include: {
+                ratings: {
+                    select: { stars: true }
+                }
+            }
         });
 
         if (!track) {
             return res.status(404).json({ error: 'Track not found' });
         }
 
-        res.json(track);
+        const count = track.ratings.length;
+        const avg = count > 0 ? track.ratings.reduce((acc, r) => acc + r.stars, 0) / count : 0;
+        const { ratings, ...trackData } = track;
+
+        res.json({
+            ...trackData,
+            averageRating: parseFloat(avg.toFixed(1)),
+            ratingCount: count
+        });
     } catch (error) {
         console.error('Error fetching track by slug:', error);
         res.status(500).json({ error: 'Failed to fetch track' });
@@ -103,14 +129,27 @@ router.get('/:id', verifyToken, async (req, res) => {
     try {
         const { id } = req.params;
         const track = await prisma.track.findUnique({
-            where: { id }
+            where: { id },
+            include: {
+                ratings: {
+                    select: { stars: true }
+                }
+            }
         });
 
         if (!track) {
             return res.status(404).json({ error: 'Track not found' });
         }
 
-        res.json(track);
+        const count = track.ratings.length;
+        const avg = count > 0 ? track.ratings.reduce((acc, r) => acc + r.stars, 0) / count : 0;
+        const { ratings, ...trackData } = track;
+
+        res.json({
+            ...trackData,
+            averageRating: parseFloat(avg.toFixed(1)),
+            ratingCount: count
+        });
     } catch (error) {
         console.error('Error fetching track:', error);
         res.status(500).json({ error: 'Failed to fetch track' });
@@ -145,10 +184,7 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
             slug = slugify(name);
             const duplicate = await prisma.track.findFirst({
                 where: {
-                    AND: [
-                        { id: { not: id } },
-                        { OR: [{ name }, { slug }] }
-                    ]
+                    AND: [{ id: { not: id } }, { OR: [{ name }, { slug }] }]
                 }
             });
             if (duplicate) {
@@ -173,8 +209,12 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
         // Notify learners when a track transitions to PUBLISHED
         if (status === 'PUBLISHED' && currentTrack.status !== 'PUBLISHED') {
             try {
-                const targetDepts = track.targetDepartments ? track.targetDepartments.split(',').map(d => d.trim()) : [];
-                const isGlobal = targetDepts.length === 0 || targetDepts.some(d => d.toLowerCase() === 'all' || d.toLowerCase() === 'other');
+                const targetDepts = track.targetDepartments
+                    ? track.targetDepartments.split(',').map(d => d.trim())
+                    : [];
+                const isGlobal =
+                    targetDepts.length === 0 ||
+                    targetDepts.some(d => d.toLowerCase() === 'all' || d.toLowerCase() === 'other');
 
                 let userWhere;
                 if (isGlobal) {
@@ -182,10 +222,7 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
                 } else {
                     userWhere = {
                         role: 'LEARNER',
-                        OR: [
-                            { tracks: { some: { id: track.id } } },
-                            { department: { in: targetDepts } }
-                        ]
+                        OR: [{ tracks: { some: { id: track.id } } }, { department: { in: targetDepts } }]
                     };
                 }
 
@@ -203,7 +240,9 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
                             message: `🚀 A new track "${track.name}" is now available for you.`
                         }))
                     });
-                    console.log(`[Notifications] Sent NEW_TRACK to ${usersToNotify.length} learner(s) for "${track.name}" (via PUT)`);
+                    console.log(
+                        `[Notifications] Sent NEW_TRACK to ${usersToNotify.length} learner(s) for "${track.name}" (via PUT)`
+                    );
                 }
             } catch (notifError) {
                 console.error('Error creating publication notifications (PUT):', notifError);
@@ -234,7 +273,9 @@ router.delete('/:id', verifyToken, verifyAdmin, async (req, res) => {
         }
 
         if (track.status === 'PUBLISHED') {
-            return res.status(400).json({ error: 'Cannot delete a published track. Please unpublish (set to DRAFT) it first.' });
+            return res
+                .status(400)
+                .json({ error: 'Cannot delete a published track. Please unpublish (set to DRAFT) it first.' });
         }
 
         // First, fetch all modules to collect their mediaUrls for cleanup
@@ -325,7 +366,7 @@ router.post('/:id/publish', verifyToken, verifyAdmin, async (req, res) => {
                 const type = (item.type || 'DOCUMENT').toUpperCase().replace(/-/g, '_');
                 const blobUrl = item['blob-url'] || item.blobUrl || '';
                 const fileId = item['file-id'] || item.fileId || '';
-                
+
                 // Prioritize permanent URLs (relative or external) over local file IDs
                 let mediaUrl = '';
                 if (blobUrl && !blobUrl.startsWith('blob:') && blobUrl !== '#') {
@@ -336,7 +377,6 @@ router.post('/:id/publish', verifyToken, verifyAdmin, async (req, res) => {
                     mediaUrl = item['video-id'] || blobUrl || '';
                 }
 
-                
                 // Let's use finding and manual update/create
                 const existing = existingModules.find(m => m.title === title);
                 if (existing) {
@@ -400,7 +440,7 @@ router.post('/:id/publish', verifyToken, verifyAdmin, async (req, res) => {
         // Update track status to PUBLISHED
         const updatedTrack = await prisma.track.update({
             where: { id },
-            data: { 
+            data: {
                 status: 'PUBLISHED',
                 curriculumDraft: null // Clear draft on successful publish
             }
@@ -409,9 +449,13 @@ router.post('/:id/publish', verifyToken, verifyAdmin, async (req, res) => {
         // --- NEW TRACK NOTIFICATION LOGIC ---
         // Notify users when a track is published
         try {
-            const targetDepts = updatedTrack.targetDepartments ? updatedTrack.targetDepartments.split(',').map(d => d.trim()) : [];
-            const isGlobal = targetDepts.length === 0 || targetDepts.some(d => d.toLowerCase() === 'all' || d.toLowerCase() === 'other');
-            
+            const targetDepts = updatedTrack.targetDepartments
+                ? updatedTrack.targetDepartments.split(',').map(d => d.trim())
+                : [];
+            const isGlobal =
+                targetDepts.length === 0 ||
+                targetDepts.some(d => d.toLowerCase() === 'all' || d.toLowerCase() === 'other');
+
             // Build user query based on scope
             let userWhere;
             if (isGlobal) {
@@ -421,10 +465,7 @@ router.post('/:id/publish', verifyToken, verifyAdmin, async (req, res) => {
                 // Only learners in target departments or explicitly assigned
                 userWhere = {
                     role: 'LEARNER',
-                    OR: [
-                        { tracks: { some: { id: updatedTrack.id } } },
-                        { department: { in: targetDepts } }
-                    ]
+                    OR: [{ tracks: { some: { id: updatedTrack.id } } }, { department: { in: targetDepts } }]
                 };
             }
 
@@ -444,7 +485,9 @@ router.post('/:id/publish', verifyToken, verifyAdmin, async (req, res) => {
                 await prisma.notification.createMany({
                     data: notificationData
                 });
-                console.log(`[Notifications] Sent NEW_TRACK to ${usersToNotify.length} learner(s) for "${updatedTrack.name}"`);
+                console.log(
+                    `[Notifications] Sent NEW_TRACK to ${usersToNotify.length} learner(s) for "${updatedTrack.name}"`
+                );
             }
         } catch (notifError) {
             console.error('Error creating publication notifications:', notifError);
