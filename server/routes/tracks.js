@@ -16,7 +16,7 @@ function slugify(text) {
 }
 
 // GET /api/tracks - Get available tracks (with optional status filter)
-router.get('/', verifyToken, async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         const { status } = req.query;
         const where = {};
@@ -26,29 +26,10 @@ router.get('/', verifyToken, async (req, res) => {
 
         const tracks = await prisma.track.findMany({
             where,
-            include: {
-                ratings: {
-                    select: { stars: true }
-                }
-            },
             orderBy: { createdAt: 'desc' }
         });
 
-        const plainTracks = JSON.parse(JSON.stringify(tracks));
-        const tracksWithStats = plainTracks.map(t => {
-            const ratings = t.ratings || [];
-            const count = ratings.length;
-            const avg = count > 0 ? ratings.reduce((acc, r) => acc + r.stars, 0) / count : 0;
-
-            delete t.ratings;
-            return {
-                ...t,
-                averageRating: parseFloat(avg.toFixed(1)),
-                ratingCount: count
-            };
-        });
-
-        res.json(tracksWithStats);
+        res.json(tracks);
     } catch (error) {
         console.error('Error fetching tracks:', error);
         res.status(500).json({ error: 'Failed to fetch tracks' });
