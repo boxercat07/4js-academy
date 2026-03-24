@@ -89,20 +89,19 @@ router.get('/:trackId/stats', verifyToken, async (req, res) => {
     try {
         const { trackId } = req.params;
 
-        const [track, ratings] = await Promise.all([
-            prisma.track.findUnique({
-                where: { id: trackId },
-                select: { id: true }
-            }),
-            prisma.rating.findMany({
-                where: { trackId },
-                select: { stars: true }
-            })
-        ]);
+        const track = await prisma.track.findUnique({
+            where: { id: trackId },
+            select: { id: true }
+        });
 
         if (!track) {
             return res.status(404).json({ error: 'Track not found' });
         }
+
+        const ratings = await prisma.rating.findMany({
+            where: { trackId },
+            select: { stars: true }
+        });
 
         const count = ratings.length;
         const avg = count > 0 ? ratings.reduce((acc, r) => acc + r.stars, 0) / count : 0;

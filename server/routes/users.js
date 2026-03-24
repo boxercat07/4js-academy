@@ -673,17 +673,12 @@ router.post('/track', verifyToken, async (req, res) => {
         const updatedUser = await prisma.user.update({
             where: { id: userId },
             data: {
-                // No relation update here to avoid transaction
+                tracks: {
+                    connect: { id: trackId }
+                }
             },
             include: { tracks: true }
         });
-
-        // Manual connect via Raw SQL
-        await prisma.$executeRaw`INSERT INTO "_TrackToUser" ("A", "B") 
-                                 SELECT ${trackId}, ${userId}
-                                 WHERE NOT EXISTS (
-                                     SELECT 1 FROM "_TrackToUser" WHERE "A" = ${trackId} AND "B" = ${userId}
-                                 )`;
 
         res.json({ message: 'Track selection saved', trackId, trackName: track.name });
     } catch (error) {
