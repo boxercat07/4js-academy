@@ -1,6 +1,6 @@
-const validatePassword = (password) => {
+const validatePassword = password => {
     if (!password) return { isValid: false, error: 'Password is required.' };
-    
+
     const requirements = [
         { regex: /.{12,}/, error: 'Password must be at least 12 characters long.' },
         { regex: /[A-Z]/, error: 'Password must contain at least one uppercase letter.' },
@@ -18,10 +18,11 @@ const validatePassword = (password) => {
     return { isValid: true };
 };
 
-const validateEmail = (email) => {
+const validateEmail = email => {
     if (!email) return { isValid: false, error: 'Email is required.' };
-    if (!email.toLowerCase().endsWith('@4js.com')) {
-        return { isValid: false, error: 'Only @4js.com email addresses are allowed.' };
+    const emailLower = email.toLowerCase();
+    if (!emailLower.endsWith('@4js.com') && !emailLower.endsWith('@fourjs.com')) {
+        return { isValid: false, error: 'Only @4js.com or @fourjs.com email addresses are allowed.' };
     }
     return { isValid: true };
 };

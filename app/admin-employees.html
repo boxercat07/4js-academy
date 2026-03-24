@@ -1281,7 +1281,10 @@
                         fetchEmployees(); // Refresh table
                     } else {
                         const data = await response.json().catch(() => ({}));
-                        alert(data.error || data.details || 'Error updating user');
+                        const errorMsg = data.error || 'Error updating user';
+                        const details = data.details || '';
+                        const code = data.code ? ` (Code: ${data.code})` : '';
+                        alert(`${errorMsg}\n${details}${code}`);
                     }
                 } catch (err) {
                     console.error(err);

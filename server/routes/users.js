@@ -382,23 +382,35 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
         }
 
         log('Executing database update...');
-        const updatedUser = await prisma.user.update({
-            where: { id },
-            data: {
-                firstName,
-                lastName,
-                email,
-                role,
-                passwordHash,
-                tracks:
-                    trackIds && Array.isArray(trackIds)
-                        ? {
-                              set: trackIds.map(id => ({ id }))
-                          }
-                        : undefined,
-                department: department
+        let updatedUser;
+        try {
+            updatedUser = await prisma.user.update({
+                where: { id },
+                data: {
+                    firstName,
+                    lastName,
+                    email,
+                    role,
+                    passwordHash,
+                    tracks:
+                        trackIds && Array.isArray(trackIds)
+                            ? {
+                                  set: trackIds.map(id => ({ id }))
+                              }
+                            : undefined,
+                    department: department || null
+                }
+            });
+        } catch (dbError) {
+            log(`Database update failed: ${dbError.message} (Code: ${dbError.code})`);
+            if (dbError.code === 'P2002') {
+                return res.status(400).json({ error: 'Email already exists for another user.' });
             }
-        });
+            if (dbError.code === 'P2025') {
+                return res.status(404).json({ error: 'User not found or invalid track IDs provided.' });
+            }
+            throw dbError; // Rethrow to be caught by outer catch
+        }
 
         // --- NEW TRACK NOTIFICATION LOGIC ---
         if (updatedUser.role === 'LEARNER' && trackIds && Array.isArray(trackIds)) {
@@ -433,9 +445,13 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
         log('Update successful');
         res.json({ user: updatedUser });
     } catch (error) {
-        log(`CRITICAL ERROR: ${error.message} \nStack: ${error.stack}`);
+        log(`CRITICAL ERROR during User Update: ${error.message} \nStack: ${error.stack}`);
         console.error('Update employee error:', error);
-        res.status(500).json({ error: 'Failed to update user', details: error.message });
+        res.status(500).json({
+            error: 'Failed to update user',
+            details: error.message,
+            code: error.code
+        });
     }
 });
 
