@@ -1,10 +1,13 @@
-const { PrismaNeonHTTP } = require('@prisma/adapter-neon');
+const { Pool, neonConfig } = require('@neondatabase/serverless');
+const { PrismaNeon } = require('@prisma/adapter-neon');
 const { PrismaClient } = require('@prisma/client');
+const ws = require('ws');
 const path = require('path');
 
 // Synchronously load env for initialization
 if (!process.env.DATABASE_URL) {
-    require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
+    const envPath = path.resolve(__dirname, '../.env');
+    require('dotenv').config({ path: envPath });
 }
 
 let prisma;
@@ -23,11 +26,14 @@ if (process.env.NODE_ENV === 'test') {
         prisma = new PrismaClient();
     } else {
         try {
-            // PrismaNeonHTTP is a factory that takes a STRING in this version
-            const adapter = new PrismaNeonHTTP(url);
+            // Neon connection setup for WebSockets (supports transactions)
+            neonConfig.webSocketConstructor = ws;
+            const pool = new Pool({ connectionString: url });
+            const adapter = new PrismaNeon(pool);
             prisma = new PrismaClient({ adapter });
         } catch (err) {
             console.error('[PRISMA_FATAL] Driver initialization error:', err.message);
+            // Fallback to standard client if adapter fails
             prisma = new PrismaClient();
         }
     }
