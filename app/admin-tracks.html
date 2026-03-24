@@ -1,198 +1,335 @@
 <!doctype html>
 <html lang="en" class="dark">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Track Management - Academy Admin</title>
+        <!-- Tailwind CSS (Compiled) -->
+        <link href="dist/output.css" rel="stylesheet" />
+        <script src="components.js"></script>
+    </head>
 
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Track Management - Academy Admin</title>
-    <!-- Tailwind CSS (Compiled) -->
-    <link href="dist/output.css" rel="stylesheet">
-    <script src="components.js"></script>
-</head>
+    <body class="page-transition">
+        <!-- Create/Edit Track Modal -->
+        <div
+            id="trackModal"
+            class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-[#0a0f1a]/80 backdrop-blur-sm"
+        >
+            <div class="bg-[#131b2c] border border-slate-700/50 rounded-xl p-6 w-full max-w-md shadow-2xl relative">
+                <button
+                    onclick="closeTrackModal()"
+                    class="absolute top-4 right-4 text-slate-400 hover:text-white material-symbols-outlined"
+                >
+                    close
+                </button>
+                <h2 id="modalTitle" class="text-xl font-bold text-white mb-6 font-display">Create New Track</h2>
 
-<body class="page-transition">
-    <!-- Create/Edit Track Modal -->
-    <div id="trackModal"
-        class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-[#0a0f1a]/80 backdrop-blur-sm">
-        <div class="bg-[#131b2c] border border-slate-700/50 rounded-xl p-6 w-full max-w-md shadow-2xl relative">
-            <button onclick="closeTrackModal()"
-                class="absolute top-4 right-4 text-slate-400 hover:text-white material-symbols-outlined">
-                close
-            </button>
-            <h2 id="modalTitle" class="text-xl font-bold text-white mb-6 font-display">Create New Track</h2>
-
-            <form id="trackForm" onsubmit="submitTrackForm(event)">
-                <input type="hidden" id="track-id" />
-                <div class="space-y-4">
-                    <div>
-                        <label class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-widest">Track Name</label>
-                        <input type="text" id="track-name" required placeholder="e.g. BUSINESS, ADVANCED TECH..."
-                            class="w-full px-3 py-2 bg-slate-800/50 border border-slate-700 rounded text-white focus:border-primary focus:outline-none" />
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-widest">Description</label>
-                        <textarea id="track-description" rows="3"
-                            class="w-full px-3 py-2 bg-slate-800/50 border border-slate-700 rounded text-white focus:border-primary focus:outline-none"
-                            placeholder="Briefly describe the purpose of this learning path..."></textarea>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-widest">Material Icon Name</label>
-                        <div class="flex gap-2">
-                             <input type="text" id="track-icon" placeholder="e.g. terminal, school, business..."
-                                class="w-full px-3 py-2 bg-slate-800/50 border border-slate-700 rounded text-white focus:border-primary focus:outline-none" />
-                             <div class="size-10 rounded bg-slate-800 flex items-center justify-center border border-slate-700">
-                                <span id="icon-preview" class="material-symbols-outlined text-primary text-xl">terminal</span>
-                             </div>
+                <form id="trackForm" onsubmit="submitTrackForm(event)">
+                    <input type="hidden" id="track-id" />
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-widest">
+                                Track Name
+                            </label>
+                            <input
+                                type="text"
+                                id="track-name"
+                                required
+                                placeholder="e.g. BUSINESS, ADVANCED TECH..."
+                                class="w-full px-3 py-2 bg-slate-800/50 border border-slate-700 rounded text-white focus:border-primary focus:outline-none"
+                            />
                         </div>
-                        <p class="text-[10px] text-slate-500 mt-1 italic">Use any <a href="https://fonts.google.com/icons" target="_blank" class="text-primary hover:underline">Google Material Icon</a> name.</p>
-                    </div>
-                    <div id="status-container" class="hidden">
-                        <label class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-widest">Status</label>
-                        <select id="track-status"
-                            class="w-full px-3 py-2 bg-slate-800/50 border border-slate-700 rounded text-white focus:border-primary focus:outline-none">
-                            <option value="DRAFT">Draft</option>
-                            <option value="PUBLISHED">Published</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-400 mb-2 uppercase tracking-widest">Target Departments</label>
-                        <div id="dept-checkboxes" class="grid grid-cols-2 gap-2 p-3 bg-slate-800/30 border border-slate-700/50 rounded-lg max-h-40 overflow-y-auto">
-                            <!-- Checkboxes for: Sales, PS, Marketing, R&D, Finance, Customer Care, IT & Security, HR, Other -->
-                            <label class="flex items-center gap-2 text-xs text-slate-300 hover:text-white cursor-pointer">
-                                <input type="checkbox" value="Sales" class="rounded border-slate-700 text-primary bg-slate-900 focus:ring-0" /> Sales
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-widest">
+                                Description
                             </label>
-                            <label class="flex items-center gap-2 text-xs text-slate-300 hover:text-white cursor-pointer">
-                                <input type="checkbox" value="PS" class="rounded border-slate-700 text-primary bg-slate-900 focus:ring-0" /> PS
+                            <textarea
+                                id="track-description"
+                                rows="3"
+                                class="w-full px-3 py-2 bg-slate-800/50 border border-slate-700 rounded text-white focus:border-primary focus:outline-none"
+                                placeholder="Briefly describe the purpose of this learning path..."
+                            ></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-widest">
+                                Material Icon Name
                             </label>
-                            <label class="flex items-center gap-2 text-xs text-slate-300 hover:text-white cursor-pointer">
-                                <input type="checkbox" value="Marketing" class="rounded border-slate-700 text-primary bg-slate-900 focus:ring-0" /> Marketing
+                            <div class="flex gap-2">
+                                <input
+                                    type="text"
+                                    id="track-icon"
+                                    placeholder="e.g. terminal, school, business..."
+                                    class="w-full px-3 py-2 bg-slate-800/50 border border-slate-700 rounded text-white focus:border-primary focus:outline-none"
+                                />
+                                <div
+                                    class="size-10 rounded bg-slate-800 flex items-center justify-center border border-slate-700"
+                                >
+                                    <span id="icon-preview" class="material-symbols-outlined text-primary text-xl">
+                                        terminal
+                                    </span>
+                                </div>
+                            </div>
+                            <p class="text-[10px] text-slate-500 mt-1 italic">
+                                Use any
+                                <a
+                                    href="https://fonts.google.com/icons"
+                                    target="_blank"
+                                    class="text-primary hover:underline"
+                                >
+                                    Google Material Icon
+                                </a>
+                                name.
+                            </p>
+                        </div>
+                        <div id="status-container" class="hidden">
+                            <label class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-widest">
+                                Status
                             </label>
-                            <label class="flex items-center gap-2 text-xs text-slate-300 hover:text-white cursor-pointer">
-                                <input type="checkbox" value="R&D" class="rounded border-slate-700 text-primary bg-slate-900 focus:ring-0" /> R&D
-                            </label>
-                            <label class="flex items-center gap-2 text-xs text-slate-300 hover:text-white cursor-pointer">
-                                <input type="checkbox" value="Finance" class="rounded border-slate-700 text-primary bg-slate-900 focus:ring-0" /> Finance
-                            </label>
-                            <label class="flex items-center gap-2 text-xs text-slate-300 hover:text-white cursor-pointer">
-                                <input type="checkbox" value="Customer Care" class="rounded border-slate-700 text-primary bg-slate-900 focus:ring-0" /> Customer Care
-                            </label>
-                            <label class="flex items-center gap-2 text-xs text-slate-300 hover:text-white cursor-pointer">
-                                <input type="checkbox" value="IT & Security" class="rounded border-slate-700 text-primary bg-slate-900 focus:ring-0" /> IT & Security
-                            </label>
-                            <label class="flex items-center gap-2 text-xs text-slate-300 hover:text-white cursor-pointer">
-                                <input type="checkbox" value="HR" class="rounded border-slate-700 text-primary bg-slate-900 focus:ring-0" /> HR
-                            </label>
-                            <label class="flex items-center gap-2 text-xs text-slate-300 hover:text-white cursor-pointer">
-                                <input type="checkbox" value="Other" class="rounded border-slate-700 text-primary bg-slate-900 focus:ring-0" /> Other
-                            </label>
+                            <select
+                                id="track-status"
+                                class="w-full px-3 py-2 bg-slate-800/50 border border-slate-700 rounded text-white focus:border-primary focus:outline-none"
+                            >
+                                <option value="DRAFT">Draft</option>
+                                <option value="PUBLISHED">Published</option>
+                            </select>
+                        </div>
+                        <div>
+                            <div class="flex items-center justify-between mb-2">
+                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest">
+                                    Target Departments
+                                </label>
+                                <button
+                                    type="button"
+                                    onclick="toggleAllDepartments(true)"
+                                    class="text-[9px] font-bold text-primary hover:text-white uppercase tracking-tighter"
+                                >
+                                    Select All
+                                </button>
+                            </div>
+                            <div
+                                id="dept-checkboxes"
+                                class="grid grid-cols-2 gap-2 p-3 bg-slate-800/30 border border-slate-700/50 rounded-lg max-h-40 overflow-y-auto"
+                            >
+                                <!-- Checkboxes for: Sales, PS, Marketing, R&D, Finance, Customer Care, IT & Security, HR, Other -->
+                                <label
+                                    class="flex items-center gap-2 text-xs text-slate-300 hover:text-white cursor-pointer"
+                                >
+                                    <input
+                                        type="checkbox"
+                                        value="Sales"
+                                        class="rounded border-slate-700 text-primary bg-slate-900 focus:ring-0"
+                                    />
+                                    Sales
+                                </label>
+                                <label
+                                    class="flex items-center gap-2 text-xs text-slate-300 hover:text-white cursor-pointer"
+                                >
+                                    <input
+                                        type="checkbox"
+                                        value="PS"
+                                        class="rounded border-slate-700 text-primary bg-slate-900 focus:ring-0"
+                                    />
+                                    PS
+                                </label>
+                                <label
+                                    class="flex items-center gap-2 text-xs text-slate-300 hover:text-white cursor-pointer"
+                                >
+                                    <input
+                                        type="checkbox"
+                                        value="Marketing"
+                                        class="rounded border-slate-700 text-primary bg-slate-900 focus:ring-0"
+                                    />
+                                    Marketing
+                                </label>
+                                <label
+                                    class="flex items-center gap-2 text-xs text-slate-300 hover:text-white cursor-pointer"
+                                >
+                                    <input
+                                        type="checkbox"
+                                        value="R&D"
+                                        class="rounded border-slate-700 text-primary bg-slate-900 focus:ring-0"
+                                    />
+                                    R&D
+                                </label>
+                                <label
+                                    class="flex items-center gap-2 text-xs text-slate-300 hover:text-white cursor-pointer"
+                                >
+                                    <input
+                                        type="checkbox"
+                                        value="Finance"
+                                        class="rounded border-slate-700 text-primary bg-slate-900 focus:ring-0"
+                                    />
+                                    Finance
+                                </label>
+                                <label
+                                    class="flex items-center gap-2 text-xs text-slate-300 hover:text-white cursor-pointer"
+                                >
+                                    <input
+                                        type="checkbox"
+                                        value="Customer Care"
+                                        class="rounded border-slate-700 text-primary bg-slate-900 focus:ring-0"
+                                    />
+                                    Customer Care
+                                </label>
+                                <label
+                                    class="flex items-center gap-2 text-xs text-slate-300 hover:text-white cursor-pointer"
+                                >
+                                    <input
+                                        type="checkbox"
+                                        value="IT & Security"
+                                        class="rounded border-slate-700 text-primary bg-slate-900 focus:ring-0"
+                                    />
+                                    IT & Security
+                                </label>
+                                <label
+                                    class="flex items-center gap-2 text-xs text-slate-300 hover:text-white cursor-pointer"
+                                >
+                                    <input
+                                        type="checkbox"
+                                        value="HR"
+                                        class="rounded border-slate-700 text-primary bg-slate-900 focus:ring-0"
+                                    />
+                                    HR
+                                </label>
+                                <label
+                                    class="flex items-center gap-2 text-xs text-slate-300 hover:text-white cursor-pointer"
+                                >
+                                    <input
+                                        type="checkbox"
+                                        value="Other"
+                                        class="rounded border-slate-700 text-primary bg-slate-900 focus:ring-0"
+                                    />
+                                    Other
+                                </label>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="mt-8 flex justify-end gap-3">
-                    <button type="button" onclick="closeTrackModal()"
-                        class="px-4 py-2 text-sm font-bold text-slate-400 hover:text-white">
-                        Cancel
-                    </button>
-                    <button type="submit"
-                        class="px-6 py-2 text-sm font-bold bg-[#1b5ffe] text-white rounded hover:bg-blue-600 transition-colors shadow-lg shadow-blue-500/20">
-                        Save Track
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <admin-header></admin-header>
-    <div class="flex h-[calc(100vh-60px)] overflow-hidden">
-        <admin-sidebar active-page="tracks"></admin-sidebar>
-
-        <main class="flex-1 p-8 overflow-y-auto bg-background-dark">
-            <div class="max-w-6xl mx-auto">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10">
-                    <div>
-                        <h1 class="text-4xl font-extrabold text-white mb-2 font-display tracking-tight">
-                            Track Management
-                        </h1>
-                        <p class="text-slate-400 text-lg">
-                            Orchestrate learning pathways and coordinate curriculum distribution.
-                        </p>
-                    </div>
-                    <div class="mt-6 md:mt-0">
-                        <button onclick="openCreateModal()" class="btn-primary px-6 py-3 flex items-center gap-2 group">
-                            <span class="material-symbols-outlined transition-transform group-hover:rotate-90">add</span>
-                            Create New Track
+                    <div class="mt-8 flex justify-end gap-3">
+                        <button
+                            type="button"
+                            onclick="closeTrackModal()"
+                            class="px-4 py-2 text-sm font-bold text-slate-400 hover:text-white"
+                        >
+                            Cancel
+                        </button>
+                        <button
+                            type="submit"
+                            class="px-6 py-2 text-sm font-bold bg-[#1b5ffe] text-white rounded hover:bg-blue-600 transition-colors shadow-lg shadow-blue-500/20"
+                        >
+                            Save Track
                         </button>
                     </div>
-                </div>
+                </form>
+            </div>
+        </div>
 
-                <!-- Tracks Grid -->
-                <div id="tracks-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    <!-- Loading State -->
-                    <div class="col-span-full py-20 text-center">
-                        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"></div>
-                        <p class="text-slate-500 font-medium">Synchronizing learning paths...</p>
+        <admin-header></admin-header>
+        <div class="flex h-[calc(100vh-60px)] overflow-hidden">
+            <admin-sidebar active-page="tracks"></admin-sidebar>
+
+            <main class="flex-1 p-8 overflow-y-auto bg-background-dark">
+                <div class="max-w-6xl mx-auto">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10">
+                        <div>
+                            <h1 class="text-4xl font-extrabold text-white mb-2 font-display tracking-tight">
+                                Track Management
+                            </h1>
+                            <p class="text-slate-400 text-lg">
+                                Orchestrate learning pathways and coordinate curriculum distribution.
+                            </p>
+                        </div>
+                        <div class="mt-6 md:mt-0">
+                            <button
+                                onclick="openCreateModal()"
+                                class="btn-primary px-6 py-3 flex items-center gap-2 group"
+                            >
+                                <span class="material-symbols-outlined transition-transform group-hover:rotate-90">
+                                    add
+                                </span>
+                                Create New Track
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Tracks Grid -->
+                    <div id="tracks-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                        <!-- Loading State -->
+                        <div class="col-span-full py-20 text-center">
+                            <div
+                                class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"
+                            ></div>
+                            <p class="text-slate-500 font-medium">Synchronizing learning paths...</p>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </main>
-    </div>
+            </main>
+        </div>
 
-    <script>
-        async function fetchTracks() {
-            try {
-                const response = await fetch('/api/tracks', { credentials: 'include' });
-                if (response.status === 401 || response.status === 403) {
-                    window.location.href = 'login.html';
-                    return;
-                }
-                const tracks = await response.json();
-                renderTracks(tracks);
-            } catch (error) {
-                console.error('Error:', error);
-                document.getElementById('tracks-grid').innerHTML = `
+        <script>
+            async function fetchTracks() {
+                try {
+                    const response = await fetch('/api/tracks', { credentials: 'include' });
+                    if (response.status === 401 || response.status === 403) {
+                        window.location.href = 'login.html';
+                        return;
+                    }
+                    const tracks = await response.json();
+                    renderTracks(tracks);
+                } catch (error) {
+                    console.error('Error:', error);
+                    document.getElementById('tracks-grid').innerHTML = `
                     <div class="col-span-full glass-card p-10 text-center">
                         <span class="material-symbols-outlined text-red-400 text-5xl mb-4">error</span>
                         <p class="text-white font-bold text-lg">Connection Failure</p>
                         <p class="text-slate-500">Could not retrieve tracks from the server.</p>
                     </div>
                 `;
+                }
             }
-        }
 
-        function renderTracks(tracks) {
-            const grid = document.getElementById('tracks-grid');
-            if (!tracks.length) {
-                grid.innerHTML = `
+            function renderTracks(tracks) {
+                const grid = document.getElementById('tracks-grid');
+                if (!tracks.length) {
+                    grid.innerHTML = `
                     <div class="col-span-full glass-card p-10 text-center">
                         <p class="text-slate-500">No tracks have been created yet.</p>
                     </div>
                 `;
-                return;
-            }
+                    return;
+                }
 
-            grid.innerHTML = tracks.map(track => {
-                const isPublished = track.status === 'PUBLISHED';
-                const statusColor = isPublished ? 'bg-teal-500/10 text-teal-400 border-teal-500/20' : 'bg-amber-500/10 text-amber-500 border-amber-500/20';
-                const icon = track.icon || (track.name.toUpperCase().includes('TECH') ? 'terminal' : 'trending_up');
-                
-                // Extract department tags (similar to learner dashboard)
-                const depts = (track.targetDepartments || '').split(',')
-                    .map(d => d.trim())
-                    .filter(d => d && d !== 'Other');
+                grid.innerHTML = tracks
+                    .map(track => {
+                        const isPublished = track.status === 'PUBLISHED';
+                        const statusColor = isPublished
+                            ? 'bg-teal-500/10 text-teal-400 border-teal-500/20'
+                            : 'bg-amber-500/10 text-amber-500 border-amber-500/20';
+                        const icon =
+                            track.icon || (track.name.toUpperCase().includes('TECH') ? 'terminal' : 'trending_up');
 
-                const departmentTags = depts.map(dept => `
+                        // Extract department tags (similar to learner dashboard)
+                        const depts = (track.targetDepartments || '')
+                            .split(',')
+                            .map(d => d.trim())
+                            .filter(d => d && d !== 'Other');
+
+                        const departmentTags = depts
+                            .map(
+                                dept => `
                     <span class="px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 text-[9px] font-bold border border-slate-700/50 uppercase tracking-tighter">
                         ${dept}
                     </span>
-                `).join('');
+                `
+                            )
+                            .join('');
 
-                // Escape strings for safe use in JS
-                const safeName = track.name.replace(/'/g, "\\'");
-                const safeDesc = (track.description || '').replace(/'/g, "\\'").replace(/\n/g, "\\n");
-                const truncatedName = track.name.length > 40 ? track.name.substring(0, 37) + '...' : track.name;
-                
-                return `
+                        // Escape strings for safe use in JS
+                        const safeName = track.name.replace(/'/g, "\\'");
+                        const safeDesc = (track.description || '').replace(/'/g, "\\'").replace(/\n/g, '\\n');
+                        const truncatedName = track.name.length > 40 ? track.name.substring(0, 37) + '...' : track.name;
+
+                        return `
                 <div class="glass-card flex flex-col group p-4 hover:border-primary/40 transition-all duration-300">
                     <div class="flex justify-between items-start mb-4">
                         <div class="w-10 h-10 rounded-xl bg-slate-800/80 flex items-center justify-center text-primary border border-slate-700 group-hover:bg-primary group-hover:text-white transition-all">
@@ -228,138 +365,148 @@
                     </div>
                 </div>
                 `;
-            }).join('');
-        }
+                    })
+                    .join('');
+            }
 
-        function openCreateModal() {
-            document.getElementById('trackForm').reset();
-            document.getElementById('track-id').value = '';
-            document.getElementById('track-icon').value = 'terminal';
-            document.getElementById('icon-preview').textContent = 'terminal';
-            // Clear checkboxes
-            document.querySelectorAll('#dept-checkboxes input').forEach(cb => cb.checked = false);
-            document.getElementById('modalTitle').innerText = 'Create New Track';
-            document.getElementById('status-container').classList.add('hidden');
-            document.getElementById('trackModal').classList.remove('hidden');
-        }
+            function openCreateModal() {
+                document.getElementById('trackForm').reset();
+                document.getElementById('track-id').value = '';
+                document.getElementById('track-icon').value = 'terminal';
+                document.getElementById('icon-preview').textContent = 'terminal';
+                // Clear checkboxes
+                document.querySelectorAll('#dept-checkboxes input').forEach(cb => (cb.checked = false));
+                document.getElementById('modalTitle').innerText = 'Create New Track';
+                document.getElementById('status-container').classList.add('hidden');
+                document.getElementById('trackModal').classList.remove('hidden');
+            }
 
-        function openEditMetadataModal(id, name, description, status, icon, targetDepartments) {
-            document.getElementById('track-id').value = id;
-            document.getElementById('track-name').value = name;
-            document.getElementById('track-description').value = description;
-            document.getElementById('track-status').value = status;
-            document.getElementById('track-icon').value = icon || 'terminal';
-            document.getElementById('icon-preview').textContent = icon || 'terminal';
-            
-            // Set checkboxes based on targetDepartments (comma separated string)
-            const depts = (targetDepartments || '').split(',').map(d => d.trim());
-            document.querySelectorAll('#dept-checkboxes input').forEach(cb => {
-                cb.checked = depts.includes(cb.value);
-            });
-            
-            document.getElementById('modalTitle').innerText = 'Edit Track Metadata';
-            document.getElementById('status-container').classList.remove('hidden');
-            document.getElementById('trackModal').classList.remove('hidden');
-        }
+            function openEditMetadataModal(id, name, description, status, icon, targetDepartments) {
+                document.getElementById('track-id').value = id;
+                document.getElementById('track-name').value = name;
+                document.getElementById('track-description').value = description;
+                document.getElementById('track-status').value = status;
+                document.getElementById('track-icon').value = icon || 'terminal';
+                document.getElementById('icon-preview').textContent = icon || 'terminal';
 
-        function closeTrackModal() {
-            document.getElementById('trackModal').classList.add('hidden');
-        }
+                // Set checkboxes based on targetDepartments (comma separated string)
+                const depts = (targetDepartments || '').split(',').map(d => d.trim());
+                document.querySelectorAll('#dept-checkboxes input').forEach(cb => {
+                    cb.checked = depts.includes(cb.value);
+                });
 
-         async function submitTrackForm(e) {
-            e.preventDefault();
-            const id = document.getElementById('track-id').value;
-            const payload = {
-                name: document.getElementById('track-name').value,
-                description: document.getElementById('track-description').value,
-                status: document.getElementById('track-status').value,
-                icon: document.getElementById('track-icon').value,
-                targetDepartments: Array.from(document.querySelectorAll('#dept-checkboxes input:checked')).map(cb => cb.value).join(',')
+                document.getElementById('modalTitle').innerText = 'Edit Track Metadata';
+                document.getElementById('status-container').classList.remove('hidden');
+                document.getElementById('trackModal').classList.remove('hidden');
+            }
+
+            function closeTrackModal() {
+                document.getElementById('trackModal').classList.add('hidden');
+            }
+
+            window.toggleAllDepartments = checked => {
+                document.querySelectorAll('#dept-checkboxes input').forEach(cb => (cb.checked = checked));
             };
-            console.log('Submitting track form payload:', payload);
 
-            const url = id ? `/api/tracks/${id}` : '/api/tracks';
-            const method = id ? 'PUT' : 'POST';
+            async function submitTrackForm(e) {
+                e.preventDefault();
+                const id = document.getElementById('track-id').value;
+                const payload = {
+                    name: document.getElementById('track-name').value,
+                    description: document.getElementById('track-description').value,
+                    status: document.getElementById('track-status').value,
+                    icon: document.getElementById('track-icon').value,
+                    targetDepartments: Array.from(document.querySelectorAll('#dept-checkboxes input:checked'))
+                        .map(cb => cb.value)
+                        .join(',')
+                };
+                console.log('Submitting track form payload:', payload);
 
-            try {
-                const response = await fetch(url, {
-                    method: method,
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify(payload)
-                });
+                const url = id ? `/api/tracks/${id}` : '/api/tracks';
+                const method = id ? 'PUT' : 'POST';
 
-                if (response.ok) {
-                    closeTrackModal();
-                    fetchTracks();
-                } else if (response.status === 409) {
-                    const data = await response.json();
-                    alert(data.error || 'A track with this name already exists.');
-                } else {
-                    const data = await response.json();
-                    alert(data.error || 'Operation failed');
+                try {
+                    const response = await fetch(url, {
+                        method: method,
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (response.ok) {
+                        closeTrackModal();
+                        fetchTracks();
+                    } else if (response.status === 409) {
+                        const data = await response.json();
+                        alert(data.error || 'A track with this name already exists.');
+                    } else {
+                        const data = await response.json();
+                        alert(data.error || 'Operation failed');
+                    }
+                } catch (err) {
+                    console.error(err);
+                    alert('Network error');
                 }
-            } catch (err) {
-                console.error(err);
-                alert('Network error');
-            }
-        }
-
-        async function deleteTrack(id, name, status) {
-            if (status === 'PUBLISHED') {
-                alert(`Cannot delete "${name}" because it is currently published. Please set it to DRAFT in the metadata settings before deleting.`);
-                return;
             }
 
-            const modal = document.querySelector('ai-confirm-modal');
-            if (modal) {
-                const confirmed = await modal.show({
-                    title: 'Delete Track',
-                    message: `Are you sure you want to delete "${name}"? This action is permanent and will delete all associated modules.`,
-                    confirmText: 'Delete Track',
-                    type: 'danger'
-                });
+            async function deleteTrack(id, name, status) {
+                if (status === 'PUBLISHED') {
+                    alert(
+                        `Cannot delete "${name}" because it is currently published. Please set it to DRAFT in the metadata settings before deleting.`
+                    );
+                    return;
+                }
 
-                if (confirmed) {
-                    try {
-                        const response = await fetch(`/api/tracks/${id}`, { 
-                            method: 'DELETE',
-                            credentials: 'include'
-                        });
-                        if (response.ok) {
-                            fetchTracks();
-                        } else {
-                            const data = await response.json();
-                            alert(data.error || 'Failed to delete track');
+                const modal = document.querySelector('ai-confirm-modal');
+                if (modal) {
+                    const confirmed = await modal.show({
+                        title: 'Delete Track',
+                        message: `Are you sure you want to delete "${name}"? This action is permanent and will delete all associated modules.`,
+                        confirmText: 'Delete Track',
+                        type: 'danger'
+                    });
+
+                    if (confirmed) {
+                        try {
+                            const response = await fetch(`/api/tracks/${id}`, {
+                                method: 'DELETE',
+                                credentials: 'include'
+                            });
+                            if (response.ok) {
+                                fetchTracks();
+                            } else {
+                                const data = await response.json();
+                                alert(data.error || 'Failed to delete track');
+                            }
+                        } catch (err) {
+                            console.error('Error:', err);
                         }
-                    } catch (err) {
-                        console.error('Error:', err);
                     }
                 }
             }
-        }
 
-        function previewTrack(id, name, slug) {
-            const targetPage = name.toUpperCase().includes('TECHNICAL') ? 'learning-track-technical.html' : 'learning-track-business.html';
-            const identifier = slug ? `slug=${slug}` : `id=${id}`;
-            window.location.href = `${targetPage}?${identifier}&preview=true`;
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            fetchTracks();
-            
-            // Icon preview listener
-            const iconInput = document.getElementById('track-icon');
-            const iconPreview = document.getElementById('icon-preview');
-            if (iconInput && iconPreview) {
-                iconInput.addEventListener('input', (e) => {
-                    iconPreview.textContent = e.target.value.trim() || 'question_mark';
-                });
+            function previewTrack(id, name, slug) {
+                const targetPage = name.toUpperCase().includes('TECHNICAL')
+                    ? 'learning-track-technical.html'
+                    : 'learning-track-business.html';
+                const identifier = slug ? `slug=${slug}` : `id=${id}`;
+                window.location.href = `${targetPage}?${identifier}&preview=true`;
             }
-        });
-    </script>
-    <ai-confirm-modal></ai-confirm-modal>
-    <ai-profile-modal></ai-profile-modal>
-</body>
 
+            document.addEventListener('DOMContentLoaded', () => {
+                fetchTracks();
+
+                // Icon preview listener
+                const iconInput = document.getElementById('track-icon');
+                const iconPreview = document.getElementById('icon-preview');
+                if (iconInput && iconPreview) {
+                    iconInput.addEventListener('input', e => {
+                        iconPreview.textContent = e.target.value.trim() || 'question_mark';
+                    });
+                }
+            });
+        </script>
+        <ai-confirm-modal></ai-confirm-modal>
+        <ai-profile-modal></ai-profile-modal>
+    </body>
 </html>

@@ -41,16 +41,20 @@ router.get('/', verifyToken, verifyAdmin, async (req, res) => {
             const trackProgressDetails = emp.tracks.map(track => {
                 const trackModuleIds = track.modules.map(m => m.id);
                 const totalModules = trackModuleIds.length;
-                const completedInTrack = emp.enrollments.filter(e => e.completed && trackModuleIds.includes(e.moduleId)).length;
-                
+                const completedInTrack = emp.enrollments.filter(
+                    e => e.completed && trackModuleIds.includes(e.moduleId)
+                ).length;
+
                 totalModulesGlobal += totalModules;
                 totalCompletedGlobal += completedInTrack;
 
                 const progress = totalModules > 0 ? Math.round((completedInTrack / totalModules) * 100) : 0;
-                
+
                 const quizModules = track.modules.filter(m => m.type === 'QUIZ');
                 const quizTotal = quizModules.length;
-                const quizCompleted = emp.enrollments.filter(e => e.completed && e.module && e.module.trackId === track.id && e.module.type === 'QUIZ').length;
+                const quizCompleted = emp.enrollments.filter(
+                    e => e.completed && e.module && e.module.trackId === track.id && e.module.type === 'QUIZ'
+                ).length;
 
                 return {
                     id: track.id,
@@ -61,10 +65,9 @@ router.get('/', verifyToken, verifyAdmin, async (req, res) => {
                 };
             });
 
-            const globalProgress = totalModulesGlobal > 0
-                ? Math.round((totalCompletedGlobal / totalModulesGlobal) * 100)
-                : 0;
-            
+            const globalProgress =
+                totalModulesGlobal > 0 ? Math.round((totalCompletedGlobal / totalModulesGlobal) * 100) : 0;
+
             const totalQuizTotal = trackProgressDetails.reduce((acc, t) => acc + t.quizTotal, 0);
             const totalQuizCompleted = trackProgressDetails.reduce((acc, t) => acc + t.quizCompleted, 0);
 
@@ -88,24 +91,28 @@ router.get('/', verifyToken, verifyAdmin, async (req, res) => {
         const allLearners = allData.filter(emp => emp.role === 'LEARNER' && emp.tracks.length > 0);
         const stats = {
             totalLearners: allLearners.length,
-            avgProgression: allLearners.length > 0 
-                ? Math.round(allLearners.reduce((acc, curr) => acc + curr.progress, 0) / allLearners.length) 
-                : 0,
+            avgProgression:
+                allLearners.length > 0
+                    ? Math.round(allLearners.reduce((acc, curr) => acc + curr.progress, 0) / allLearners.length)
+                    : 0,
             avgPassRate: 0
         };
 
         const learnedWithQuizzes = allLearners.filter(l => l.quizTotal > 0);
         if (learnedWithQuizzes.length > 0) {
-            stats.avgPassRate = Math.round(learnedWithQuizzes.reduce((acc, curr) => acc + (curr.quizCompleted / curr.quizTotal), 0) / learnedWithQuizzes.length * 100);
+            stats.avgPassRate = Math.round(
+                (learnedWithQuizzes.reduce((acc, curr) => acc + curr.quizCompleted / curr.quizTotal, 0) /
+                    learnedWithQuizzes.length) *
+                    100
+            );
         }
 
         // 2. Apply filtering
         let filteredData = allData;
         if (search) {
             const s = search.toLowerCase();
-            filteredData = filteredData.filter(emp => 
-                emp.name.toLowerCase().includes(s) || 
-                emp.email.toLowerCase().includes(s)
+            filteredData = filteredData.filter(
+                emp => emp.name.toLowerCase().includes(s) || emp.email.toLowerCase().includes(s)
             );
         }
         if (trackId && trackId !== 'ALL') {
@@ -118,7 +125,7 @@ router.get('/', verifyToken, verifyAdmin, async (req, res) => {
         const startIndex = (pageNum - 1) * limitNum;
         const paginatedData = filteredData.slice(startIndex, startIndex + limitNum);
 
-        res.json({ 
+        res.json({
             employees: paginatedData,
             stats,
             pagination: {
@@ -181,9 +188,12 @@ router.post('/', verifyToken, verifyAdmin, async (req, res) => {
                 email,
                 passwordHash,
                 role: role || 'LEARNER',
-                tracks: trackIds && Array.isArray(trackIds) ? {
-                    connect: trackIds.map(id => ({ id }))
-                } : undefined,
+                tracks:
+                    trackIds && Array.isArray(trackIds)
+                        ? {
+                              connect: trackIds.map(id => ({ id }))
+                          }
+                        : undefined,
                 department: department || 'Other'
             }
         });
@@ -194,7 +204,7 @@ router.post('/', verifyToken, verifyAdmin, async (req, res) => {
                 const tracks = await prisma.track.findMany({
                     where: { id: { in: trackIds }, status: 'PUBLISHED' }
                 });
-                
+
                 if (tracks.length > 0) {
                     await prisma.notification.createMany({
                         data: tracks.map(t => ({
@@ -320,12 +330,43 @@ router.post('/bulk', verifyToken, verifyAdmin, async (req, res) => {
 
 // PUT /api/users/:id - Update an employee (Admin only)
 router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
+    const fs = require('fs');
+    const logFile = 'server_debug.log';
+    const log = msg => {
+        try {
+            fs.appendFileSync(logFile, `[${new Date().toISOString()}] UPDATE USER ${req.params.id}: ${msg}\n`);
+        } catch (e) {}
+        console.log(`[UPDATE USER ${req.params.id}]: ${msg}`);
+    };
+
     try {
         const { id } = req.params;
         const { firstName, lastName, email, trackIds, role, department, password } = req.body;
 
+        log(
+            `Payload received: ${JSON.stringify({ firstName, lastName, email, role, department, trackIds, hasPassword: !!password })}`
+        );
+
+        // Basic validation for required fields
+        if (!firstName || !lastName || !email) {
+            log('Validation failed: Missing required fields');
+            return res.status(400).json({ error: 'First name, last name, and email are required.' });
+        }
+
+        const emailVal = validateEmail(email);
+        if (!emailVal.isValid) {
+            log(`Validation failed: ${emailVal.error}`);
+            return res.status(400).json({ error: emailVal.error });
+        }
+
         let passwordHash = undefined;
-        if (password) {
+        if (password && password.trim() !== '') {
+            log('Hashing new password...');
+            const passVal = validatePassword(password);
+            if (!passVal.isValid) {
+                log(`Validation failed: ${passVal.error}`);
+                return res.status(400).json({ error: passVal.error });
+            }
             const salt = await bcrypt.genSalt(10);
             passwordHash = await bcrypt.hash(password, salt);
         }
@@ -335,6 +376,12 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
             include: { tracks: { select: { id: true } } }
         });
 
+        if (!oldUser) {
+            log('Error: User not found in database');
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        log('Executing database update...');
         const updatedUser = await prisma.user.update({
             where: { id },
             data: {
@@ -343,9 +390,12 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
                 email,
                 role,
                 passwordHash,
-                tracks: trackIds && Array.isArray(trackIds) ? {
-                    set: trackIds.map(id => ({ id }))
-                } : undefined,
+                tracks:
+                    trackIds && Array.isArray(trackIds)
+                        ? {
+                              set: trackIds.map(id => ({ id }))
+                          }
+                        : undefined,
                 department: department
             }
         });
@@ -362,6 +412,7 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
                     });
 
                     if (tracks.length > 0) {
+                        log(`Creating ${tracks.length} track assignment notifications...`);
                         await prisma.notification.createMany({
                             data: tracks.map(t => ({
                                 userId: updatedUser.id,
@@ -373,15 +424,18 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
                     }
                 }
             } catch (err) {
+                log(`Error creating update notifications (non-fatal): ${err.message}`);
                 console.error('Error creating update notifications:', err);
             }
         }
         // --- END NOTIFICATION LOGIC ---
 
+        log('Update successful');
         res.json({ user: updatedUser });
     } catch (error) {
+        log(`CRITICAL ERROR: ${error.message} \nStack: ${error.stack}`);
         console.error('Update employee error:', error);
-        res.status(500).json({ error: 'Failed to update employee' });
+        res.status(500).json({ error: 'Failed to update user', details: error.message });
     }
 });
 
@@ -389,8 +443,10 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
 router.delete('/bulk', verifyToken, verifyAdmin, async (req, res) => {
     const fs = require('fs');
     const logFile = 'server_debug.log';
-    const log = (msg) => {
-        try { fs.appendFileSync(logFile, `[${new Date().toISOString()}] BULK DELETE: ${msg}\n`); } catch(e) {}
+    const log = msg => {
+        try {
+            fs.appendFileSync(logFile, `[${new Date().toISOString()}] BULK DELETE: ${msg}\n`);
+        } catch (e) {}
         console.log(`[BULK DELETE]: ${msg}`);
     };
 
@@ -406,7 +462,7 @@ router.delete('/bulk', verifyToken, verifyAdmin, async (req, res) => {
 
         // Prevent self-deletion in bulk
         const filteredIds = ids.filter(id => id !== currentUserId);
-        
+
         if (filteredIds.length === 0) {
             return res.status(400).json({ error: 'You cannot delete yourself.' });
         }
@@ -421,8 +477,8 @@ router.delete('/bulk', verifyToken, verifyAdmin, async (req, res) => {
 
         if (adminsInSelection.length > 0) {
             const adminNames = adminsInSelection.map(a => `${a.firstName} ${a.lastName}`).join(', ');
-            return res.status(400).json({ 
-                error: `Administrators cannot be deleted. Please change their role to Learner first. (Admin found: ${adminNames})` 
+            return res.status(400).json({
+                error: `Administrators cannot be deleted. Please change their role to Learner first. (Admin found: ${adminNames})`
             });
         }
 
@@ -438,10 +494,10 @@ router.delete('/bulk', verifyToken, verifyAdmin, async (req, res) => {
         });
 
         log(`Successfully deleted ${deleteResult.count} users`);
-        res.json({ 
-            message: 'Employees deleted successfully', 
+        res.json({
+            message: 'Employees deleted successfully',
             count: deleteResult.count,
-            selfDeletedBlocked: filteredIds.length !== ids.length 
+            selfDeletedBlocked: filteredIds.length !== ids.length
         });
     } catch (error) {
         log(`ERROR: ${error.message}`);
@@ -453,8 +509,10 @@ router.delete('/bulk', verifyToken, verifyAdmin, async (req, res) => {
 router.delete('/:id', verifyToken, verifyAdmin, async (req, res) => {
     const fs = require('fs');
     const logFile = 'server_debug.log';
-    const log = (msg) => {
-        try { fs.appendFileSync(logFile, `[${new Date().toISOString()}] DELETE: ${msg}\n`); } catch(e) {}
+    const log = msg => {
+        try {
+            fs.appendFileSync(logFile, `[${new Date().toISOString()}] DELETE: ${msg}\n`);
+        } catch (e) {}
         console.log(`[DELETE]: ${msg}`);
     };
 
@@ -479,7 +537,9 @@ router.delete('/:id', verifyToken, verifyAdmin, async (req, res) => {
         }
 
         if (userToDelete.role === 'ADMIN') {
-            return res.status(400).json({ error: 'Administrators cannot be deleted. Please change their role to Learner first.' });
+            return res
+                .status(400)
+                .json({ error: 'Administrators cannot be deleted. Please change their role to Learner first.' });
         }
 
         // Manual Cascade
@@ -527,11 +587,11 @@ router.put('/profile', verifyToken, async (req, res) => {
 
         // Re-issue JWT with updated info
         const newToken = jwt.sign(
-            { 
-                id: updatedUser.id, 
-                email: updatedUser.email, 
-                role: updatedUser.role, 
-                firstName: updatedUser.firstName, 
+            {
+                id: updatedUser.id,
+                email: updatedUser.email,
+                role: updatedUser.role,
+                firstName: updatedUser.firstName,
                 lastName: updatedUser.lastName,
                 department: updatedUser.department
             },
@@ -546,8 +606,8 @@ router.put('/profile', verifyToken, async (req, res) => {
             maxAge: 24 * 60 * 60 * 1000 // 24 hours
         });
 
-        res.json({ 
-            message: 'Profile updated successfully', 
+        res.json({
+            message: 'Profile updated successfully',
             user: {
                 id: updatedUser.id,
                 email: updatedUser.email,

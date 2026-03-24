@@ -115,17 +115,17 @@ class AiFileStore {
         if (this.db) return this.db;
         return new Promise((resolve, reject) => {
             const request = indexedDB.open(this.dbName, 1);
-            request.onupgradeneeded = (e) => {
+            request.onupgradeneeded = e => {
                 const db = e.target.result;
                 if (!db.objectStoreNames.contains(this.storeName)) {
                     db.createObjectStore(this.storeName);
                 }
             };
-            request.onsuccess = (e) => {
+            request.onsuccess = e => {
                 this.db = e.target.result;
                 resolve(this.db);
             };
-            request.onerror = (e) => reject(e.target.error);
+            request.onerror = e => reject(e.target.error);
         });
     }
 
@@ -136,7 +136,7 @@ class AiFileStore {
             const store = transaction.objectStore(this.storeName);
             const request = store.put(file, id);
             request.onsuccess = () => resolve();
-            request.onerror = (e) => reject(e.target.error);
+            request.onerror = e => reject(e.target.error);
         });
     }
 
@@ -147,7 +147,7 @@ class AiFileStore {
             const store = transaction.objectStore(this.storeName);
             const request = store.get(id);
             request.onsuccess = () => resolve(request.result);
-            request.onerror = (e) => reject(e.target.error);
+            request.onerror = e => reject(e.target.error);
         });
     }
 
@@ -158,7 +158,7 @@ class AiFileStore {
             const store = transaction.objectStore(this.storeName);
             const request = store.delete(id);
             request.onsuccess = () => resolve();
-            request.onerror = (e) => reject(e.target.error);
+            request.onerror = e => reject(e.target.error);
         });
     }
 }
@@ -180,20 +180,20 @@ async function handleLogout() {
 }
 window.handleLogout = handleLogout;
 
-window.getInitials = (name) => {
+window.getInitials = name => {
     if (!name || typeof name !== 'string') return '??';
     const trimmed = name.trim();
     if (!trimmed) return '??';
-    
+
     // Split by any whitespace
     const parts = trimmed.split(/\s+/).filter(p => p.length > 0);
-    
+
     if (parts.length > 1) {
         const first = parts[0][0];
         const last = parts[parts.length - 1][0];
         return (first + last).toUpperCase();
     }
-    
+
     // Single word fallback
     if (trimmed.length >= 2) {
         return trimmed.substring(0, 2).toUpperCase();
@@ -261,16 +261,16 @@ class LearnerHeader extends HTMLElement {
     setupDropdown() {
         const toggleBtn = this.querySelector('.profile-toggle-btn');
         const menu = this.querySelector('.profile-menu');
-        
+
         if (toggleBtn && menu) {
-            toggleBtn.addEventListener('click', (e) => {
+            toggleBtn.addEventListener('click', e => {
                 e.stopPropagation();
                 menu.classList.toggle('show');
                 // Close other menus
                 const notifMenu = this.querySelector('.notifications-menu');
                 if (notifMenu) notifMenu.classList.remove('show');
             });
-            
+
             const editBtn = this.querySelector('.edit-profile-btn');
             if (editBtn) {
                 editBtn.addEventListener('click', () => {
@@ -289,7 +289,7 @@ class LearnerHeader extends HTMLElement {
         const notifMenu = this.querySelector('.notifications-menu');
 
         if (notifBtn && notifMenu) {
-            notifBtn.addEventListener('click', (e) => {
+            notifBtn.addEventListener('click', e => {
                 e.stopPropagation();
                 notifMenu.classList.toggle('show');
                 // Close other menus
@@ -308,7 +308,7 @@ class LearnerHeader extends HTMLElement {
 
             const readAllBtn = this.querySelector('.read-all-btn');
             if (readAllBtn) {
-                readAllBtn.addEventListener('click', async (e) => {
+                readAllBtn.addEventListener('click', async e => {
                     e.stopPropagation();
                     await this.markAllAsRead();
                 });
@@ -320,7 +320,7 @@ class LearnerHeader extends HTMLElement {
         const roleEl = this.querySelector('#dropdown-user-role');
         const storedName = sessionStorage.getItem('userName');
         const storedRole = sessionStorage.getItem('userRole');
-        
+
         if (nameEl && storedName) {
             nameEl.textContent = storedName;
             const initialsEl = this.querySelector('.profile-initials-display');
@@ -382,7 +382,9 @@ class LearnerHeader extends HTMLElement {
                 if (data.notifications.length === 0) {
                     list.innerHTML = '<div class="notifications-empty">No notifications yet</div>';
                 } else {
-                    list.innerHTML = data.notifications.map(n => `
+                    list.innerHTML = data.notifications
+                        .map(
+                            n => `
                         <div class="notification-item ${n.read ? '' : 'unread'}" data-id="${n.id}">
                             <div class="flex justify-between items-start">
                                 <div class="time">${new Date(n.createdAt).toLocaleTimeString()} · ${new Date(n.createdAt).toLocaleDateString()}</div>
@@ -393,11 +395,13 @@ class LearnerHeader extends HTMLElement {
                             <div class="title">${n.title}</div>
                             <div class="message">${n.message}</div>
                         </div>
-                    `).join('');
+                    `
+                        )
+                        .join('');
 
                     // Add click listeners to items
                     list.querySelectorAll('.notification-item').forEach(item => {
-                        item.addEventListener('click', async (e) => {
+                        item.addEventListener('click', async e => {
                             e.stopPropagation();
                             const id = item.dataset.id;
                             await this.markAsRead(id);
@@ -407,7 +411,7 @@ class LearnerHeader extends HTMLElement {
                         // Add click listener to delete button
                         const deleteBtn = item.querySelector('.delete-notification-btn');
                         if (deleteBtn) {
-                            deleteBtn.addEventListener('click', async (e) => {
+                            deleteBtn.addEventListener('click', async e => {
                                 e.stopPropagation();
                                 console.log('[LearnerHeader] Deleting notification:', item.dataset.id);
                                 const id = item.dataset.id;
@@ -515,7 +519,7 @@ class AdminHeader extends HTMLElement {
     setupMobileToggle() {
         const toggleBtn = this.querySelector('#mobile-menu-toggle');
         if (toggleBtn) {
-            toggleBtn.addEventListener('click', (e) => {
+            toggleBtn.addEventListener('click', e => {
                 e.stopPropagation();
                 const sidebar = document.querySelector('admin-sidebar');
                 if (sidebar) sidebar.toggleMobile();
@@ -526,9 +530,9 @@ class AdminHeader extends HTMLElement {
     setupDropdown() {
         const toggleBtn = this.querySelector('.profile-toggle-btn');
         const menu = this.querySelector('.profile-menu');
-        
+
         if (toggleBtn && menu) {
-            toggleBtn.addEventListener('click', (e) => {
+            toggleBtn.addEventListener('click', e => {
                 e.stopPropagation();
                 menu.classList.toggle('show');
                 const notifMenu = this.querySelector('.notifications-menu');
@@ -542,7 +546,7 @@ class AdminHeader extends HTMLElement {
                     if (profileModal) profileModal.show();
                 });
             }
-            
+
             document.addEventListener('click', () => {
                 menu.classList.remove('show');
             });
@@ -552,7 +556,7 @@ class AdminHeader extends HTMLElement {
         const notifBtn = this.querySelector('.notifications-toggle-btn');
         const notifMenu = this.querySelector('.notifications-menu');
         if (notifBtn && notifMenu) {
-            notifBtn.addEventListener('click', (e) => {
+            notifBtn.addEventListener('click', e => {
                 e.stopPropagation();
                 notifMenu.classList.toggle('show');
                 const adminMenu = this.querySelector('.profile-menu');
@@ -567,7 +571,7 @@ class AdminHeader extends HTMLElement {
 
             const readAllBtn = this.querySelector('.read-all-btn');
             if (readAllBtn) {
-                readAllBtn.addEventListener('click', async (e) => {
+                readAllBtn.addEventListener('click', async e => {
                     e.stopPropagation();
                     await this.markAllAsRead();
                 });
@@ -579,7 +583,7 @@ class AdminHeader extends HTMLElement {
         const roleEl = this.querySelector('#admin-dropdown-role');
         const storedName = sessionStorage.getItem('userName');
         const storedRole = sessionStorage.getItem('userRole');
-        
+
         if (nameEl && storedName) {
             nameEl.textContent = storedName;
             const initialsEl = this.querySelector('.profile-initials-display');
@@ -603,7 +607,9 @@ class AdminHeader extends HTMLElement {
                     else dot.classList.remove('show');
                 }
             }
-        } catch (err) { console.error('Admin Fetch count error:', err); }
+        } catch (err) {
+            console.error('Admin Fetch count error:', err);
+        }
     }
 
     async fetchNotificationsList() {
@@ -616,7 +622,9 @@ class AdminHeader extends HTMLElement {
                 if (data.notifications.length === 0) {
                     list.innerHTML = '<div class="notifications-empty">No notifications yet</div>';
                 } else {
-                    list.innerHTML = data.notifications.map(n => `
+                    list.innerHTML = data.notifications
+                        .map(
+                            n => `
                         <div class="notification-item ${n.read ? '' : 'unread'}" data-id="${n.id}">
                             <div class="flex justify-between items-start">
                                 <div class="time">${new Date(n.createdAt).toLocaleTimeString()} · ${new Date(n.createdAt).toLocaleDateString()}</div>
@@ -627,10 +635,12 @@ class AdminHeader extends HTMLElement {
                             <div class="title">${n.title}</div>
                             <div class="message">${n.message}</div>
                         </div>
-                    `).join('');
+                    `
+                        )
+                        .join('');
 
                     list.querySelectorAll('.notification-item').forEach(item => {
-                        item.addEventListener('click', async (e) => {
+                        item.addEventListener('click', async e => {
                             e.stopPropagation();
                             const id = item.dataset.id;
                             await this.markAsRead(id);
@@ -638,7 +648,7 @@ class AdminHeader extends HTMLElement {
                         });
                         const deleteBtn = item.querySelector('.delete-notification-btn');
                         if (deleteBtn) {
-                            deleteBtn.addEventListener('click', async (e) => {
+                            deleteBtn.addEventListener('click', async e => {
                                 e.stopPropagation();
                                 console.log('[AdminHeader] Deleting notification:', item.dataset.id);
                                 await this.deleteNotification(item.dataset.id);
@@ -660,14 +670,18 @@ class AdminHeader extends HTMLElement {
                 this.fetchNotificationsCount();
                 this.fetchNotificationsList();
             }
-        } catch (err) { console.error('Admin Delete error:', err); }
+        } catch (err) {
+            console.error('Admin Delete error:', err);
+        }
     }
 
     async markAsRead(id) {
         try {
             await fetch(`/api/notifications/${id}/read`, { method: 'PATCH', credentials: 'include' });
             this.fetchNotificationsCount();
-        } catch (err) { console.error('Admin Mark as read error:', err); }
+        } catch (err) {
+            console.error('Admin Mark as read error:', err);
+        }
     }
 
     async markAllAsRead() {
@@ -677,7 +691,9 @@ class AdminHeader extends HTMLElement {
                 this.fetchNotificationsCount();
                 this.fetchNotificationsList();
             }
-        } catch (err) { console.error('Admin Mark all read error:', err); }
+        } catch (err) {
+            console.error('Admin Mark all read error:', err);
+        }
     }
 }
 
@@ -702,7 +718,7 @@ class AdminSidebar extends HTMLElement {
     connectedCallback() {
         this.classList.add('flex', 'flex-col', 'h-full', 'shrink-0');
         this.render();
-        
+
         // Handle window resize
         window.addEventListener('resize', () => {
             if (window.innerWidth >= 1024 && this.isMobileOpen) {
@@ -712,7 +728,7 @@ class AdminSidebar extends HTMLElement {
         });
 
         // Close mobile menu on click outside
-        document.addEventListener('click', (e) => {
+        document.addEventListener('click', e => {
             if (this.isMobileOpen && !this.contains(e.target)) {
                 this.isMobileOpen = false;
                 this.render();
@@ -722,17 +738,18 @@ class AdminSidebar extends HTMLElement {
 
     render() {
         const activePage = this.getAttribute('active-page') || 'dashboard';
-        
+
         // Update host classes
         this.classList.toggle('sidebar-collapsed', this.isCollapsed);
-        
+
         const collapsedClass = this.isCollapsed ? 'sidebar-collapsed' : '';
         const mobileClass = this.isMobileOpen ? 'mobile-open' : '';
-        
+
         const getLinkClasses = page => {
-            const base = page === activePage 
-                ? 'bg-[#1b5ffe]/10 border border-[#1b5ffe]/20 text-[#1b5ffe] font-semibold' 
-                : 'text-slate-400 hover:bg-slate-800 font-medium';
+            const base =
+                page === activePage
+                    ? 'bg-[#1b5ffe]/10 border border-[#1b5ffe]/20 text-[#1b5ffe] font-semibold'
+                    : 'text-slate-400 hover:bg-slate-800 font-medium';
             return `flex items-center ${this.isCollapsed ? 'justify-center' : 'gap-4 px-4'} py-3 rounded-lg text-sm transition-all duration-200 ${base}`;
         };
 
@@ -858,19 +875,19 @@ class AdminSidebar extends HTMLElement {
 
     setupEventListeners() {
         // Sidebar Toggle (Desktop Collapse)
-        this.querySelector('#sidebar-toggle')?.addEventListener('click', (e) => {
+        this.querySelector('#sidebar-toggle')?.addEventListener('click', e => {
             e.stopPropagation();
             this.toggleCollapse();
         });
 
         // Mobile Close Button
-        this.querySelector('#mobile-close')?.addEventListener('click', (e) => {
+        this.querySelector('#mobile-close')?.addEventListener('click', e => {
             e.stopPropagation();
             this.toggleMobile();
         });
 
         // Overlay Close Click
-        this.querySelector('.mobile-overlay')?.addEventListener('click', (e) => {
+        this.querySelector('.mobile-overlay')?.addEventListener('click', e => {
             e.stopPropagation();
             this.toggleMobile();
         });
@@ -882,7 +899,7 @@ class AdminSidebar extends HTMLElement {
         const avatarEl = this.querySelector('.sidebar-avatar');
         const storedName = sessionStorage.getItem('userName');
         const storedRole = sessionStorage.getItem('userRole');
-        
+
         if (nameEl && storedName) {
             nameEl.textContent = storedName;
             if (avatarEl) {
@@ -925,7 +942,7 @@ class AiModule extends HTMLElement {
                 <!-- Module Header -->
                 <div class="p-5 flex items-center justify-between bg-slate-900/60 border-b border-slate-800">
                     <div class="flex items-center gap-4">
-                        <div class="drag-handle text-slate-600 hover:text-slate-400 transition-colors cursor-pointer ${(sessionStorage.getItem('userRole') === 'ADMIN' && !window.location.search.includes('preview=true')) ? '' : 'hidden'}">
+                        <div class="drag-handle text-slate-600 hover:text-slate-400 transition-colors cursor-pointer ${sessionStorage.getItem('userRole') === 'ADMIN' && !window.location.search.includes('preview=true') ? '' : 'hidden'}">
                             <span class="material-symbols-outlined">drag_indicator</span>
                         </div>
                         <div>
@@ -949,7 +966,7 @@ class AiModule extends HTMLElement {
                                 expand_less
                             </span>
                         </button>
-                        <div class="relative module-options-container ${(sessionStorage.getItem('userRole') === 'ADMIN' && !window.location.search.includes('preview=true')) ? '' : 'hidden'}">
+                        <div class="relative module-options-container ${sessionStorage.getItem('userRole') === 'ADMIN' && !window.location.search.includes('preview=true') ? '' : 'hidden'}">
                             <button class="p-2 hover:bg-slate-800 rounded text-slate-400 hover:text-white transition-colors more-options-btn" title="Options">
                                 <span class="material-symbols-outlined text-xl">more_vert</span>
                             </button>
@@ -976,7 +993,7 @@ class AiModule extends HTMLElement {
                 </div>
                 
                 <!-- Insert Content Button built into the module -->
-                <div class="p-4 border-t border-slate-800/50 ${(sessionStorage.getItem('userRole') === 'ADMIN' && !window.location.search.includes('preview=true')) ? '' : 'hidden'}">
+                <div class="p-4 border-t border-slate-800/50 ${sessionStorage.getItem('userRole') === 'ADMIN' && !window.location.search.includes('preview=true') ? '' : 'hidden'}">
                     <button class="w-full py-4 border-2 border-dashed border-slate-800 rounded-lg text-slate-600 hover:text-primary hover:border-primary/50 hover:bg-primary/5 transition-all flex items-center justify-center gap-2 text-xs font-bold uppercase tracking-widest insert-content-btn">
                         <span class="material-symbols-outlined text-sm">add_circle</span>
                         Insert Content Item
@@ -997,7 +1014,7 @@ class AiModule extends HTMLElement {
         this.processLocking();
 
         // Listen for global quiz passed events to update locking and card status
-        document.addEventListener('ai-quiz-passed', (e) => {
+        document.addEventListener('ai-quiz-passed', e => {
             // Re-render quiz content items so score/status badges update
             this.querySelectorAll('ai-content-item').forEach(item => {
                 if (item.getAttribute('type') === 'QUIZ') {
@@ -1013,7 +1030,7 @@ class AiModule extends HTMLElement {
             // Give content items a moment to update their 'completed' attribute
             setTimeout(() => this.updateCompletionStats(), 50);
         });
-        
+
         // Initial stat update
         setTimeout(() => this.updateCompletionStats(), 100);
     }
@@ -1022,11 +1039,14 @@ class AiModule extends HTMLElement {
         const items = Array.from(this.querySelectorAll('ai-content-item'));
         if (items.length === 0) return;
 
-        const isLearnerView = sessionStorage.getItem('userRole') !== 'ADMIN' || window.location.search.includes('preview=true');
+        const isLearnerView =
+            sessionStorage.getItem('userRole') !== 'ADMIN' || window.location.search.includes('preview=true');
         if (!isLearnerView) return;
 
         const completedCount = items.filter(item => item.getAttribute('completed') === 'true').length;
-        console.log(`[AiModule] updateCompletionStats for ${this.getAttribute('title') || 'module'}: ${completedCount}/${items.length} completed`);
+        console.log(
+            `[AiModule] updateCompletionStats for ${this.getAttribute('title') || 'module'}: ${completedCount}/${items.length} completed`
+        );
         const totalCount = items.length;
         const percent = Math.round((completedCount / totalCount) * 100);
 
@@ -1103,7 +1123,7 @@ class AiModule extends HTMLElement {
         const moreBtn = this.querySelector('.more-options-btn');
         const dropdown = this.querySelector('.ai-dropdown-menu');
         if (moreBtn && dropdown) {
-            moreBtn.addEventListener('click', (e) => {
+            moreBtn.addEventListener('click', e => {
                 e.stopPropagation();
                 // Close all other dropdowns first
                 document.querySelectorAll('.ai-dropdown-menu.show').forEach(d => {
@@ -1264,7 +1284,14 @@ class AiModule extends HTMLElement {
                                     title: `Upload ${result.type}`,
                                     icon: result.icon,
                                     color: result.color,
-                                    accept: result.type === 'PDF' ? '.pdf' : (result.type === 'AUDIO' ? '.mp3,.wav' : (result.type === 'SLIDES' ? '.ppt,.pptx' : 'image/*'))
+                                    accept:
+                                        result.type === 'PDF'
+                                            ? '.pdf'
+                                            : result.type === 'AUDIO'
+                                              ? '.mp3,.wav'
+                                              : result.type === 'SLIDES'
+                                                ? '.ppt,.pptx'
+                                                : 'image/*'
                                 });
 
                                 if (uploadResult && uploadResult.title) {
@@ -1315,7 +1342,7 @@ class AiModule extends HTMLElement {
         // Drag and Drop Logic
         const container = this.querySelector('.module-container');
         if (container) {
-            container.addEventListener('dragover', (e) => {
+            container.addEventListener('dragover', e => {
                 e.preventDefault();
                 container.classList.add('border-primary', 'bg-primary/5');
             });
@@ -1324,7 +1351,7 @@ class AiModule extends HTMLElement {
                 container.classList.remove('border-primary', 'bg-primary/5');
             });
 
-            container.addEventListener('drop', (e) => {
+            container.addEventListener('drop', e => {
                 e.preventDefault();
                 container.classList.remove('border-primary', 'bg-primary/5');
 
@@ -1336,11 +1363,15 @@ class AiModule extends HTMLElement {
                         let icon = 'description';
                         let color = 'indigo';
 
-                        if (['pdf', 'jpg', 'jpeg', 'png', 'gif', 'svg', 'webp', 'mp3', 'wav', 'ppt', 'pptx'].includes(ext)) {
+                        if (
+                            ['pdf', 'jpg', 'jpeg', 'png', 'gif', 'svg', 'webp', 'mp3', 'wav', 'ppt', 'pptx'].includes(
+                                ext
+                            )
+                        ) {
                             const isPdf = ext === 'pdf';
                             const isAudio = ['mp3', 'wav'].includes(ext);
                             const isSlides = ['ppt', 'pptx'].includes(ext);
-                            type = isPdf ? 'PDF' : (isAudio ? 'AUDIO' : (isSlides ? 'SLIDES' : 'IMAGE'));
+                            type = isPdf ? 'PDF' : isAudio ? 'AUDIO' : isSlides ? 'SLIDES' : 'IMAGE';
 
                             const config = CONTENT_TYPE_CONFIG[type] || CONTENT_TYPE_CONFIG.DEFAULT;
                             icon = config.icon;
@@ -1353,7 +1384,7 @@ class AiModule extends HTMLElement {
                                     currentTitle: file.name.split('.').shift(),
                                     icon: icon,
                                     color: color,
-                                    accept: isPdf ? '.pdf' : (isAudio ? '.mp3,.wav' : (isSlides ? '.ppt,.pptx' : 'image/*'))
+                                    accept: isPdf ? '.pdf' : isAudio ? '.mp3,.wav' : isSlides ? '.ppt,.pptx' : 'image/*'
                                 });
 
                                 if (uploadResult && uploadResult.title) {
@@ -1427,7 +1458,12 @@ class AiContentItem extends HTMLElement {
             this.setAttribute('blob-url', '#');
         }
 
-        if (fileId && (!this.getAttribute('blob-url') || this.getAttribute('blob-url') === '#' || this.getAttribute('blob-url') === '')) {
+        if (
+            fileId &&
+            (!this.getAttribute('blob-url') ||
+                this.getAttribute('blob-url') === '#' ||
+                this.getAttribute('blob-url') === '')
+        ) {
             try {
                 const file = await aiFileStore.get(fileId);
                 if (file) {
@@ -1480,7 +1516,9 @@ class AiContentItem extends HTMLElement {
         const colorClass = colorClasses[color] || colorClasses.slate;
         const isLocked = this.hasAttribute('locked') && this.getAttribute('locked') !== 'false';
 
-        const isClickable = ['PDF', 'IMAGE', 'AUDIO', 'SLIDES', 'VIDEO', 'QUIZ', 'PAGE', 'DOCUMENT', 'LINK'].includes(type) && !isLocked;
+        const isClickable =
+            ['PDF', 'IMAGE', 'AUDIO', 'SLIDES', 'VIDEO', 'QUIZ', 'PAGE', 'DOCUMENT', 'LINK'].includes(type) &&
+            !isLocked;
         const clickableClasses = isClickable ? 'cursor-pointer hover:bg-slate-800/40 clickable-content' : '';
         const lockedClasses = isLocked ? 'opacity-50 grayscale pointer-events-none' : '';
 
@@ -1493,7 +1531,7 @@ class AiContentItem extends HTMLElement {
             </style>
             <div class="flex items-center justify-between bg-[var(--ai-bg-card)] border border-slate-800 p-4 rounded-lg hover:border-slate-600 transition-colors group/item relative overflow-visible ai-content-body ${clickableClasses} ${lockedClasses}">
                 <div class="flex items-center gap-4">
-                    <div class="drag-handle text-slate-700 cursor-pointer hover:text-slate-400 transition-colors ${(sessionStorage.getItem('userRole') === 'ADMIN' && !window.location.search.includes('preview=true')) ? '' : 'hidden'}">
+                    <div class="drag-handle text-slate-700 cursor-pointer hover:text-slate-400 transition-colors ${sessionStorage.getItem('userRole') === 'ADMIN' && !window.location.search.includes('preview=true') ? '' : 'hidden'}">
                         <span class="material-symbols-outlined text-sm">drag_handle</span>
                     </div>
                     <div class="size-10 ${colorClass} rounded flex items-center justify-center relative">
@@ -1511,7 +1549,7 @@ class AiContentItem extends HTMLElement {
                         </div>
                     </div>
                 </div>
-                <div class="flex items-center gap-1 group-hover/item:opacity-100 transition-opacity opacity-100 relative ${(sessionStorage.getItem('userRole') === 'ADMIN' && !window.location.search.includes('preview=true')) ? '' : 'hidden'}">
+                <div class="flex items-center gap-1 group-hover/item:opacity-100 transition-opacity opacity-100 relative ${sessionStorage.getItem('userRole') === 'ADMIN' && !window.location.search.includes('preview=true') ? '' : 'hidden'}">
                     <div class="relative content-options-container">
                         <button class="p-1.5 hover:bg-slate-800 rounded text-slate-500 hover:text-white more-options-btn">
                             <span class="material-symbols-outlined text-lg">more_vert</span>
@@ -1521,17 +1559,21 @@ class AiContentItem extends HTMLElement {
                                 <span class="material-symbols-outlined text-lg">edit_note</span>
                                 Rename
                             </button>
-                            ${type === 'PAGE' ? `
+                            ${
+                                type === 'PAGE'
+                                    ? `
                             <button class="ai-dropdown-item edit-page-content">
                                 <span class="material-symbols-outlined text-lg">edit_document</span>
                                 Edit Page
                             </button>
-                            ` : `
+                            `
+                                    : `
                             <button class="ai-dropdown-item edit-content">
                                 <span class="material-symbols-outlined text-lg">edit</span>
                                 Replace File
                             </button>
-                            `}
+                            `
+                            }
                             <button class="ai-dropdown-item delete delete-content">
                                 <span class="material-symbols-outlined text-lg">delete</span>
                                 Delete
@@ -1548,7 +1590,7 @@ class AiContentItem extends HTMLElement {
         const dropdown = this.querySelector('.ai-dropdown-menu');
 
         if (moreBtn && dropdown) {
-            moreBtn.addEventListener('click', (e) => {
+            moreBtn.addEventListener('click', e => {
                 e.stopPropagation();
                 // Close all other dropdowns
                 document.querySelectorAll('.ai-dropdown-menu.show').forEach(d => {
@@ -1672,21 +1714,22 @@ class AiContentItem extends HTMLElement {
 
         const itemBody = this.querySelector('.ai-content-body');
         if (itemBody) {
-            itemBody.addEventListener('click', async (e) => {
+            itemBody.addEventListener('click', async e => {
                 if (e.target.closest('.content-options-container') || e.target.closest('.drag-handle')) {
                     return;
                 }
 
                 const type = this.getAttribute('type');
-                let url = this.getAttribute('blob-url') || this.getAttribute('src') || this.getAttribute('video-id') || '#';
+                let url =
+                    this.getAttribute('blob-url') || this.getAttribute('src') || this.getAttribute('video-id') || '#';
                 let fileId = this.getAttribute('file-id');
 
                 console.log(`[AiContentItem] Clicked on ${type}. URL: ${url}, FileID: ${fileId}`);
 
                 // Handle 'local:' prefix from DB
                 if (url.startsWith('local:')) {
-                    fileId = url.split('|')[0].replace('local:', ''); 
-                    url = '#'; 
+                    fileId = url.split('|')[0].replace('local:', '');
+                    url = '#';
                     console.log(`[AiContentItem] Detected local URL, set fileId to ${fileId}`);
                 }
 
@@ -1700,7 +1743,7 @@ class AiContentItem extends HTMLElement {
                                 throw new Error('MISSING_URL');
                             }
                         }
-                        
+
                         this._openViewer(type, url);
                     } catch (err) {
                         console.log(`[AiContentItem] Link dead or local redirection, checking IndexedDB for ${fileId}`);
@@ -1709,7 +1752,7 @@ class AiContentItem extends HTMLElement {
                             if (file) {
                                 console.log(`[AiContentItem] File found in IndexedDB, creating new blob URL`);
                                 const newUrl = URL.createObjectURL(file);
-                                if (type !== 'QUIZ') this.setAttribute('blob-url', newUrl); 
+                                if (type !== 'QUIZ') this.setAttribute('blob-url', newUrl);
                                 this._openViewer(type, newUrl);
                                 return;
                             } else {
@@ -1719,10 +1762,10 @@ class AiContentItem extends HTMLElement {
                         }
 
                         const isLearner = sessionStorage.getItem('userRole') !== 'ADMIN';
-                        const message = isLearner 
-                            ? 'This resource is currently unavailable. It looks like it was not properly uploaded to the server yet. Please contact your administrator.' 
+                        const message = isLearner
+                            ? 'This resource is currently unavailable. It looks like it was not properly uploaded to the server yet. Please contact your administrator.'
                             : `CRITICAL: This content only exists in another browser's local storage. FileID [${fileId || 'None'}]. You MUST re-upload this file to Cloudflare R2 to make it accessible to everyone.`;
-                        
+
                         if (window.showToast) {
                             window.showToast(message, isLearner ? 'error' : 'info');
                         } else {
@@ -1743,7 +1786,7 @@ class AiContentItem extends HTMLElement {
         if (this._progressUpdateHandler) {
             window.removeEventListener('ai-progress-update', this._progressUpdateHandler);
         }
-        this._progressUpdateHandler = (e) => {
+        this._progressUpdateHandler = e => {
             if (e.detail?.moduleId === this.getAttribute('module-id')) {
                 console.log(`[AiContentItem] Matching module progress update received for ${e.detail.moduleId}`);
                 this.setAttribute('completed', 'true');
@@ -1779,7 +1822,8 @@ class AiContentItem extends HTMLElement {
             window.open(url, '_blank');
             // Mark as complete immediately on click for learners
             const moduleId = this.getAttribute('module-id');
-            const isLearner = sessionStorage.getItem('userRole') !== 'ADMIN' || window.location.search.includes('preview=true');
+            const isLearner =
+                sessionStorage.getItem('userRole') !== 'ADMIN' || window.location.search.includes('preview=true');
             if (moduleId && isLearner) {
                 console.log(`[AiContentItem] Link clicked. Marking module ${moduleId} as complete...`);
                 fetch('/api/progress/complete', {
@@ -1787,20 +1831,24 @@ class AiContentItem extends HTMLElement {
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
                     body: JSON.stringify({ moduleId })
-                }).then(res => {
-                    if (res.ok) {
-                        console.log(`[AiContentItem] Progress updated for link: ${moduleId}`);
-                        this.setAttribute('completed', 'true');
-                        window.dispatchEvent(new CustomEvent('ai-progress-update', { 
-                            detail: { moduleId } 
-                        }));
-                    }
-                }).catch(err => console.error('[AiContentItem] Link progress update error:', err));
+                })
+                    .then(res => {
+                        if (res.ok) {
+                            console.log(`[AiContentItem] Progress updated for link: ${moduleId}`);
+                            this.setAttribute('completed', 'true');
+                            window.dispatchEvent(
+                                new CustomEvent('ai-progress-update', {
+                                    detail: { moduleId }
+                                })
+                            );
+                        }
+                    })
+                    .catch(err => console.error('[AiContentItem] Link progress update error:', err));
             }
         } else if (type === 'QUIZ') {
             const quizModal = document.querySelector('ai-quiz-modal');
             if (quizModal) {
-                const quizSrc = (url && url !== '#') ? url : this.getAttribute('src');
+                const quizSrc = url && url !== '#' ? url : this.getAttribute('src');
                 quizModal.show(
                     this.getAttribute('title'),
                     this.getAttribute('success-threshold') || 80,
@@ -1874,12 +1922,16 @@ class AiConfirmModal extends HTMLElement {
         // Apply type styles
         if (type === 'danger') {
             this.iconEl.textContent = 'report';
-            this.iconContainer.className = 'size-12 rounded-full flex items-center justify-center bg-red-500/10 text-red-500';
-            this.confirmBtn.className = 'bg-[var(--ai-danger)] hover:bg-[#dc2626] text-white px-6 py-2.5 rounded-[var(--ai-radius-lg)] text-sm font-bold transition-all shadow-lg shadow-red-500/20';
+            this.iconContainer.className =
+                'size-12 rounded-full flex items-center justify-center bg-red-500/10 text-red-500';
+            this.confirmBtn.className =
+                'bg-[var(--ai-danger)] hover:bg-[#dc2626] text-white px-6 py-2.5 rounded-[var(--ai-radius-lg)] text-sm font-bold transition-all shadow-lg shadow-red-500/20';
         } else if (type === 'info') {
             this.iconEl.textContent = 'info';
-            this.iconContainer.className = 'size-12 rounded-full flex items-center justify-center bg-blue-500/10 text-blue-500';
-            this.confirmBtn.className = 'bg-[var(--ai-primary)] hover:bg-[var(--ai-primary-hover)] text-white px-6 py-2.5 rounded-[var(--ai-radius-lg)] text-sm font-bold transition-all shadow-lg shadow-blue-500/20';
+            this.iconContainer.className =
+                'size-12 rounded-full flex items-center justify-center bg-blue-500/10 text-blue-500';
+            this.confirmBtn.className =
+                'bg-[var(--ai-primary)] hover:bg-[var(--ai-primary-hover)] text-white px-6 py-2.5 rounded-[var(--ai-radius-lg)] text-sm font-bold transition-all shadow-lg shadow-blue-500/20';
         }
 
         this.container.classList.remove('opacity-0', 'pointer-events-none');
@@ -1925,14 +1977,19 @@ class AiContentPickerModal extends HTMLElement {
                     </div>
                     
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-                        ${Object.entries(CONTENT_TYPE_CONFIG).filter(([key]) => key !== 'DEFAULT').map(([type, config]) => `
+                        ${Object.entries(CONTENT_TYPE_CONFIG)
+                            .filter(([key]) => key !== 'DEFAULT')
+                            .map(
+                                ([type, config]) => `
                             <button class="picker-option group" data-type="${type}" data-icon="${config.icon}" data-color="${config.color}">
                                 <div class="size-14 rounded-[var(--ai-radius-xl)] bg-${config.color}-500/10 text-${config.color}-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform">
                                     <span class="material-symbols-outlined text-3xl">${config.icon}</span>
                                 </div>
                                 <span class="text-sm font-bold text-slate-300 group-hover:text-white transition-colors">${config.label}</span>
                             </button>
-                        `).join('')}
+                        `
+                            )
+                            .join('')}
                     </div>
                     
                     <div class="flex justify-center">
@@ -2087,7 +2144,7 @@ class AiMediaUploadModal extends HTMLElement {
         this.cancelBtn.addEventListener('click', () => this.close(null));
         this.confirmBtn.addEventListener('click', async () => {
             if (!this.currentFile && !this.titleInput.value) return;
-            
+
             // Show loading state on button
             const originalText = this.confirmBtn.textContent;
             this.confirmBtn.disabled = true;
@@ -2097,7 +2154,7 @@ class AiMediaUploadModal extends HTMLElement {
                 // 1. Upload to server for permanent hosting
                 const formData = new FormData();
                 formData.append('file', this.currentFile);
-                
+
                 const response = await fetch('/api/upload', {
                     method: 'POST',
                     body: formData,
@@ -2109,19 +2166,21 @@ class AiMediaUploadModal extends HTMLElement {
                     try {
                         const errData = await response.json();
                         errorMessage = errData.error || errorMessage;
-                    } catch(e) {}
+                    } catch (e) {}
                     throw new Error(errorMessage);
                 }
                 const result = await response.json();
-                
+
                 // Return only the server URL. Local IndexedDB storage is disabled to ensure global access.
-                this.close({ 
-                    title: this.titleInput.value, 
+                this.close({
+                    title: this.titleInput.value,
                     url: result.url
                 });
             } catch (err) {
                 console.error('Upload error:', err);
-                window.alert(`CRITICAL ERROR: Failed to upload file to Cloudflare R2. ${err.message}. Content must be hosted on R2 for global accessibility. Please check server credentials.`);
+                window.alert(
+                    `CRITICAL ERROR: Failed to upload file to Cloudflare R2. ${err.message}. Content must be hosted on R2 for global accessibility. Please check server credentials.`
+                );
                 this.confirmBtn.disabled = false;
                 this.confirmBtn.textContent = originalText;
             } finally {
@@ -2133,7 +2192,7 @@ class AiMediaUploadModal extends HTMLElement {
 
         this.dropZone.addEventListener('click', () => this.fileInput.click());
 
-        this.dropZone.addEventListener('dragover', (e) => {
+        this.dropZone.addEventListener('dragover', e => {
             e.preventDefault();
             this.dropZone.classList.add('drag-over');
         });
@@ -2142,7 +2201,7 @@ class AiMediaUploadModal extends HTMLElement {
             this.dropZone.classList.remove('drag-over');
         });
 
-        this.dropZone.addEventListener('drop', (e) => {
+        this.dropZone.addEventListener('drop', e => {
             e.preventDefault();
             this.dropZone.classList.remove('drag-over');
             const files = e.dataTransfer.files;
@@ -2178,7 +2237,11 @@ class AiMediaUploadModal extends HTMLElement {
         } else if (accept === '.pdf') {
             isValid = file.type === 'application/pdf';
         } else if (accept.includes('.ppt')) {
-            isValid = file.name.endsWith('.ppt') || file.name.endsWith('.pptx') || file.type.includes('presentation') || file.type.includes('powerpoint');
+            isValid =
+                file.name.endsWith('.ppt') ||
+                file.name.endsWith('.pptx') ||
+                file.type.includes('presentation') ||
+                file.type.includes('powerpoint');
         } else {
             isValid = true;
         }
@@ -2254,7 +2317,6 @@ class AiMediaUploadModal extends HTMLElement {
     }
 }
 
-
 // Only define VideoUtils if it's not already defined (avoids collision with video-utils.js)
 if (typeof VideoUtils === 'undefined') {
     window.VideoUtils = {
@@ -2265,14 +2327,23 @@ if (typeof VideoUtils === 'undefined') {
         parse(url) {
             if (!url) return null;
             const ytMatch = url.match(this.REGEX.YOUTUBE);
-            if (ytMatch) return { type: 'YOUTUBE', id: ytMatch[1], embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1` };
+            if (ytMatch)
+                return {
+                    type: 'YOUTUBE',
+                    id: ytMatch[1],
+                    embedUrl: `https://www.youtube.com/embed/${ytMatch[1]}?autoplay=1`
+                };
             const vimeoMatch = url.match(this.REGEX.VIMEO);
-            if (vimeoMatch) return { type: 'VIMEO', id: vimeoMatch[1], embedUrl: `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1` };
+            if (vimeoMatch)
+                return {
+                    type: 'VIMEO',
+                    id: vimeoMatch[1],
+                    embedUrl: `https://player.vimeo.com/video/${vimeoMatch[1]}?autoplay=1`
+                };
             return null;
         }
     };
 }
-
 
 class AiMediaViewerModal extends HTMLElement {
     constructor() {
@@ -2396,7 +2467,7 @@ class AiMediaViewerModal extends HTMLElement {
 
         this.closeBtn.addEventListener('click', () => this.close());
         this.container.querySelector('.absolute').addEventListener('click', () => this.close());
-        this.audioEl.addEventListener('error', (e) => {
+        this.audioEl.addEventListener('error', e => {
             console.error('Audio playback error:', e, this.audioEl.src);
             this.loading.classList.add('hidden');
             if (this.audioPlayer) this.audioPlayer.classList.add('hidden');
@@ -2408,8 +2479,14 @@ class AiMediaViewerModal extends HTMLElement {
                 this.downloadBtn.classList.add('hidden');
             }
         });
-        this.frame.addEventListener('load', () => { this.loading.classList.add('hidden'); this.frame.classList.remove('opacity-0'); });
-        this.image.addEventListener('load', () => { this.loading.classList.add('hidden'); this.image.classList.remove('opacity-0'); });
+        this.frame.addEventListener('load', () => {
+            this.loading.classList.add('hidden');
+            this.frame.classList.remove('opacity-0');
+        });
+        this.image.addEventListener('load', () => {
+            this.loading.classList.add('hidden');
+            this.image.classList.remove('opacity-0');
+        });
         this.image.addEventListener('error', () => {
             this.loading.classList.add('hidden');
             this.image.classList.add('hidden');
@@ -2417,7 +2494,10 @@ class AiMediaViewerModal extends HTMLElement {
             this.placeholderTitle.textContent = 'Image Error';
             this.placeholderIcon.textContent = 'broken_image';
         });
-        this.video.addEventListener('loadeddata', () => { this.loading.classList.add('hidden'); this.video.classList.remove('opacity-0'); });
+        this.video.addEventListener('loadeddata', () => {
+            this.loading.classList.add('hidden');
+            this.video.classList.remove('opacity-0');
+        });
         this.video.addEventListener('error', () => {
             this.loading.classList.add('hidden');
             this.video.classList.add('hidden');
@@ -2426,7 +2506,7 @@ class AiMediaViewerModal extends HTMLElement {
             this.placeholderIcon.textContent = 'videocam_off';
         });
         this.setupAudioEvents();
-        
+
         this.downloadBtn.addEventListener('click', () => {
             if (this.currentUrl && this.currentUrl !== '#') {
                 const a = document.createElement('a');
@@ -2453,8 +2533,15 @@ class AiMediaViewerModal extends HTMLElement {
 
     setupAudioEvents() {
         this.audioPlayToggle.addEventListener('click', () => {
-            if (this.audioEl.paused) { this.audioEl.play(); this.audioPlayIcon.textContent = 'pause'; this.audioPing.classList.remove('hidden'); }
-            else { this.audioEl.pause(); this.audioPlayIcon.textContent = 'play_arrow'; this.audioPing.classList.add('hidden'); }
+            if (this.audioEl.paused) {
+                this.audioEl.play();
+                this.audioPlayIcon.textContent = 'pause';
+                this.audioPing.classList.remove('hidden');
+            } else {
+                this.audioEl.pause();
+                this.audioPlayIcon.textContent = 'play_arrow';
+                this.audioPing.classList.add('hidden');
+            }
         });
         this.audioEl.addEventListener('timeupdate', () => {
             const percent = (this.audioEl.currentTime / this.audioEl.duration) * 100;
@@ -2466,35 +2553,42 @@ class AiMediaViewerModal extends HTMLElement {
             this.loading.classList.add('hidden');
             this.audioPlayer.classList.remove('hidden');
         });
-        this.audioSeekBar.addEventListener('click', (e) => {
+        this.audioSeekBar.addEventListener('click', e => {
             const rect = this.audioSeekBar.getBoundingClientRect();
             const percent = (e.clientX - rect.left) / rect.width;
             this.audioEl.currentTime = percent * this.audioEl.duration;
         });
-        this.audioVolumeRange.addEventListener('input', () => { this.audioEl.volume = this.audioVolumeRange.value; });
-        this.audioRewind.addEventListener('click', () => this.audioEl.currentTime -= 10);
-        this.audioForward.addEventListener('click', () => this.audioEl.currentTime += 10);
+        this.audioVolumeRange.addEventListener('input', () => {
+            this.audioEl.volume = this.audioVolumeRange.value;
+        });
+        this.audioRewind.addEventListener('click', () => (this.audioEl.currentTime -= 10));
+        this.audioForward.addEventListener('click', () => (this.audioEl.currentTime += 10));
     }
 
     formatTime(s) {
         if (!s || isNaN(s)) return '0:00';
-        const m = Math.floor(s / 60); const ss = Math.floor(s % 60);
+        const m = Math.floor(s / 60);
+        const ss = Math.floor(s % 60);
         return `${m}:${ss.toString().padStart(2, '0')}`;
     }
 
     show(opt = {}) {
         const { title, type, url, icon, color, isPlaceholder, moduleId } = opt;
         this.currentModuleId = moduleId;
-        console.log(`[AiMediaViewerModal] show() called. moduleId: ${moduleId}, type: ${type}, role: ${sessionStorage.getItem('userRole')}`);
-        
+        console.log(
+            `[AiMediaViewerModal] show() called. moduleId: ${moduleId}, type: ${type}, role: ${sessionStorage.getItem('userRole')}`
+        );
+
         // Clear existing timer if any
         if (this.completionTimer) clearTimeout(this.completionTimer);
-        
+
         // Start 3-second timer for progression
         if (this.currentModuleId && sessionStorage.getItem('userRole') !== 'ADMIN') {
             this.completionTimer = setTimeout(async () => {
                 try {
-                    console.log(`[AiMediaViewerModal] 3s timer reached. Marking module ${this.currentModuleId} as complete...`);
+                    console.log(
+                        `[AiMediaViewerModal] 3s timer reached. Marking module ${this.currentModuleId} as complete...`
+                    );
                     const res = await fetch('/api/progress/complete', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -2504,12 +2598,18 @@ class AiMediaViewerModal extends HTMLElement {
                     if (res.ok) {
                         console.log(`[AiMediaViewerModal] Progress update successful for ${this.currentModuleId}`);
                         // Notify other components
-                        window.dispatchEvent(new CustomEvent('ai-progress-update', { 
-                            detail: { moduleId: this.currentModuleId } 
-                        }));
+                        window.dispatchEvent(
+                            new CustomEvent('ai-progress-update', {
+                                detail: { moduleId: this.currentModuleId }
+                            })
+                        );
                     } else {
                         const errorData = await res.json().catch(() => ({}));
-                        console.error(`[AiMediaViewerModal] Progress update FAILED for ${this.currentModuleId}:`, res.status, errorData);
+                        console.error(
+                            `[AiMediaViewerModal] Progress update FAILED for ${this.currentModuleId}:`,
+                            res.status,
+                            errorData
+                        );
                     }
                 } catch (err) {
                     console.error(`[AiMediaViewerModal] Progress update ERROR for ${this.currentModuleId}:`, err);
@@ -2522,14 +2622,14 @@ class AiMediaViewerModal extends HTMLElement {
             this.container.classList.remove('opacity-0', 'pointer-events-none');
         }
         if (this.card) {
-            this.card.classList.remove('scale-95'); 
+            this.card.classList.remove('scale-95');
             this.card.classList.add('scale-100');
         }
 
         // Defensive checks for elements
         if (this.titleEl) this.titleEl.textContent = title || 'Preview';
         if (this.subtitleEl) this.subtitleEl.textContent = `${type} Mode`;
-        
+
         if (this.iconEl) {
             this.iconEl.textContent = icon || 'visibility';
             if (this.iconEl.parentElement) {
@@ -2537,37 +2637,51 @@ class AiMediaViewerModal extends HTMLElement {
                 this.iconEl.parentElement.style.backgroundColor = `var(--ai-${color || 'primary'}-soft)`;
             }
         }
-        
+
         if (this.audioFilenameEl) this.audioFilenameEl.textContent = title;
-        if (this.audioEl) this.audioEl.pause(); 
-        if (this.audioPlayIcon) this.audioPlayIcon.textContent = 'play_arrow'; 
+        if (this.audioEl) this.audioEl.pause();
+        if (this.audioPlayIcon) this.audioPlayIcon.textContent = 'play_arrow';
         if (this.audioProgress) this.audioProgress.style.width = '0%';
         if (this.audioPing) this.audioPing.classList.add('hidden');
-        
+
         this.currentUrl = url;
 
         if (isPlaceholder) {
-            if (this.frame) this.frame.classList.add('hidden'); 
-            if (this.image) this.image.classList.add('hidden'); 
-            if (this.audioPlayer) this.audioPlayer.classList.add('hidden'); 
+            if (this.frame) this.frame.classList.add('hidden');
+            if (this.image) this.image.classList.add('hidden');
+            if (this.audioPlayer) this.audioPlayer.classList.add('hidden');
             if (this.video) this.video.classList.add('hidden');
             if (this.slidesDownloadOverlay) this.slidesDownloadOverlay.classList.add('hidden');
-            
+
             if (this.placeholder) {
                 this.placeholder.classList.remove('hidden');
-                if (this.placeholderTitle) this.placeholderTitle.textContent = type === 'SLIDES' ? 'Presentation Ready' : (type === 'PAGE' ? 'Page Content' : 'Preview Not Available');
-                if (this.placeholderIcon) this.placeholderIcon.textContent = type === 'SLIDES' ? 'present_to_all' : (type === 'PAGE' ? 'description' : 'visibility_off');
-                if (this.placeholderText) this.placeholderText.textContent = type === 'SLIDES' ? 'This file is stored locally. Download to view the presentation.' : (type === 'PAGE' ? 'This page is available for download.' : `This ${type.toLowerCase()} is stored securely.`);
+                if (this.placeholderTitle)
+                    this.placeholderTitle.textContent =
+                        type === 'SLIDES'
+                            ? 'Presentation Ready'
+                            : type === 'PAGE'
+                              ? 'Page Content'
+                              : 'Preview Not Available';
+                if (this.placeholderIcon)
+                    this.placeholderIcon.textContent =
+                        type === 'SLIDES' ? 'present_to_all' : type === 'PAGE' ? 'description' : 'visibility_off';
+                if (this.placeholderText)
+                    this.placeholderText.textContent =
+                        type === 'SLIDES'
+                            ? 'This file is stored locally. Download to view the presentation.'
+                            : type === 'PAGE'
+                              ? 'This page is available for download.'
+                              : `This ${type.toLowerCase()} is stored securely.`;
             }
             if (this.loading) this.loading.classList.add('hidden');
             if (this.downloadBtn) this.downloadBtn.classList.toggle('hidden', !url || url === '#');
         } else {
-            if (this.placeholder) this.placeholder.classList.add('hidden'); 
+            if (this.placeholder) this.placeholder.classList.add('hidden');
             if (this.loading) this.loading.classList.remove('hidden');
-            
-            if (this.frame) this.frame.classList.add('hidden'); 
-            if (this.image) this.image.classList.add('hidden'); 
-            if (this.audioPlayer) this.audioPlayer.classList.add('hidden'); 
+
+            if (this.frame) this.frame.classList.add('hidden');
+            if (this.image) this.image.classList.add('hidden');
+            if (this.audioPlayer) this.audioPlayer.classList.add('hidden');
             if (this.video) this.video.classList.add('hidden');
             if (this.slidesDownloadOverlay) this.slidesDownloadOverlay.classList.add('hidden');
             if (type === 'SLIDES') {
@@ -2583,50 +2697,52 @@ class AiMediaViewerModal extends HTMLElement {
                 if (this.slidesDownloadOverlay) {
                     this.slidesDownloadOverlay.classList.remove('hidden');
                 }
-            }
-            else if (type === 'PDF' || type === 'DOCUMENT') { 
+            } else if (type === 'PDF' || type === 'DOCUMENT') {
                 if (this.frame) {
-                    this.frame.src = url; 
-                    this.frame.classList.remove('hidden'); 
-                    this.frame.classList.add('opacity-0'); 
+                    this.frame.src = url;
+                    this.frame.classList.remove('hidden');
+                    this.frame.classList.add('opacity-0');
                 }
-            }
-            else if (type === 'IMAGE') { 
+            } else if (type === 'IMAGE') {
                 if (this.image) {
-                    this.image.src = url; 
-                    this.image.classList.remove('hidden'); 
-                    this.image.classList.add('opacity-0'); 
+                    this.image.src = url;
+                    this.image.classList.remove('hidden');
+                    this.image.classList.add('opacity-0');
                 }
-            }
-            else if (type === 'AUDIO') { 
-                if (this.audioEl) this.audioEl.src = url; 
+            } else if (type === 'AUDIO') {
+                if (this.audioEl) this.audioEl.src = url;
                 if (this.audioPlayer) this.audioPlayer.classList.remove('hidden');
                 if (this.loading) this.loading.classList.add('hidden');
-            }
-            else if (type === 'VIDEO') {
+            } else if (type === 'VIDEO') {
                 const vd = VideoUtils.parse(url);
-                if (vd) { 
+                if (vd) {
                     if (this.frame) {
-                        this.frame.src = vd.embedUrl; 
-                        this.frame.classList.remove('hidden'); 
-                        this.frame.classList.add('opacity-0'); 
+                        this.frame.src = vd.embedUrl;
+                        this.frame.classList.remove('hidden');
+                        this.frame.classList.add('opacity-0');
                     }
-                }
-                else { 
+                } else {
                     if (this.video) {
-                        this.video.src = url; 
-                        this.video.classList.remove('hidden'); 
-                        this.video.classList.add('opacity-0'); 
+                        this.video.src = url;
+                        this.video.classList.remove('hidden');
+                        this.video.classList.add('opacity-0');
                     }
                 }
-            }
-            else if (type === 'PAGE') {
+            } else if (type === 'PAGE') {
                 if (this.pageContent) {
                     this.pageContent.innerHTML = url || '<p class="text-slate-400 italic">No content on this page.</p>';
                     this.pageContent.classList.remove('hidden');
                     // Ensure YouTube embeds are responsive
                     this.pageContent.querySelectorAll('iframe').forEach(ifr => {
-                        ifr.classList.add('aspect-video', 'w-full', 'max-w-3xl', 'mx-auto', 'block', 'rounded-xl', 'my-8');
+                        ifr.classList.add(
+                            'aspect-video',
+                            'w-full',
+                            'max-w-3xl',
+                            'mx-auto',
+                            'block',
+                            'rounded-xl',
+                            'my-8'
+                        );
                     });
                 }
                 if (this.loading) this.loading.classList.add('hidden');
@@ -2702,13 +2818,22 @@ class AiMediaViewerModal extends HTMLElement {
     close() {
         if (this.completionTimer) clearTimeout(this.completionTimer);
         this.container.classList.add('opacity-0', 'pointer-events-none');
-        this.card.classList.remove('scale-100'); this.card.classList.add('scale-95');
-        setTimeout(() => { this.frame.src = ''; this.image.src = ''; this.audioEl.pause(); this.audioEl.src = ''; }, 300);
+        this.card.classList.remove('scale-100');
+        this.card.classList.add('scale-95');
+        setTimeout(() => {
+            this.frame.src = '';
+            this.image.src = '';
+            this.audioEl.pause();
+            this.audioEl.src = '';
+        }, 300);
     }
 }
 
 class AiVideoInsertModal extends HTMLElement {
-    constructor() { super(); this.resolve = null; }
+    constructor() {
+        super();
+        this.resolve = null;
+    }
     connectedCallback() {
         this.innerHTML = `
             <div id="ai-video-modal-container" class="fixed inset-0 z-[1003] flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300">
@@ -2770,7 +2895,9 @@ class AiVideoInsertModal extends HTMLElement {
         this.cancelBtn.addEventListener('click', () => this.close(null));
         this.confirmBtn.addEventListener('click', () => this.handleConfirm());
         this.dropZone.addEventListener('click', () => this.fileInput.click());
-        this.fileInput.addEventListener('change', () => { if (this.fileInput.files.length > 0) this.handleFile(this.fileInput.files[0]); });
+        this.fileInput.addEventListener('change', () => {
+            if (this.fileInput.files.length > 0) this.handleFile(this.fileInput.files[0]);
+        });
         this.container.querySelector('.absolute').addEventListener('click', () => this.close(null));
     }
 
@@ -2785,18 +2912,28 @@ class AiVideoInsertModal extends HTMLElement {
     }
 
     handleFile(f) {
-        if (f.type.startsWith('video/')) { this.file = f; this.selectedFilenameEl.textContent = f.name; if (!this.uploadTitleInput.value) this.uploadTitleInput.value = f.name.split('.').shift(); }
-        else window.alert('Invalid file');
+        if (f.type.startsWith('video/')) {
+            this.file = f;
+            this.selectedFilenameEl.textContent = f.name;
+            if (!this.uploadTitleInput.value) this.uploadTitleInput.value = f.name.split('.').shift();
+        } else window.alert('Invalid file');
     }
 
     async handleConfirm() {
         if (this.mode === 'URL') {
-            const url = this.urlInput.value.trim(); const vd = VideoUtils.parse(url);
+            const url = this.urlInput.value.trim();
+            const vd = VideoUtils.parse(url);
             if (!vd) return window.alert('Invalid URL');
-            this.close({ type: 'VIDEO', subtype: vd.type, url, videoId: vd.id, title: this.urlTitleInput.value.trim() || `${vd.type} Video` });
+            this.close({
+                type: 'VIDEO',
+                subtype: vd.type,
+                url,
+                videoId: vd.id,
+                title: this.urlTitleInput.value.trim() || `${vd.type} Video`
+            });
         } else {
             if (!this.file) return window.alert('Select file');
-            
+
             // Show loading state
             const originalText = this.confirmBtn.textContent;
             this.confirmBtn.disabled = true;
@@ -2805,7 +2942,7 @@ class AiVideoInsertModal extends HTMLElement {
             try {
                 const formData = new FormData();
                 formData.append('file', this.file);
-                
+
                 const response = await fetch('/api/upload', {
                     method: 'POST',
                     body: formData,
@@ -2817,20 +2954,22 @@ class AiVideoInsertModal extends HTMLElement {
                     try {
                         const errData = await response.json();
                         errorMessage = errData.error || errorMessage;
-                    } catch(e) {}
+                    } catch (e) {}
                     throw new Error(errorMessage);
                 }
                 const result = await response.json();
 
-                this.close({ 
-                    type: 'VIDEO', 
-                    subtype: 'R2', 
-                    url: result.url, 
-                    title: this.uploadTitleInput.value.trim() || this.file.name 
+                this.close({
+                    type: 'VIDEO',
+                    subtype: 'R2',
+                    url: result.url,
+                    title: this.uploadTitleInput.value.trim() || this.file.name
                 });
             } catch (err) {
                 console.error('Video upload error:', err);
-                window.alert(`CRITICAL ERROR: Failed to upload video to Cloudflare R2. ${err.message}. Videos must be hosted on R2 for global accessibility.`);
+                window.alert(
+                    `CRITICAL ERROR: Failed to upload video to Cloudflare R2. ${err.message}. Videos must be hosted on R2 for global accessibility.`
+                );
                 this.confirmBtn.disabled = false;
                 this.confirmBtn.textContent = originalText;
             }
@@ -2838,19 +2977,34 @@ class AiVideoInsertModal extends HTMLElement {
     }
 
     async show() {
-        this.setMode('URL'); this.urlInput.value = ''; this.urlTitleInput.value = ''; this.uploadTitleInput.value = ''; this.file = null; this.selectedFilenameEl.textContent = 'Drop video here';
-        this.container.classList.remove('opacity-0', 'pointer-events-none'); this.card.classList.remove('scale-95'); this.card.classList.add('scale-100');
-        return new Promise(r => this.resolve = r);
+        this.setMode('URL');
+        this.urlInput.value = '';
+        this.urlTitleInput.value = '';
+        this.uploadTitleInput.value = '';
+        this.file = null;
+        this.selectedFilenameEl.textContent = 'Drop video here';
+        this.container.classList.remove('opacity-0', 'pointer-events-none');
+        this.card.classList.remove('scale-95');
+        this.card.classList.add('scale-100');
+        return new Promise(r => (this.resolve = r));
     }
 
     close(res) {
-        this.container.classList.add('opacity-0', 'pointer-events-none'); this.card.classList.remove('scale-100'); this.card.classList.add('scale-95');
-        if (this.resolve) { this.resolve(res); this.resolve = null; }
+        this.container.classList.add('opacity-0', 'pointer-events-none');
+        this.card.classList.remove('scale-100');
+        this.card.classList.add('scale-95');
+        if (this.resolve) {
+            this.resolve(res);
+            this.resolve = null;
+        }
     }
 }
 
 class AiRenameModal extends HTMLElement {
-    constructor() { super(); this.resolve = null; }
+    constructor() {
+        super();
+        this.resolve = null;
+    }
     connectedCallback() {
         this.innerHTML = `
             <div id="ai-rename-modal-container" class="fixed inset-0 z-[1002] flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300">
@@ -2881,8 +3035,14 @@ class AiRenameModal extends HTMLElement {
         this.cancelBtn = this.querySelector('#ai-rename-cancel');
         this.saveBtn = this.querySelector('#ai-rename-save');
         this.cancelBtn.addEventListener('click', () => this.close(null));
-        this.saveBtn.addEventListener('click', () => { const v = this.input.value.trim(); if (v) this.close(v); });
-        this.input.addEventListener('keydown', (e) => { if (e.key === 'Enter') this.saveBtn.click(); if (e.key === 'Escape') this.cancelBtn.click(); });
+        this.saveBtn.addEventListener('click', () => {
+            const v = this.input.value.trim();
+            if (v) this.close(v);
+        });
+        this.input.addEventListener('keydown', e => {
+            if (e.key === 'Enter') this.saveBtn.click();
+            if (e.key === 'Escape') this.cancelBtn.click();
+        });
         this.container.querySelector('.absolute').addEventListener('click', () => this.close(null));
     }
 
@@ -2894,11 +3054,16 @@ class AiRenameModal extends HTMLElement {
         this.card.classList.remove('scale-95');
         this.card.classList.add('scale-100');
         setTimeout(() => this.input.focus(), 100);
-        return new Promise(r => this.resolve = r);
+        return new Promise(r => (this.resolve = r));
     }
     close(val) {
-        this.container.classList.add('opacity-0', 'pointer-events-none'); this.card.classList.remove('scale-100'); this.card.classList.add('scale-95');
-        if (this.resolve) { this.resolve(val); this.resolve = null; }
+        this.container.classList.add('opacity-0', 'pointer-events-none');
+        this.card.classList.remove('scale-100');
+        this.card.classList.add('scale-95');
+        if (this.resolve) {
+            this.resolve(val);
+            this.resolve = null;
+        }
     }
 }
 
@@ -2932,7 +3097,7 @@ class AiQuiz extends HTMLElement {
                 const file = await aiFileStore.get(fileId);
                 if (file) {
                     const reader = new FileReader();
-                    reader.onload = async (e) => {
+                    reader.onload = async e => {
                         this.quizData = JSON.parse(e.target.result);
                         this.renderStart();
                     };
@@ -2965,7 +3130,7 @@ class AiQuiz extends HTMLElement {
         } else if (src) {
             try {
                 if (!src || src === '#') throw new Error('Quiz source URL is missing or invalid.');
-                
+
                 let fetchUrl = src;
                 const isR2 = src.includes('.r2.dev') || src.includes('.cloudflarestorage.com');
                 if (isR2) {
@@ -2992,16 +3157,21 @@ class AiQuiz extends HTMLElement {
         } else {
             // Mock data if no src or fileId provided for demo
             this.quizData = {
-                title: this.getAttribute('title') || "Knowledge Check",
+                title: this.getAttribute('title') || 'Knowledge Check',
                 questions: [
                     {
-                        question: "What does LLM stand for?",
-                        options: ["Large Language Model", "Linear Logic Machine", "Light Learning Module", "Logical Language Maker"],
+                        question: 'What does LLM stand for?',
+                        options: [
+                            'Large Language Model',
+                            'Linear Logic Machine',
+                            'Light Learning Module',
+                            'Logical Language Maker'
+                        ],
                         answer: 0
                     },
                     {
-                        question: "Which company developed Gemini?",
-                        options: ["OpenAI", "Microsoft", "Google", "Meta"],
+                        question: 'Which company developed Gemini?',
+                        options: ['OpenAI', 'Microsoft', 'Google', 'Meta'],
                         answer: 2
                     }
                 ]
@@ -3083,9 +3253,7 @@ class AiQuiz extends HTMLElement {
         if (this.quizData && this.quizData.questions) {
             this.quizData.questions.forEach(q => {
                 const options = q.options || q.choices || [];
-                q._shuffledOptions = this.shuffleArray(
-                    options.map((opt, idx) => ({ opt, originalIndex: idx }))
-                );
+                q._shuffledOptions = this.shuffleArray(options.map((opt, idx) => ({ opt, originalIndex: idx })));
             });
         }
 
@@ -3116,7 +3284,7 @@ class AiQuiz extends HTMLElement {
     renderQuestion() {
         const q = this.quizData.questions[this.currentQuestionIndex];
         const options = q.options || q.choices || [];
-        const progress = ((this.currentQuestionIndex) / this.quizData.questions.length) * 100;
+        const progress = (this.currentQuestionIndex / this.quizData.questions.length) * 100;
         const optionsToRender = q._shuffledOptions || options.map((o, i) => ({ opt: o, originalIndex: i }));
 
         this.innerHTML = `
@@ -3129,30 +3297,32 @@ class AiQuiz extends HTMLElement {
                 </div>
                 <h3 class="text-xl font-bold text-white mb-8 text-left">${q.question || q.text || ''}</h3>
                 <div class="space-y-3 mb-8">
-                    ${optionsToRender.map((shuffled, i) => {
-            const isCorrect = shuffled.originalIndex === this.getCorrectAnswerIndex(q);
-            const isSelected = this.selectedAnswer === shuffled.originalIndex;
+                    ${optionsToRender
+                        .map((shuffled, i) => {
+                            const isCorrect = shuffled.originalIndex === this.getCorrectAnswerIndex(q);
+                            const isSelected = this.selectedAnswer === shuffled.originalIndex;
 
-            let btnClass = "border-slate-800 bg-slate-900/50 text-slate-300 hover:border-teal-500/50 hover:bg-teal-500/5";
-            let icon = String.fromCharCode(65 + i);
-            let iconClass = "flex-shrink-0 border-slate-700 group-hover:border-teal-500";
+                            let btnClass =
+                                'border-slate-800 bg-slate-900/50 text-slate-300 hover:border-teal-500/50 hover:bg-teal-500/5';
+                            let icon = String.fromCharCode(65 + i);
+                            let iconClass = 'flex-shrink-0 border-slate-700 group-hover:border-teal-500';
 
-            if (this.showingFeedback) {
-                if (isCorrect) {
-                    btnClass = "border-green-500/50 bg-green-500/20 text-green-400";
-                    icon = "check_circle";
-                    iconClass = "flex-shrink-0 border-green-500 text-green-500 bg-green-500/10";
-                } else if (isSelected) {
-                    btnClass = "border-red-500/50 bg-red-500/20 text-red-400";
-                    icon = "cancel";
-                    iconClass = "flex-shrink-0 border-red-500 text-red-500 bg-red-500/10";
-                } else {
-                    btnClass = "border-slate-800 bg-slate-900/10 text-slate-600 opacity-40";
-                    iconClass = "flex-shrink-0 border-slate-800 text-slate-700";
-                }
-            }
+                            if (this.showingFeedback) {
+                                if (isCorrect) {
+                                    btnClass = 'border-green-500/50 bg-green-500/20 text-green-400';
+                                    icon = 'check_circle';
+                                    iconClass = 'flex-shrink-0 border-green-500 text-green-500 bg-green-500/10';
+                                } else if (isSelected) {
+                                    btnClass = 'border-red-500/50 bg-red-500/20 text-red-400';
+                                    icon = 'cancel';
+                                    iconClass = 'flex-shrink-0 border-red-500 text-red-500 bg-red-500/10';
+                                } else {
+                                    btnClass = 'border-slate-800 bg-slate-900/10 text-slate-600 opacity-40';
+                                    iconClass = 'flex-shrink-0 border-slate-800 text-slate-700';
+                                }
+                            }
 
-            return `
+                            return `
                             <button class="w-full p-4 rounded-xl border transition-all group option-btn ${btnClass} ${this.showingFeedback ? 'cursor-default' : 'cursor-pointer'}" 
                                     data-original-index="${shuffled.originalIndex}" 
                                     ${this.showingFeedback ? 'disabled' : ''}>
@@ -3164,10 +3334,13 @@ class AiQuiz extends HTMLElement {
                                 </div>
                             </button>
                         `;
-        }).join('')}
+                        })
+                        .join('')}
                 </div>
                 
-                ${this.showingFeedback ? `
+                ${
+                    this.showingFeedback
+                        ? `
                     <div class="mb-8 p-6 rounded-xl bg-slate-900/40 border border-slate-800 animate-in fade-in slide-in-from-top-4 duration-500">
                         <div class="flex items-start gap-4">
                             <div class="size-8 rounded-full bg-teal-500/10 text-teal-500 flex items-center justify-center shrink-0">
@@ -3187,7 +3360,9 @@ class AiQuiz extends HTMLElement {
                             <span class="material-symbols-outlined">arrow_forward</span>
                         </button>
                     </div>
-                ` : ''}
+                `
+                        : ''
+                }
             </div>
         `;
 
@@ -3203,15 +3378,19 @@ class AiQuiz extends HTMLElement {
     getRationale(q, selectedIndex) {
         // 1. Check for a general rationale for the whole question
         let rationale = q.rationale || q.explanation || q.feedback || q.rationale_text || q.explanation_text;
-        
+
         // 2. Check for per-option rationale
         const options = q.options || q.choices || [];
         const selectedOption = options[selectedIndex];
         if (selectedOption && typeof selectedOption === 'object') {
-            const optRationale = selectedOption.rationale || selectedOption.explanation || selectedOption.feedback || selectedOption.rationale_text;
+            const optRationale =
+                selectedOption.rationale ||
+                selectedOption.explanation ||
+                selectedOption.feedback ||
+                selectedOption.rationale_text;
             if (optRationale) rationale = optRationale;
         }
-        
+
         // 3. If still no rationale, check if the question has a general rationale for the correct answer
         if (!rationale) {
             const correctIndex = this.getCorrectAnswerIndex(q);
@@ -3262,11 +3441,14 @@ class AiQuiz extends HTMLElement {
 
         // Only save if this attempt is better than the previous best
         if (!previous || this.score > previous.score) {
-            localStorage.setItem(quizId, JSON.stringify({
-                score: this.score,
-                passed: this.passed,
-                timestamp: new Date().getTime()
-            }));
+            localStorage.setItem(
+                quizId,
+                JSON.stringify({
+                    score: this.score,
+                    passed: this.passed,
+                    timestamp: new Date().getTime()
+                })
+            );
         }
 
         if (this.passed) {
@@ -3291,18 +3473,26 @@ class AiQuiz extends HTMLElement {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
-                body: JSON.stringify({ 
+                body: JSON.stringify({
                     moduleId: this.getAttribute('module-id'),
                     score: this.score,
                     completed: this.passed
                 })
-            }).then(res => {
-                if (res.ok) {
-                    window.dispatchEvent(new CustomEvent('ai-progress-update', { 
-                        detail: { moduleId: this.getAttribute('module-id'), score: this.score, passed: this.passed } 
-                    }));
-                }
-            }).catch(err => console.error('Failed to update quiz progress:', err));
+            })
+                .then(res => {
+                    if (res.ok) {
+                        window.dispatchEvent(
+                            new CustomEvent('ai-progress-update', {
+                                detail: {
+                                    moduleId: this.getAttribute('module-id'),
+                                    score: this.score,
+                                    passed: this.passed
+                                }
+                            })
+                        );
+                    }
+                })
+                .catch(err => console.error('Failed to update quiz progress:', err));
         }
 
         this.renderResults();
@@ -3338,7 +3528,6 @@ class AiQuiz extends HTMLElement {
         }
     }
 }
-
 
 class AiQuizUploadModal extends HTMLElement {
     constructor() {
@@ -3402,7 +3591,7 @@ class AiQuizUploadModal extends HTMLElement {
         this.droppedFile = null;
 
         this.fileTrigger.addEventListener('click', () => this.fileInput.click());
-        this.fileInput.addEventListener('change', (e) => {
+        this.fileInput.addEventListener('change', e => {
             if (e.target.files && e.target.files[0]) {
                 this.droppedFile = null; // Clear any dropped file
                 this.handleFileSelected(e.target.files[0]);
@@ -3410,19 +3599,19 @@ class AiQuizUploadModal extends HTMLElement {
         });
 
         // Drag-and-drop support
-        this.fileTrigger.addEventListener('dragover', (e) => {
+        this.fileTrigger.addEventListener('dragover', e => {
             e.preventDefault();
             e.stopPropagation();
             this.fileTrigger.classList.add('border-teal-500', 'bg-teal-500/5', 'text-teal-400');
             this.fileTrigger.classList.remove('border-slate-800');
         });
-        this.fileTrigger.addEventListener('dragleave', (e) => {
+        this.fileTrigger.addEventListener('dragleave', e => {
             e.preventDefault();
             e.stopPropagation();
             this.fileTrigger.classList.remove('border-teal-500', 'bg-teal-500/5', 'text-teal-400');
             this.fileTrigger.classList.add('border-slate-800');
         });
-        this.fileTrigger.addEventListener('drop', (e) => {
+        this.fileTrigger.addEventListener('drop', e => {
             e.preventDefault();
             e.stopPropagation();
             this.fileTrigger.classList.remove('border-teal-500', 'bg-teal-500/5', 'text-teal-400');
@@ -3445,7 +3634,7 @@ class AiQuizUploadModal extends HTMLElement {
                 return window.alert('Please select a JSON file.');
             }
             const file = this.droppedFile || this.fileInput.files[0];
-            
+
             // Show loading state
             const originalText = this.confirmBtn.textContent;
             this.confirmBtn.disabled = true;
@@ -3454,7 +3643,7 @@ class AiQuizUploadModal extends HTMLElement {
             try {
                 const formData = new FormData();
                 formData.append('file', file);
-                
+
                 const response = await fetch('/api/upload', {
                     method: 'POST',
                     body: formData,
@@ -3466,11 +3655,11 @@ class AiQuizUploadModal extends HTMLElement {
                     try {
                         const errData = await response.json();
                         errorMessage = errData.error || errorMessage;
-                    } catch(e) {}
+                    } catch (e) {}
                     throw new Error(errorMessage);
                 }
                 const uploadResult = await response.json();
-                
+
                 this.close({
                     title: this.titleInput.value || file.name.split('.').shift(),
                     threshold: this.thresholdInput.value,
@@ -3478,7 +3667,9 @@ class AiQuizUploadModal extends HTMLElement {
                 });
             } catch (err) {
                 console.error('Quiz upload error:', err);
-                window.alert(`CRITICAL ERROR: Failed to upload quiz to Cloudflare R2. ${err.message}. Content must be hosted on R2 for global accessibility.`);
+                window.alert(
+                    `CRITICAL ERROR: Failed to upload quiz to Cloudflare R2. ${err.message}. Content must be hosted on R2 for global accessibility.`
+                );
                 this.confirmBtn.disabled = false;
                 this.confirmBtn.textContent = originalText;
             } finally {
@@ -3525,7 +3716,10 @@ class AiQuizUploadModal extends HTMLElement {
 }
 
 class AiQuizModal extends HTMLElement {
-    constructor() { super(); this.resolve = null; }
+    constructor() {
+        super();
+        this.resolve = null;
+    }
     connectedCallback() {
         this.innerHTML = `
             <div id="ai-quiz-modal-container" class="fixed inset-0 z-[1001] flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300">
@@ -3663,11 +3857,11 @@ class AiProfileModal extends HTMLElement {
             const response = await fetch('/api/auth/me', { credentials: 'include' });
             if (!response.ok) throw new Error('Failed to fetch user data');
             const data = await response.json();
-            
+
             this.firstNameInput.value = data.user.firstName;
             this.lastNameInput.value = data.user.lastName;
             this.emailInput.value = data.user.email;
-            
+
             this.saveBtn.disabled = false;
             this.saveBtn.textContent = 'Save Changes';
         } catch (err) {
@@ -3778,17 +3972,17 @@ class AiLinkInsertModal extends HTMLElement {
         this.cancelBtn.addEventListener('click', () => this.close());
         this.saveBtn.addEventListener('click', () => this.handleSave());
         this.container.querySelector('.absolute').addEventListener('click', () => this.close());
-        
+
         // Handle Enter key
         [this.nameInput, this.urlInput].forEach(input => {
-            input.addEventListener('keydown', (e) => {
+            input.addEventListener('keydown', e => {
                 if (e.key === 'Enter') this.handleSave();
             });
         });
     }
 
     show(data = null) {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             this.resolve = resolve;
             if (data) {
                 this.titleEl.textContent = 'Edit External Link';
@@ -3799,7 +3993,7 @@ class AiLinkInsertModal extends HTMLElement {
                 this.nameInput.value = '';
                 this.urlInput.value = '';
             }
-            
+
             this.container.classList.remove('opacity-0', 'pointer-events-none');
             this.card.classList.remove('scale-95');
             this.card.classList.add('scale-100');
@@ -3810,7 +4004,7 @@ class AiLinkInsertModal extends HTMLElement {
     handleSave() {
         const title = this.nameInput.value.trim();
         const url = this.urlInput.value.trim();
-        
+
         if (!title || !url) {
             alert('Please provide both a name and a URL.');
             return;
@@ -3838,7 +4032,7 @@ class AiLinkInsertModal extends HTMLElement {
 let quillFormatsRegistered = false;
 function registerQuillFormats() {
     if (quillFormatsRegistered || typeof Quill === 'undefined') return;
-    
+
     console.log('[Quill] Registering custom formats...');
     try {
         const Block = Quill.import('blots/block');
@@ -3860,32 +4054,35 @@ function registerQuillFormats() {
 
         // Table Support for Quill 1.x (Stable Wrapper Approach)
         console.log('[Quill] Registering Contextual Table wrapper...');
-            class TableBlot extends BlockEmbed {
-                static create(value) {
-                    let node = super.create();
-                    node.setAttribute('contenteditable', 'false');
+        class TableBlot extends BlockEmbed {
+            static create(value) {
+                let node = super.create();
+                node.setAttribute('contenteditable', 'false');
 
-                    let tableHtml = '';
-                    if (typeof value === 'object') {
-                        const rows = value.rows || 2;
-                        const cols = value.cols || 2;
-                        tableHtml = '<table style="border-collapse: collapse; width: 100%; border: 1px solid #cbd5e1; margin: 10px 0;"><tbody>';
-                        for (let i = 0; i < rows; i++) {
-                            tableHtml += '<tr>';
-                            for (let j = 0; j < cols; j++) {
-                                tableHtml += '<td contenteditable="true" style="border: 1px solid #cbd5e1; padding: 12px; min-width: 50px;"><br></td>';
-                            }
-                            tableHtml += '</tr>';
+                let tableHtml = '';
+                if (typeof value === 'object') {
+                    const rows = value.rows || 2;
+                    const cols = value.cols || 2;
+                    tableHtml =
+                        '<table style="border-collapse: collapse; width: 100%; border: 1px solid #cbd5e1; margin: 10px 0;"><tbody>';
+                    for (let i = 0; i < rows; i++) {
+                        tableHtml += '<tr>';
+                        for (let j = 0; j < cols; j++) {
+                            tableHtml +=
+                                '<td contenteditable="true" style="border: 1px solid #cbd5e1; padding: 12px; min-width: 50px;"><br></td>';
                         }
-                        tableHtml += '</tbody></table>';
-                    } else if (typeof value === 'string' && value.length > 0) {
-                        tableHtml = value;
-                    } else {
-                        // Default 2x2
-                        tableHtml = '<table style="border-collapse: collapse; width: 100%; border: 1px solid #cbd5e1; margin: 10px 0;"><tbody><tr><td contenteditable="true" style="border: 1px solid #cbd5e1; padding: 12px; min-width: 50px;"><br></td><td contenteditable="true" style="border: 1px solid #cbd5e1; padding: 12px; min-width: 50px;"><br></td></tr><tr><td contenteditable="true" style="border: 1px solid #cbd5e1; padding: 12px; min-width: 50px;"><br></td><td contenteditable="true" style="border: 1px solid #cbd5e1; padding: 12px; min-width: 50px;"><br></td></tr></tbody></table>';
+                        tableHtml += '</tr>';
                     }
+                    tableHtml += '</tbody></table>';
+                } else if (typeof value === 'string' && value.length > 0) {
+                    tableHtml = value;
+                } else {
+                    // Default 2x2
+                    tableHtml =
+                        '<table style="border-collapse: collapse; width: 100%; border: 1px solid #cbd5e1; margin: 10px 0;"><tbody><tr><td contenteditable="true" style="border: 1px solid #cbd5e1; padding: 12px; min-width: 50px;"><br></td><td contenteditable="true" style="border: 1px solid #cbd5e1; padding: 12px; min-width: 50px;"><br></td></tr><tr><td contenteditable="true" style="border: 1px solid #cbd5e1; padding: 12px; min-width: 50px;"><br></td><td contenteditable="true" style="border: 1px solid #cbd5e1; padding: 12px; min-width: 50px;"><br></td></tr></tbody></table>';
+                }
 
-                    node.innerHTML = `
+                node.innerHTML = `
                         <div class="ql-table-controls apple-blur" contenteditable="false" style="
                             position: absolute;
                             top: -48px;
@@ -3913,115 +4110,128 @@ function registerQuillFormats() {
                         <div class="ql-table-wrapper" style="position: relative;">${tableHtml}</div>
                     `;
 
-                    // Context detection helper
-                    const getContext = () => {
-                        const sel = window.getSelection();
-                        if (!sel.rangeCount) return null;
-                        let node = sel.getRangeAt(0).startContainer;
-                        while (node && node !== this) {
-                            if (node.nodeType === 1 && node.tagName === 'TD') return node;
-                            node = node.parentNode;
-                        }
-                        return null;
-                    };
+                // Context detection helper
+                const getContext = () => {
+                    const sel = window.getSelection();
+                    if (!sel.rangeCount) return null;
+                    let node = sel.getRangeAt(0).startContainer;
+                    while (node && node !== this) {
+                        if (node.nodeType === 1 && node.tagName === 'TD') return node;
+                        node = node.parentNode;
+                    }
+                    return null;
+                };
 
-                    // Action logic
-                    node.querySelector('.add-row').onclick = (e) => {
-                        e.preventDefault(); e.stopPropagation();
-                        const td = getContext();
-                        const table = node.querySelector('table');
-                        const targetRow = td ? td.parentNode : table.rows[table.rows.length - 1];
-                        const newRow = table.insertRow(targetRow.rowIndex + 1);
-                        for (let i = 0; i < targetRow.cells.length; i++) {
-                            const newCell = newRow.insertCell();
-                            newCell.contentEditable = "true";
-                            newCell.style.border = "1px solid #cbd5e1";
-                            newCell.style.padding = "12px";
-                            newCell.innerHTML = "<br>";
-                        }
-                    };
+                // Action logic
+                node.querySelector('.add-row').onclick = e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const td = getContext();
+                    const table = node.querySelector('table');
+                    const targetRow = td ? td.parentNode : table.rows[table.rows.length - 1];
+                    const newRow = table.insertRow(targetRow.rowIndex + 1);
+                    for (let i = 0; i < targetRow.cells.length; i++) {
+                        const newCell = newRow.insertCell();
+                        newCell.contentEditable = 'true';
+                        newCell.style.border = '1px solid #cbd5e1';
+                        newCell.style.padding = '12px';
+                        newCell.innerHTML = '<br>';
+                    }
+                };
 
-                    node.querySelector('.del-row').onclick = (e) => {
-                        e.preventDefault(); e.stopPropagation();
-                        const td = getContext();
-                        const table = node.querySelector('table');
-                        if (table.rows.length <= 1) return;
-                        const targetRow = td ? td.parentNode : table.rows[table.rows.length - 1];
-                        table.deleteRow(targetRow.rowIndex);
-                    };
+                node.querySelector('.del-row').onclick = e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const td = getContext();
+                    const table = node.querySelector('table');
+                    if (table.rows.length <= 1) return;
+                    const targetRow = td ? td.parentNode : table.rows[table.rows.length - 1];
+                    table.deleteRow(targetRow.rowIndex);
+                };
 
-                    node.querySelector('.add-col').onclick = (e) => {
-                        e.preventDefault(); e.stopPropagation();
-                        const td = getContext();
-                        const table = node.querySelector('table');
-                        const colIndex = td ? td.cellIndex : table.rows[0].cells.length - 1;
-                        for (let i = 0; i < table.rows.length; i++) {
-                            const newCell = table.rows[i].insertCell(colIndex + 1);
-                            newCell.contentEditable = "true";
-                            newCell.style.border = "1px solid #cbd5e1";
-                            newCell.style.padding = "12px";
-                            newCell.innerHTML = "<br>";
-                        }
-                    };
+                node.querySelector('.add-col').onclick = e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const td = getContext();
+                    const table = node.querySelector('table');
+                    const colIndex = td ? td.cellIndex : table.rows[0].cells.length - 1;
+                    for (let i = 0; i < table.rows.length; i++) {
+                        const newCell = table.rows[i].insertCell(colIndex + 1);
+                        newCell.contentEditable = 'true';
+                        newCell.style.border = '1px solid #cbd5e1';
+                        newCell.style.padding = '12px';
+                        newCell.innerHTML = '<br>';
+                    }
+                };
 
-                    node.querySelector('.del-col').onclick = (e) => {
-                        e.preventDefault(); e.stopPropagation();
-                        const td = getContext();
-                        const table = node.querySelector('table');
-                        const colCount = table.rows[0].cells.length;
-                        if (colCount <= 1) return;
-                        const colIndex = td ? td.cellIndex : colCount - 1;
-                        for (let i = 0; i < table.rows.length; i++) {
-                            table.rows[i].deleteCell(colIndex);
-                        }
-                    };
+                node.querySelector('.del-col').onclick = e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const td = getContext();
+                    const table = node.querySelector('table');
+                    const colCount = table.rows[0].cells.length;
+                    if (colCount <= 1) return;
+                    const colIndex = td ? td.cellIndex : colCount - 1;
+                    for (let i = 0; i < table.rows.length; i++) {
+                        table.rows[i].deleteCell(colIndex);
+                    }
+                };
 
-                    node.querySelector('.delete-table').onclick = (e) => {
-                        e.preventDefault(); e.stopPropagation();
-                        const modal = document.querySelector('ai-confirm-modal');
-                        if (modal) {
-                            modal.show({
+                node.querySelector('.delete-table').onclick = e => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const modal = document.querySelector('ai-confirm-modal');
+                    if (modal) {
+                        modal
+                            .show({
                                 title: 'Delete Table',
                                 message: 'Are you sure you want to delete this table entirely?',
                                 confirmText: 'Delete Table',
                                 type: 'danger'
-                            }).then(confirmed => {
+                            })
+                            .then(confirmed => {
                                 if (confirmed) node.remove();
                             });
-                        } else if (confirm('Delete this table entirely?')) {
-                            node.remove();
-                        }
+                    } else if (confirm('Delete this table entirely?')) {
+                        node.remove();
+                    }
+                };
+
+                // Hover logic
+                node.onmouseenter = () => {
+                    const ctrls = node.querySelector('.ql-table-controls');
+                    if (ctrls) ctrls.style.display = 'flex';
+                };
+                node.onmouseleave = () => {
+                    const ctrls = node.querySelector('.ql-table-controls');
+                    if (ctrls) ctrls.style.display = 'none';
+                };
+
+                // Button styles
+                node.querySelectorAll('button').forEach(btn => {
+                    const isDanger = btn.className.includes('del') || btn.className.includes('delete');
+                    btn.onmouseenter = () => {
+                        btn.style.background = isDanger ? 'var(--ai-danger-soft)' : 'var(--ai-bg-active)';
+                        btn.style.color = isDanger ? 'var(--ai-danger-hover)' : 'var(--ai-text-main)';
                     };
+                    btn.onmouseleave = () => {
+                        btn.style.background = 'transparent';
+                        btn.style.color = isDanger ? 'var(--ai-danger)' : 'var(--ai-text-dim)';
+                    };
+                });
 
-                    // Hover logic
-                    node.onmouseenter = () => { const ctrls = node.querySelector('.ql-table-controls'); if (ctrls) ctrls.style.display = 'flex'; };
-                    node.onmouseleave = () => { const ctrls = node.querySelector('.ql-table-controls'); if (ctrls) ctrls.style.display = 'none'; };
-
-                    // Button styles
-                    node.querySelectorAll('button').forEach(btn => {
-                        const isDanger = btn.className.includes('del') || btn.className.includes('delete');
-                        btn.onmouseenter = () => { 
-                            btn.style.background = isDanger ? 'var(--ai-danger-soft)' : 'var(--ai-bg-active)';
-                            btn.style.color = isDanger ? 'var(--ai-danger-hover)' : 'var(--ai-text-main)';
-                        };
-                        btn.onmouseleave = () => { 
-                            btn.style.background = 'transparent'; 
-                            btn.style.color = isDanger ? 'var(--ai-danger)' : 'var(--ai-text-dim)';
-                        };
-                    });
-
-                    return node;
-                }
-                static value(node) {
-                    const wrapper = node.querySelector('.ql-table-wrapper');
-                    return wrapper ? wrapper.innerHTML : node.innerHTML;
-                }
+                return node;
             }
-            TableBlot.blotName = 'table';
-            TableBlot.tagName = 'div';
-            TableBlot.className = 'ql-table-container';
-            Quill.register(TableBlot, true);
-        
+            static value(node) {
+                const wrapper = node.querySelector('.ql-table-wrapper');
+                return wrapper ? wrapper.innerHTML : node.innerHTML;
+            }
+        }
+        TableBlot.blotName = 'table';
+        TableBlot.tagName = 'div';
+        TableBlot.className = 'ql-table-container';
+        Quill.register(TableBlot, true);
+
         quillFormatsRegistered = true;
     } catch (e) {
         console.error('[Quill] Global registration error:', e);
@@ -4386,7 +4596,7 @@ class AiPageEditorModal extends HTMLElement {
 
     initQuill() {
         if (this.quill) return;
-        
+
         console.log('[AiPageEditorModal] Initializing Quill...');
         if (typeof Quill === 'undefined') {
             console.error('Quill is not loaded.');
@@ -4403,12 +4613,12 @@ class AiPageEditorModal extends HTMLElement {
                 toolbar: {
                     container: '#quill-toolbar',
                     handlers: {
-                        'divider': function() {
+                        divider: function () {
                             const range = this.quill.getSelection(true);
                             this.quill.insertEmbed(range.index, 'divider', true);
                             this.quill.setSelection(range.index + 1);
                         },
-                        'callout': function() {
+                        callout: function () {
                             const range = this.quill.getSelection(true);
                             if (range) {
                                 const [line] = this.quill.getLine(range.index);
@@ -4427,106 +4637,119 @@ class AiPageEditorModal extends HTMLElement {
         const tableBtn = this.querySelector('.ql-table');
         if (tableBtn) {
             console.log('[Quill] Manual listener attached to Table button');
-            tableBtn.addEventListener('click', (e) => {
-                e.preventDefault(); e.stopPropagation();
-                
-                let range = this.quill.getSelection(true);
-                if (!range) range = { index: this.quill.getLength() - 1, length: 0 };
+            tableBtn.addEventListener(
+                'click',
+                e => {
+                    e.preventDefault();
+                    e.stopPropagation();
 
-                // Toggle logic
-                let picker = this.container.querySelector('#ql-table-picker');
-                if (picker) { picker.remove(); return; }
+                    let range = this.quill.getSelection(true);
+                    if (!range) range = { index: this.quill.getLength() - 1, length: 0 };
 
-                picker = document.createElement('div');
-                picker.id = 'ql-table-picker';
-                picker.className = 'ql-table-picker apple-blur';
-                // Inline styles for guaranteed visibility and alignment
-                Object.assign(picker.style, {
-                    position: 'absolute',
-                    zIndex: '10000',
-                    background: 'var(--ai-bg-dark)',
-                    padding: '16px',
-                    borderRadius: 'var(--ai-radius-xl)',
-                    border: '1px solid var(--ai-border)',
-                    boxShadow: 'var(--ai-shadow-xl)',
-                    display: 'block',
-                    animation: 'pickerIn 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
-                });
-                
-                // Position relative to toolbar button
-                const btnRect = tableBtn.getBoundingClientRect();
-                const containerRect = this.container.getBoundingClientRect();
-                picker.style.top = `${btnRect.bottom - containerRect.top + 8}px`;
-                picker.style.left = `${btnRect.left - containerRect.left}px`;
-                
-                picker.innerHTML = `
+                    // Toggle logic
+                    let picker = this.container.querySelector('#ql-table-picker');
+                    if (picker) {
+                        picker.remove();
+                        return;
+                    }
+
+                    picker = document.createElement('div');
+                    picker.id = 'ql-table-picker';
+                    picker.className = 'ql-table-picker apple-blur';
+                    // Inline styles for guaranteed visibility and alignment
+                    Object.assign(picker.style, {
+                        position: 'absolute',
+                        zIndex: '10000',
+                        background: 'var(--ai-bg-dark)',
+                        padding: '16px',
+                        borderRadius: 'var(--ai-radius-xl)',
+                        border: '1px solid var(--ai-border)',
+                        boxShadow: 'var(--ai-shadow-xl)',
+                        display: 'block',
+                        animation: 'pickerIn 0.2s cubic-bezier(0.16, 1, 0.3, 1)'
+                    });
+
+                    // Position relative to toolbar button
+                    const btnRect = tableBtn.getBoundingClientRect();
+                    const containerRect = this.container.getBoundingClientRect();
+                    picker.style.top = `${btnRect.bottom - containerRect.top + 8}px`;
+                    picker.style.left = `${btnRect.left - containerRect.left}px`;
+
+                    picker.innerHTML = `
                     <div class="ql-table-picker-title" style="font-size: 10px; font-weight: 800; color: var(--ai-text-muted); margin-bottom: 12px; text-transform: uppercase; tracking-widest: 0.1em;">Table 2x2</div>
                     <div class="ql-table-picker-grid" style="display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px;"></div>
                 `;
 
-                const grid = picker.querySelector('.ql-table-picker-grid');
-                const title = picker.querySelector('.ql-table-picker-title');
-                
-                for (let r = 1; r <= 8; r++) {
-                    for (let c = 1; c <= 10; c++) {
-                        const cell = document.createElement('div');
-                        cell.className = 'ql-table-picker-cell';
-                        cell.dataset.row = r;
-                        cell.dataset.col = c;
-                        Object.assign(cell.style, {
-                            width: '18px', height: '18px', border: '1px solid rgba(255, 255, 255, 0.05)',
-                            borderRadius: '3px', cursor: 'pointer', transition: 'all 0.1s',
-                            background: 'rgba(255, 255, 255, 0.02)'
-                        });
-                        
-                        cell.onmouseenter = () => {
-                            title.innerText = `Table ${r}x${c}`;
-                            grid.querySelectorAll('.ql-table-picker-cell').forEach(item => {
-                                const ir = parseInt(item.dataset.row);
-                                const ic = parseInt(item.dataset.col);
-                                if (ir <= r && ic <= c) {
-                                    item.style.background = 'var(--ai-primary-soft)';
-                                    item.style.borderColor = 'var(--ai-primary)';
-                                    item.style.boxShadow = '0 0 8px var(--ai-primary-soft)';
-                                } else {
-                                    item.style.background = 'rgba(255, 255, 255, 0.02)';
-                                    item.style.borderColor = 'rgba(255, 255, 255, 0.05)';
-                                    item.style.boxShadow = 'none';
-                                }
+                    const grid = picker.querySelector('.ql-table-picker-grid');
+                    const title = picker.querySelector('.ql-table-picker-title');
+
+                    for (let r = 1; r <= 8; r++) {
+                        for (let c = 1; c <= 10; c++) {
+                            const cell = document.createElement('div');
+                            cell.className = 'ql-table-picker-cell';
+                            cell.dataset.row = r;
+                            cell.dataset.col = c;
+                            Object.assign(cell.style, {
+                                width: '18px',
+                                height: '18px',
+                                border: '1px solid rgba(255, 255, 255, 0.05)',
+                                borderRadius: '3px',
+                                cursor: 'pointer',
+                                transition: 'all 0.1s',
+                                background: 'rgba(255, 255, 255, 0.02)'
                             });
-                        };
 
-                        cell.onclick = (ev) => {
-                            ev.preventDefault(); ev.stopPropagation();
-                            console.log(`[Quill] Picker: Inserting ${r}x${c} at index ${range.index}`);
-                            
-                            // 1. Close picker
+                            cell.onmouseenter = () => {
+                                title.innerText = `Table ${r}x${c}`;
+                                grid.querySelectorAll('.ql-table-picker-cell').forEach(item => {
+                                    const ir = parseInt(item.dataset.row);
+                                    const ic = parseInt(item.dataset.col);
+                                    if (ir <= r && ic <= c) {
+                                        item.style.background = 'var(--ai-primary-soft)';
+                                        item.style.borderColor = 'var(--ai-primary)';
+                                        item.style.boxShadow = '0 0 8px var(--ai-primary-soft)';
+                                    } else {
+                                        item.style.background = 'rgba(255, 255, 255, 0.02)';
+                                        item.style.borderColor = 'rgba(255, 255, 255, 0.05)';
+                                        item.style.boxShadow = 'none';
+                                    }
+                                });
+                            };
+
+                            cell.onclick = ev => {
+                                ev.preventDefault();
+                                ev.stopPropagation();
+                                console.log(`[Quill] Picker: Inserting ${r}x${c} at index ${range.index}`);
+
+                                // 1. Close picker
+                                picker.remove();
+
+                                // 2. Insert table
+                                try {
+                                    const index = Math.min(range.index, this.quill.getLength() - 1);
+                                    this.quill.focus();
+                                    this.quill.insertEmbed(index, 'table', { rows: r, cols: c });
+                                    this.quill.setSelection(index + 1, 0, 'silent');
+                                } catch (err) {
+                                    console.error('[Quill] Failed to insert table:', err);
+                                }
+                            };
+                            grid.appendChild(cell);
+                        }
+                    }
+
+                    this.container.appendChild(picker);
+
+                    const cleanup = ev => {
+                        if (!picker.contains(ev.target) && ev.target !== tableBtn) {
                             picker.remove();
-                            
-                            // 2. Insert table
-                            try {
-                                const index = Math.min(range.index, this.quill.getLength() - 1);
-                                this.quill.focus();
-                                this.quill.insertEmbed(index, 'table', { rows: r, cols: c });
-                                this.quill.setSelection(index + 1, 0, 'silent');
-                            } catch (err) {
-                                console.error('[Quill] Failed to insert table:', err);
-                            }
-                        };
-                        grid.appendChild(cell);
-                    }
-                }
-
-                this.container.appendChild(picker);
-
-                const cleanup = (ev) => {
-                    if (!picker.contains(ev.target) && ev.target !== tableBtn) {
-                        picker.remove();
-                        document.removeEventListener('mousedown', cleanup);
-                    }
-                };
-                setTimeout(() => document.addEventListener('mousedown', cleanup), 10);
-            }, true);
+                            document.removeEventListener('mousedown', cleanup);
+                        }
+                    };
+                    setTimeout(() => document.addEventListener('mousedown', cleanup), 10);
+                },
+                true
+            );
         } else {
             console.error('[Quill] Could not find .ql-table button for manual listener');
         }
@@ -4534,7 +4757,7 @@ class AiPageEditorModal extends HTMLElement {
 
     async show(data = { title: '', content: '' }) {
         this.initQuill();
-        
+
         this.titleInput.value = data.title || '';
         this.quill.root.innerHTML = data.content || '';
 
@@ -4586,3 +4809,111 @@ customElements.define('ai-quiz', AiQuiz);
 customElements.define('ai-quiz-modal', AiQuizModal);
 customElements.define('ai-quiz-upload-modal', AiQuizUploadModal);
 customElements.define('ai-profile-modal', AiProfileModal);
+
+/**
+ * AiRating component for 5-star rating system
+ */
+class AiRating extends HTMLElement {
+    constructor() {
+        super();
+        this.stars = 0;
+        this.trackId = this.getAttribute('track-id');
+        this.currentRating = 0;
+        this.totalRatings = 0;
+    }
+
+    async connectedCallback() {
+        this.render();
+        this.fetchStats();
+    }
+
+    async fetchStats() {
+        if (!this.trackId) return;
+        try {
+            const res = await fetch(`/api/ratings/admin/stats?trackId=${this.trackId}`);
+            if (res.ok) {
+                const data = await res.json();
+                const stats = data.find(s => s.id === this.trackId);
+                if (stats) {
+                    this.currentRating = stats.averageRating;
+                    this.totalRatings = stats.totalRatings;
+                    this.render();
+                }
+            }
+        } catch (e) {
+            /* ignore quiet errors */
+        }
+    }
+
+    render() {
+        this.innerHTML = `
+            <div class="flex items-center gap-2">
+                <div class="flex text-amber-500">
+                    ${[1, 2, 3, 4, 5]
+                        .map(
+                            i => `
+                        <button class="star-btn cursor-pointer transition-transform hover:scale-110" data-star="${i}">
+                            <span class="material-symbols-outlined ${i <= this.stars ? 'fill-current' : 'text-slate-600'} text-lg leading-none" style="font-variation-settings: 'FILL' ${i <= this.stars ? 1 : 0}">
+                                star
+                            </span>
+                        </button>
+                    `
+                        )
+                        .join('')}
+                </div>
+                ${this.totalRatings > 0 ? `<span class="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">(${this.currentRating}/5)</span>` : ''}
+            </div>
+        `;
+
+        this.querySelectorAll('.star-btn').forEach(btn => {
+            btn.addEventListener('click', e => {
+                e.preventDefault();
+                e.stopPropagation();
+                this.stars = parseInt(btn.dataset.star);
+                this.submitRating();
+            });
+
+            btn.addEventListener('mouseenter', () => {
+                const star = parseInt(btn.dataset.star);
+                this.highlightStars(star);
+            });
+
+            btn.addEventListener('mouseleave', () => {
+                this.highlightStars(this.stars);
+            });
+        });
+    }
+
+    highlightStars(n) {
+        this.querySelectorAll('.star-btn span').forEach((span, i) => {
+            if (i < n) {
+                span.classList.add('fill-current');
+                span.style.fontVariationSettings = "'FILL' 1";
+                span.classList.remove('text-slate-600');
+            } else {
+                span.classList.remove('fill-current');
+                span.style.fontVariationSettings = "'FILL' 0";
+                span.classList.add('text-slate-600');
+            }
+        });
+    }
+
+    async submitRating() {
+        try {
+            const res = await fetch(`/api/ratings/${this.trackId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ stars: this.stars })
+            });
+            if (res.ok) {
+                this.render();
+                this.dispatchEvent(
+                    new CustomEvent('rated', { detail: { trackId: this.trackId, stars: this.stars }, bubbles: true })
+                );
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+}
+customElements.define('ai-rating', AiRating);

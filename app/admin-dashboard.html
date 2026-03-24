@@ -1,277 +1,447 @@
 <!doctype html>
 <html lang="en" class="dark">
+    <head>
+        <meta charset="UTF-8" />
+        <!-- Use centralized CSP via server headers in server/app.js -->
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Admin Dashboard - Academy</title>
+        <!-- Tailwind CSS (Compiled) -->
+        <link href="dist/output.css" rel="stylesheet" />
+        <script src="video-utils.js"></script>
+        <script src="components.js"></script>
+    </head>
 
-<head>
-    <meta charset="UTF-8" />
-    <!-- Use centralized CSP via server headers in server/app.js -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Admin Dashboard - Academy</title>
-    <!-- Tailwind CSS (Compiled) -->
-    <link href="dist/output.css" rel="stylesheet">
-    <script src="video-utils.js"></script>
-    <script src="components.js"></script>
-</head>
+    <body class="page-transition">
+        <admin-header></admin-header>
+        <div class="flex h-[calc(100vh-60px)] overflow-hidden">
+            <!-- Sidebar -->
+            <admin-sidebar active-page="dashboard"></admin-sidebar>
 
-<body class="page-transition">
-    <admin-header></admin-header>
-    <div class="flex h-[calc(100vh-60px)] overflow-hidden">
-        <!-- Sidebar -->
-        <admin-sidebar active-page="dashboard"></admin-sidebar>
-
-        <main class="flex-1 px-6 py-8 overflow-y-auto bg-background-dark">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-                <div>
-                    <h1 class="text-4xl font-extrabold text-white mb-2 font-display tracking-tight uppercase">Reports</h1>
-                    <p id="dashboard-subtitle" class="text-slate-400 text-sm font-medium">📅 Performance Overview</p>
-                </div>
-                <div class="flex items-center gap-4 mt-4 md:mt-0">
-                    <div class="relative">
-                        <select id="period-selector" onchange="updatePeriod(this.value)" 
-                            class="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm font-bold text-white focus:outline-none focus:border-primary appearance-none cursor-pointer pr-10">
-                            <option value="all">All Time</option>
-                            <option value="7">Last 7 Days</option>
-                            <option value="30">Last 30 Days</option>
-                            <option value="90">Last 90 Days</option>
-                        </select>
-                        <span class="material-symbols-outlined absolute right-3 top-2 pointer-events-none text-slate-400">calendar_today</span>
+            <main class="flex-1 px-6 py-8 overflow-y-auto bg-background-dark">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+                    <div>
+                        <h1 class="text-4xl font-extrabold text-white mb-2 font-display tracking-tight uppercase">
+                            Reports
+                        </h1>
+                        <p id="dashboard-subtitle" class="text-slate-400 text-sm font-medium">
+                            📅 Performance Overview
+                        </p>
                     </div>
-                    <button class="btn-outline text-sm px-4 py-2">↓ Export</button>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
-                <!-- Track Performance -->
-                <div class="lg:col-span-3 glass-card p-5">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="font-bold text-white">Track Performance Comparison</h3>
-                        <div class="relative min-w-[140px]">
-                            <select id="track-comparison-filter" onchange="updateTrackComparisonFilter(this.value)" 
-                                class="w-full bg-slate-800/50 border border-slate-700/50 rounded-lg px-3 py-1.5 text-[10px] font-bold text-slate-300 focus:outline-none focus:border-primary transition-all appearance-none cursor-pointer">
-                                <option value="ALL">All Tracks</option>
+                    <div class="flex items-center gap-4 mt-4 md:mt-0">
+                        <div class="relative">
+                            <select
+                                id="period-selector"
+                                onchange="updatePeriod(this.value)"
+                                class="bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-sm font-bold text-white focus:outline-none focus:border-primary appearance-none cursor-pointer pr-10"
+                            >
+                                <option value="all">All Time</option>
+                                <option value="7">Last 7 Days</option>
+                                <option value="30">Last 30 Days</option>
+                                <option value="90">Last 90 Days</option>
                             </select>
-                            <span class="material-symbols-outlined absolute right-2 top-1 text-slate-500 pointer-events-none text-sm">expand_more</span>
+                            <span
+                                class="material-symbols-outlined absolute right-3 top-2 pointer-events-none text-slate-400"
+                            >
+                                calendar_today
+                            </span>
+                        </div>
+                        <button class="btn-outline text-sm px-4 py-2">↓ Export</button>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
+                    <!-- Track Performance -->
+                    <div class="lg:col-span-3 glass-card p-5">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-bold text-white">Track Performance Comparison</h3>
+                            <div class="relative min-w-[140px]">
+                                <select
+                                    id="track-comparison-filter"
+                                    onchange="updateTrackComparisonFilter(this.value)"
+                                    class="w-full bg-slate-800/50 border border-slate-700/50 rounded-lg px-3 py-1.5 text-[10px] font-bold text-slate-300 focus:outline-none focus:border-primary transition-all appearance-none cursor-pointer"
+                                >
+                                    <option value="ALL">All Tracks</option>
+                                </select>
+                                <span
+                                    class="material-symbols-outlined absolute right-2 top-1 text-slate-500 pointer-events-none text-sm"
+                                >
+                                    expand_more
+                                </span>
+                            </div>
+                        </div>
+                        <div class="space-y-6">
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-slate-400">Module 01: Foundations</span>
+                                    <span class="text-white">88% vs 72%</span>
+                                </div>
+                                <div class="flex gap-1 h-2">
+                                    <div class="flex-1 rounded-full bg-slate-800 overflow-hidden">
+                                        <div class="h-full rounded-full bg-primary" style="width: 88%"></div>
+                                    </div>
+                                    <div class="flex-1 rounded-full bg-slate-800 overflow-hidden">
+                                        <div class="h-full rounded-full bg-teal-400" style="width: 72%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-slate-400">Module 02: Advanced Logic</span>
+                                    <span class="text-white">94% vs 65%</span>
+                                </div>
+                                <div class="flex gap-1 h-2">
+                                    <div class="flex-1 rounded-full bg-slate-800 overflow-hidden">
+                                        <div class="h-full rounded-full bg-primary" style="width: 94%"></div>
+                                    </div>
+                                    <div class="flex-1 rounded-full bg-slate-800 overflow-hidden">
+                                        <div class="h-full rounded-full bg-teal-400" style="width: 65%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-slate-400">Module 03: Strategy & Implementation</span>
+                                    <span class="text-white">81% vs 91%</span>
+                                </div>
+                                <div class="flex gap-1 h-2">
+                                    <div class="flex-1 rounded-full bg-slate-800 overflow-hidden">
+                                        <div class="h-full rounded-full bg-primary" style="width: 81%"></div>
+                                    </div>
+                                    <div class="flex-1 rounded-full bg-slate-800 overflow-hidden">
+                                        <div class="h-full rounded-full bg-teal-400" style="width: 91%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Pagination for Track Comparison -->
+                        <div class="flex justify-between items-center mt-6 pt-4 border-t border-slate-800/50">
+                            <span
+                                id="track-pagination-info"
+                                class="text-[10px] font-bold text-slate-500 uppercase tracking-widest"
+                            >
+                                Page 1 of 1
+                            </span>
+                            <div class="flex gap-2">
+                                <button
+                                    id="prev-tracks-btn"
+                                    onclick="changeTrackPage(-1)"
+                                    disabled
+                                    class="p-1.5 rounded bg-slate-800 text-slate-400 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-700 transition-colors"
+                                >
+                                    <span class="material-symbols-outlined text-sm">chevron_left</span>
+                                </button>
+                                <button
+                                    id="next-tracks-btn"
+                                    onclick="changeTrackPage(1)"
+                                    disabled
+                                    class="p-1.5 rounded bg-slate-800 text-slate-400 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-700 transition-colors"
+                                >
+                                    <span class="material-symbols-outlined text-sm">chevron_right</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
-                    <div class="space-y-6">
-                        <div>
-                            <div class="flex justify-between text-sm mb-1">
-                                <span class="text-slate-400">Module 01: Foundations</span>
-                                <span class="text-white">88% vs 72%</span>
-                            </div>
-                            <div class="flex gap-1 h-2">
-                                <div class="flex-1 rounded-full bg-slate-800 overflow-hidden">
-                                    <div class="h-full rounded-full bg-primary" style="width: 88%"></div>
-                                </div>
-                                <div class="flex-1 rounded-full bg-slate-800 overflow-hidden">
-                                    <div class="h-full rounded-full bg-teal-400" style="width: 72%"></div>
+                    <!-- Quiz Distribution -->
+                    <div class="lg:col-span-2 glass-card p-5">
+                        <h3 class="font-bold text-white mb-6">Quiz Success Distribution</h3>
+                        <div class="flex items-center justify-center mb-6">
+                            <div class="relative w-40 h-40">
+                                <svg viewBox="0 0 36 36" class="w-full h-full -rotate-90">
+                                    <circle
+                                        cx="18"
+                                        cy="18"
+                                        r="15.9"
+                                        fill="none"
+                                        stroke="rgba(255,255,255,0.05)"
+                                        stroke-width="3"
+                                    ></circle>
+                                    <circle
+                                        cx="18"
+                                        cy="18"
+                                        r="15.9"
+                                        fill="none"
+                                        stroke="#1b5ffe"
+                                        stroke-width="3"
+                                        stroke-dasharray="65 35"
+                                        stroke-linecap="round"
+                                    ></circle>
+                                    <circle
+                                        cx="18"
+                                        cy="18"
+                                        r="15.9"
+                                        fill="none"
+                                        stroke="#f59e0b"
+                                        stroke-width="3"
+                                        stroke-dasharray="20 80"
+                                        stroke-dashoffset="-65"
+                                        stroke-linecap="round"
+                                    ></circle>
+                                    <circle
+                                        cx="18"
+                                        cy="18"
+                                        r="15.9"
+                                        fill="none"
+                                        stroke="#ef4444"
+                                        stroke-width="3"
+                                        stroke-dasharray="15 85"
+                                        stroke-dashoffset="-85"
+                                        stroke-linecap="round"
+                                    ></circle>
+                                </svg>
+                                <div class="absolute inset-0 flex flex-col items-center justify-center">
+                                    <span id="total-quizzes-count" class="text-3xl font-extrabold text-white">--</span>
+                                    <span class="text-[10px] text-slate-500 tracking-wider">ASSIGNMENTS</span>
                                 </div>
                             </div>
                         </div>
-                        <div>
-                            <div class="flex justify-between text-sm mb-1">
-                                <span class="text-slate-400">Module 02: Advanced Logic</span>
-                                <span class="text-white">94% vs 65%</span>
+                        <div class="flex justify-around text-center">
+                            <div>
+                                <span class="text-xs text-slate-500 tracking-wider">PASSED</span>
+                                <p class="text-lg font-bold text-primary">--</p>
                             </div>
-                            <div class="flex gap-1 h-2">
-                                <div class="flex-1 rounded-full bg-slate-800 overflow-hidden">
-                                    <div class="h-full rounded-full bg-primary" style="width: 94%"></div>
-                                </div>
-                                <div class="flex-1 rounded-full bg-slate-800 overflow-hidden">
-                                    <div class="h-full rounded-full bg-teal-400" style="width: 65%"></div>
-                                </div>
+                            <div>
+                                <span class="text-xs text-slate-500 tracking-wider">IN PROGRESS</span>
+                                <p class="text-lg font-bold text-yellow-500">--</p>
                             </div>
-                        </div>
-                        <div>
-                            <div class="flex justify-between text-sm mb-1">
-                                <span class="text-slate-400">Module 03: Strategy & Implementation</span>
-                                <span class="text-white">81% vs 91%</span>
+                            <div>
+                                <span class="text-xs text-slate-500 tracking-wider">RETAKE</span>
+                                <p class="text-lg font-bold text-red-500">--</p>
                             </div>
-                            <div class="flex gap-1 h-2">
-                                <div class="flex-1 rounded-full bg-slate-800 overflow-hidden">
-                                    <div class="h-full rounded-full bg-primary" style="width: 81%"></div>
-                                </div>
-                                <div class="flex-1 rounded-full bg-slate-800 overflow-hidden">
-                                    <div class="h-full rounded-full bg-teal-400" style="width: 91%"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Pagination for Track Comparison -->
-                    <div class="flex justify-between items-center mt-6 pt-4 border-t border-slate-800/50">
-                        <span id="track-pagination-info" class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Page 1 of 1</span>
-                        <div class="flex gap-2">
-                            <button id="prev-tracks-btn" onclick="changeTrackPage(-1)" disabled 
-                                class="p-1.5 rounded bg-slate-800 text-slate-400 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-700 transition-colors">
-                                <span class="material-symbols-outlined text-sm">chevron_left</span>
-                            </button>
-                            <button id="next-tracks-btn" onclick="changeTrackPage(1)" disabled
-                                class="p-1.5 rounded bg-slate-800 text-slate-400 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-700 transition-colors">
-                                <span class="material-symbols-outlined text-sm">chevron_right</span>
-                            </button>
                         </div>
                     </div>
                 </div>
-                <!-- Quiz Distribution -->
-                <div class="lg:col-span-2 glass-card p-5">
-                    <h3 class="font-bold text-white mb-6">Quiz Success Distribution</h3>
-                    <div class="flex items-center justify-center mb-6">
-                        <div class="relative w-40 h-40">
-                            <svg viewBox="0 0 36 36" class="w-full h-full -rotate-90">
-                                <circle cx="18" cy="18" r="15.9" fill="none" stroke="rgba(255,255,255,0.05)"
-                                    stroke-width="3"></circle>
-                                <circle cx="18" cy="18" r="15.9" fill="none" stroke="#1b5ffe" stroke-width="3"
-                                    stroke-dasharray="65 35" stroke-linecap="round"></circle>
-                                <circle cx="18" cy="18" r="15.9" fill="none" stroke="#f59e0b" stroke-width="3"
-                                    stroke-dasharray="20 80" stroke-dashoffset="-65" stroke-linecap="round">
-                                </circle>
-                                <circle cx="18" cy="18" r="15.9" fill="none" stroke="#ef4444" stroke-width="3"
-                                    stroke-dasharray="15 85" stroke-dashoffset="-85" stroke-linecap="round">
-                                </circle>
-                            </svg>
-                            <div class="absolute inset-0 flex flex-col items-center justify-center">
-                                <span id="total-quizzes-count" class="text-3xl font-extrabold text-white">--</span>
-                                <span class="text-[10px] text-slate-500 tracking-wider">ASSIGNMENTS</span>
+
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
+                    <!-- Top Performing -->
+                    <div class="lg:col-span-3 glass-card p-5">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                            <h3 class="font-bold text-white">Top Performing Modules</h3>
+                            <div class="relative min-w-[180px]">
+                                <select
+                                    id="track-filter-select"
+                                    onchange="updateTopModulesFilter(this.value)"
+                                    class="w-full bg-slate-800/50 border border-slate-700/50 rounded-lg px-3 py-2 text-xs font-bold text-slate-300 focus:outline-none focus:border-primary transition-all appearance-none cursor-pointer"
+                                >
+                                    <option value="ALL">All Tracks</option>
+                                </select>
+                                <span
+                                    class="material-symbols-outlined absolute right-2 top-1.5 text-slate-500 pointer-events-none text-base"
+                                >
+                                    expand_more
+                                </span>
                             </div>
                         </div>
+                        <div class="space-y-5" id="top-modules-list">
+                            <p class="text-slate-500 text-center py-8 text-sm italic">
+                                No performance data available...
+                            </p>
+                        </div>
                     </div>
-                    <div class="flex justify-around text-center">
-                        <div>
-                            <span class="text-xs text-slate-500 tracking-wider">PASSED</span>
-                            <p class="text-lg font-bold text-primary">--</p>
+                    <!-- Recent Activity -->
+                    <div class="lg:col-span-2 glass-card p-5">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-bold text-white">Recent Employee Progress</h3>
+                            <div class="flex gap-1">
+                                <button class="p-1 rounded bg-slate-800 text-slate-400">
+                                    <span class="material-symbols-outlined text-sm">chevron_left</span>
+                                </button>
+                                <button class="p-1 rounded bg-slate-800 text-slate-400">
+                                    <span class="material-symbols-outlined text-sm">chevron_right</span>
+                                </button>
+                            </div>
                         </div>
-                        <div>
-                            <span class="text-xs text-slate-500 tracking-wider">IN PROGRESS</span>
-                            <p class="text-lg font-bold text-yellow-500">--</p>
-                        </div>
-                        <div>
-                            <span class="text-xs text-slate-500 tracking-wider">RETAKE</span>
-                            <p class="text-lg font-bold text-red-500">--</p>
+                        <div id="recent-activity-list" class="space-y-4">
+                            <p class="text-slate-500 text-center py-8">No recent milestones</p>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
-                <!-- Top Performing -->
-                <div class="lg:col-span-3 glass-card p-5">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                        <h3 class="font-bold text-white">Top Performing Modules</h3>
-                        <div class="relative min-w-[180px]">
-                            <select id="track-filter-select" onchange="updateTopModulesFilter(this.value)" 
-                                class="w-full bg-slate-800/50 border border-slate-700/50 rounded-lg px-3 py-2 text-xs font-bold text-slate-300 focus:outline-none focus:border-primary transition-all appearance-none cursor-pointer">
-                                <option value="ALL">All Tracks</option>
-                            </select>
-                            <span class="material-symbols-outlined absolute right-2 top-1.5 text-slate-500 pointer-events-none text-base">expand_more</span>
+                <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 mb-8">
+                    <!-- Track Ratings Overview -->
+                    <div class="lg:col-span-2 glass-card p-5">
+                        <div class="flex justify-between items-center mb-6">
+                            <h3 class="font-bold text-white">Track Star Ratings</h3>
+                            <div class="relative min-w-[140px]">
+                                <select
+                                    id="rating-track-filter"
+                                    onchange="fetchRatingStats(this.value)"
+                                    class="w-full bg-slate-800/50 border border-slate-700/50 rounded-lg px-3 py-1.5 text-[10px] font-bold text-slate-300 focus:outline-none focus:border-primary transition-all appearance-none cursor-pointer"
+                                >
+                                    <option value="ALL">All Tracks</option>
+                                </select>
+                                <span
+                                    class="material-symbols-outlined absolute right-2 top-1 text-slate-500 pointer-events-none text-sm"
+                                >
+                                    expand_more
+                                </span>
+                            </div>
+                        </div>
+                        <div id="rating-stats-list" class="space-y-4">
+                            <p class="text-slate-500 text-center py-8 text-sm italic">Loading ratings...</p>
                         </div>
                     </div>
-                    <div class="space-y-5" id="top-modules-list">
-                        <p class="text-slate-500 text-center py-8 text-sm italic">No performance data available...</p>
-                    </div>
-                </div>
-                <!-- Recent Activity -->
-                <div class="lg:col-span-2 glass-card p-5">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="font-bold text-white">Recent Employee Progress</h3>
-                        <div class="flex gap-1">
-                            <button class="p-1 rounded bg-slate-800 text-slate-400">
-                                <span class="material-symbols-outlined text-sm">chevron_left</span>
-                            </button>
-                            <button class="p-1 rounded bg-slate-800 text-slate-400">
-                                <span class="material-symbols-outlined text-sm">chevron_right</span>
-                            </button>
+
+                    <!-- Detailed Employee Ratings -->
+                    <div class="lg:col-span-3 glass-card p-5">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                            <h3 class="font-bold text-white">Learner Ratings Detail</h3>
+                            <div class="flex gap-3 w-full sm:w-auto">
+                                <div class="relative flex-1 sm:w-48">
+                                    <input
+                                        type="text"
+                                        id="rating-search"
+                                        placeholder="Search learner..."
+                                        oninput="debounceRatingSearch()"
+                                        class="w-full bg-slate-800/50 border border-slate-700/50 rounded-lg pl-9 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-primary"
+                                    />
+                                    <span
+                                        class="material-symbols-outlined absolute left-2.5 top-1.5 text-slate-500 text-lg"
+                                    >
+                                        search
+                                    </span>
+                                </div>
+                                <div class="relative min-w-[120px]">
+                                    <select
+                                        id="rating-detail-track-filter"
+                                        onchange="fetchRatingDetails()"
+                                        class="w-full bg-slate-800/50 border border-slate-700/50 rounded-lg px-3 py-1.5 text-[10px] font-bold text-slate-300 focus:outline-none focus:border-primary transition-all appearance-none cursor-pointer"
+                                    >
+                                        <option value="ALL">All Tracks</option>
+                                    </select>
+                                    <span
+                                        class="material-symbols-outlined absolute right-2 top-1 text-slate-500 pointer-events-none text-sm"
+                                    >
+                                        expand_more
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left">
+                                <thead>
+                                    <tr
+                                        class="text-[10px] font-bold text-slate-500 uppercase tracking-widest border-b border-slate-800"
+                                    >
+                                        <th class="pb-3 pr-4">Learner</th>
+                                        <th class="pb-3 pr-4">Track</th>
+                                        <th class="pb-3 pr-4">Rating</th>
+                                        <th class="pb-3">Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rating-details-table" class="text-sm">
+                                    <tr>
+                                        <td colspan="4" class="py-8 text-center text-slate-500 italic">
+                                            No ratings found.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                    <div id="recent-activity-list" class="space-y-4">
-                        <p class="text-slate-500 text-center py-8">No recent milestones</p>
-                    </div>
                 </div>
-            </div>
+            </main>
+        </div>
+        <script>
+            (async function () {
+                let topModulesData = [];
+                let trackComparisonData = [];
+                let currentFilter = 'ALL';
+                let trackComparisonFilter = 'ALL';
+                let currentPeriod = 'all';
+                let trackPage = 0;
+                const trackLimit = 5;
 
-        </main>
-    </div>
-    <script>
-        (async function () {
-            let topModulesData = [];
-            let trackComparisonData = [];
-            let currentFilter = 'ALL';
-            let trackComparisonFilter = 'ALL';
-            let currentPeriod = 'all';
-            let trackPage = 0;
-            const trackLimit = 5;
-
-            window.updatePeriod = (period) => {
-                currentPeriod = period;
-                updateSubtitle();
-                fetchAnalytics();
-            };
-
-            function updateSubtitle() {
-                const subtitle = document.getElementById('dashboard-subtitle');
-                if (!subtitle) return;
-                
-                const dateStr = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-                const periodMap = {
-                    'all': 'All Time',
-                    '7': 'Last 7 Days',
-                    '30': 'Last 30 Days',
-                    '90': 'Last 90 Days'
+                window.updatePeriod = period => {
+                    currentPeriod = period;
+                    updateSubtitle();
+                    fetchAnalytics();
                 };
-                const periodLabel = periodMap[currentPeriod] || 'Custom Period';
-                
-                subtitle.innerHTML = `📅 Performance Overview • <span class="text-primary font-bold">${periodLabel}</span> • ${dateStr}`;
-            }
 
-            // Initialize subtitle on load
-            updateSubtitle();
+                function updateSubtitle() {
+                    const subtitle = document.getElementById('dashboard-subtitle');
+                    if (!subtitle) return;
 
-            function renderFilterDropdown(tracks) {
-                const select = document.getElementById('track-filter-select');
-                const compSelect = document.getElementById('track-comparison-filter');
-                if (!select || !compSelect) return;
+                    const dateStr = new Date().toLocaleDateString('en-US', {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric'
+                    });
+                    const periodMap = {
+                        all: 'All Time',
+                        7: 'Last 7 Days',
+                        30: 'Last 30 Days',
+                        90: 'Last 90 Days'
+                    };
+                    const periodLabel = periodMap[currentPeriod] || 'Custom Period';
 
-                const sortedTracks = Array.from(new Set(tracks || [])).sort();
+                    subtitle.innerHTML = `📅 Performance Overview • <span class="text-primary font-bold">${periodLabel}</span> • ${dateStr}`;
+                }
 
-                let options = '<option value="ALL">All Tracks</option>';
-                sortedTracks.forEach(track => {
-                    const displayName = track.toUpperCase().endsWith('TRACK') ? track : `${track} Track`;
-                    options += `<option value="${track}">${displayName}</option>`;
-                });
-                
-                select.innerHTML = options;
-                compSelect.innerHTML = options;
-                
-                // Restore values
-                select.value = currentFilter;
-                compSelect.value = trackComparisonFilter;
-            }
+                // Initialize subtitle on load
+                updateSubtitle();
 
-            function renderTrackComparison() {
-                const container = document.querySelector('.lg\\:col-span-3 .space-y-6');
-                if (!container || !trackComparisonData) return;
+                function renderFilterDropdown(tracks) {
+                    const select = document.getElementById('track-filter-select');
+                    const compSelect = document.getElementById('track-comparison-filter');
+                    if (!select || !compSelect) return;
 
-                const filtered = trackComparisonFilter === 'ALL'
-                    ? trackComparisonData
-                    : trackComparisonData.filter(t => t.name === trackComparisonFilter);
+                    const sortedTracks = Array.from(new Set(tracks || [])).sort();
 
-                const totalPages = Math.ceil(filtered.length / trackLimit);
-                if (trackPage >= totalPages && totalPages > 0) trackPage = totalPages - 1;
-                if (trackPage < 0) trackPage = 0;
+                    let options = '<option value="ALL">All Tracks</option>';
+                    sortedTracks.forEach(track => {
+                        const displayName = track.toUpperCase().endsWith('TRACK') ? track : `${track} Track`;
+                        options += `<option value="${track}">${displayName}</option>`;
+                    });
 
-                const start = trackPage * trackLimit;
-                const paginated = filtered.slice(start, start + trackLimit);
+                    select.innerHTML = options;
+                    compSelect.innerHTML = options;
 
-                if (paginated.length === 0) {
-                    container.innerHTML = '<p class="text-slate-500 text-center py-8 text-sm italic">No track data available.</p>';
-                } else {
-                    container.innerHTML = paginated.map(t => {
-                        // Cycle colors for multiple tracks
-                        const colors = ['bg-primary', 'bg-teal-400', 'bg-indigo-500', 'bg-emerald-500', 'bg-amber-500'];
-                        const textColors = ['text-primary', 'text-teal-400', 'text-indigo-500', 'text-emerald-500', 'text-amber-500'];
-                        const idx = trackComparisonData.findIndex(item => item.name === t.name) % colors.length;
-                        const barColor = colors[idx];
-                        const textColor = textColors[idx];
+                    // Restore values
+                    select.value = currentFilter;
+                    compSelect.value = trackComparisonFilter;
+                }
 
-                        return `
+                function renderTrackComparison() {
+                    const container = document.querySelector('.lg\\:col-span-3 .space-y-6');
+                    if (!container || !trackComparisonData) return;
+
+                    const filtered =
+                        trackComparisonFilter === 'ALL'
+                            ? trackComparisonData
+                            : trackComparisonData.filter(t => t.name === trackComparisonFilter);
+
+                    const totalPages = Math.ceil(filtered.length / trackLimit);
+                    if (trackPage >= totalPages && totalPages > 0) trackPage = totalPages - 1;
+                    if (trackPage < 0) trackPage = 0;
+
+                    const start = trackPage * trackLimit;
+                    const paginated = filtered.slice(start, start + trackLimit);
+
+                    if (paginated.length === 0) {
+                        container.innerHTML =
+                            '<p class="text-slate-500 text-center py-8 text-sm italic">No track data available.</p>';
+                    } else {
+                        container.innerHTML = paginated
+                            .map(t => {
+                                // Cycle colors for multiple tracks
+                                const colors = [
+                                    'bg-primary',
+                                    'bg-teal-400',
+                                    'bg-indigo-500',
+                                    'bg-emerald-500',
+                                    'bg-amber-500'
+                                ];
+                                const textColors = [
+                                    'text-primary',
+                                    'text-teal-400',
+                                    'text-indigo-500',
+                                    'text-emerald-500',
+                                    'text-amber-500'
+                                ];
+                                const idx = trackComparisonData.findIndex(item => item.name === t.name) % colors.length;
+                                const barColor = colors[idx];
+                                const textColor = textColors[idx];
+
+                                return `
                             <div class="animate-fadeIn">
                                 <div class="flex justify-between text-sm mb-1">
                                     <span class="text-slate-400 font-bold">${t.name} Track Average</span>
@@ -284,49 +454,53 @@
                                 </div>
                             </div>
                         `;
-                    }).join('');
+                            })
+                            .join('');
+                    }
+
+                    // Update pagination UI
+                    const info = document.getElementById('track-pagination-info');
+                    const prevBtn = document.getElementById('prev-tracks-btn');
+                    const nextBtn = document.getElementById('next-tracks-btn');
+
+                    if (info) info.innerText = `Page ${totalPages > 0 ? trackPage + 1 : 0} of ${totalPages}`;
+                    if (prevBtn) prevBtn.disabled = trackPage === 0;
+                    if (nextBtn) nextBtn.disabled = trackPage >= totalPages - 1 || totalPages === 0;
                 }
 
-                // Update pagination UI
-                const info = document.getElementById('track-pagination-info');
-                const prevBtn = document.getElementById('prev-tracks-btn');
-                const nextBtn = document.getElementById('next-tracks-btn');
+                window.changeTrackPage = delta => {
+                    trackPage += delta;
+                    renderTrackComparison();
+                };
 
-                if (info) info.innerText = `Page ${totalPages > 0 ? trackPage + 1 : 0} of ${totalPages}`;
-                if (prevBtn) prevBtn.disabled = trackPage === 0;
-                if (nextBtn) nextBtn.disabled = trackPage >= totalPages - 1 || totalPages === 0;
-            }
+                window.updateTrackComparisonFilter = filter => {
+                    trackComparisonFilter = filter;
+                    trackPage = 0;
+                    renderTrackComparison();
+                };
 
-            window.changeTrackPage = (delta) => {
-                trackPage += delta;
-                renderTrackComparison();
-            };
+                function renderTopModules() {
+                    const container = document.getElementById('top-modules-list');
+                    if (!container || !topModulesData) return;
 
-            window.updateTrackComparisonFilter = (filter) => {
-                trackComparisonFilter = filter;
-                trackPage = 0;
-                renderTrackComparison();
-            };
+                    const filtered =
+                        currentFilter === 'ALL'
+                            ? topModulesData
+                            : topModulesData.filter(m => m.track === currentFilter);
 
-            function renderTopModules() {
-                const container = document.getElementById('top-modules-list');
-                if (!container || !topModulesData) return;
+                    if (filtered.length === 0) {
+                        container.innerHTML =
+                            '<p class="text-slate-500 text-center py-8 text-sm italic">No data available for this filter.</p>';
+                        return;
+                    }
 
-                const filtered = currentFilter === 'ALL' 
-                    ? topModulesData 
-                    : topModulesData.filter(m => m.track === currentFilter);
+                    container.innerHTML = filtered
+                        .slice(0, 5)
+                        .map((m, idx) => {
+                            const trackBadgeColor =
+                                m.track === 'TECHNICAL' ? 'bg-primary/10 text-primary' : 'bg-teal-500/10 text-teal-400';
 
-                if (filtered.length === 0) {
-                    container.innerHTML = '<p class="text-slate-500 text-center py-8 text-sm italic">No data available for this filter.</p>';
-                    return;
-                }
-
-                container.innerHTML = filtered.slice(0, 5).map((m, idx) => {
-                    const trackBadgeColor = m.track === 'TECHNICAL' 
-                        ? 'bg-primary/10 text-primary' 
-                        : 'bg-teal-500/10 text-teal-400';
-                    
-                    return `
+                            return `
                         <div class="flex justify-between items-center">
                             <div class="flex items-center gap-3">
                                 <span class="text-slate-500 font-bold w-6">${String(idx + 1).padStart(2, '0')}</span>
@@ -344,97 +518,106 @@
                             </div>
                         </div>
                     `;
-                }).join('');
-            }
+                        })
+                        .join('');
+                }
 
-            window.updateTopModulesFilter = (filter) => {
-                currentFilter = filter;
-                renderTopModules();
-            };
+                window.updateTopModulesFilter = filter => {
+                    currentFilter = filter;
+                    renderTopModules();
+                };
 
-            async function fetchAnalytics() {
-                try {
-                    const res = await fetch(`/api/admin/analytics?period=${currentPeriod}`, { credentials: 'include' });
-                    if (res.status === 401 || res.status === 403) {
-                        window.location.href = 'login.html';
-                        return;
-                    }
-                    const data = await res.json();
-
-                    // 1. Stats Overview
-                    const learnersCount = document.getElementById('total-learners-count');
-                    if (learnersCount) learnersCount.innerText = data.stats.totalLearners.toLocaleString();
-
-                    // 2. Track Comparison
-                    if (data.trackComparison) {
-                        trackComparisonData = data.trackComparison;
-                        renderFilterDropdown(trackComparisonData.map(t => t.name));
-                        renderTrackComparison();
-                    }
-
-                    // 2.1 Top Modules Data
-                    if (data.topModules) {
-                        topModulesData = data.topModules;
-                        renderFilterDropdown(allTrackNames);
-                        renderTopModules();
-                    }
-
-                    // 3. Quiz Distribution
-                    if (data.quizStats) {
-                        const totalQuizText = document.getElementById('total-quizzes-count');
-                        if (totalQuizText) totalQuizText.innerText = data.quizStats.total.toLocaleString();
-                        
-                        const passedText = document.querySelector('.text-lg.font-bold.text-primary');
-                        if (passedText) passedText.innerText = `${data.quizStats.passedRaw} (${data.quizStats.passedRatio}%)`;
-
-                        const inProgressText = document.querySelector('.text-lg.font-bold.text-yellow-500');
-                        if (inProgressText) inProgressText.innerText = `${data.quizStats.inProgressRaw} (${data.quizStats.inProgressRatio}%)`;
-
-                        const retakeText = document.querySelector('.text-lg.font-bold.text-red-500');
-                        if (retakeText) retakeText.innerText = `${data.quizStats.retakeRaw} (0%)`;
-
-                        // Update SVG circles using ratios
-                        const circles = document.querySelectorAll('svg circle[stroke-dasharray]');
-                        if (circles.length >= 3) {
-                            const p = data.quizStats.passedRatio;
-                            const ip = data.quizStats.inProgressRatio;
-                            const r = data.quizStats.retakeRatio;
-
-                            // Circle 1: Passed (Blue)
-                            circles[0].setAttribute('stroke-dasharray', `${p} ${100-p}`);
-                            
-                            // Circle 2: In Progress (Yellow)
-                            circles[1].setAttribute('stroke-dasharray', `${ip} ${100-ip}`);
-                            circles[1].setAttribute('stroke-dashoffset', `-${p}`);
-
-                            // Circle 3: Retake (Red)
-                            circles[2].setAttribute('stroke-dasharray', `${r} ${100-r}`);
-                            circles[2].setAttribute('stroke-dashoffset', `-${p + ip}`);
+                async function fetchAnalytics() {
+                    try {
+                        const res = await fetch(`/api/admin/analytics?period=${currentPeriod}`, {
+                            credentials: 'include'
+                        });
+                        if (res.status === 401 || res.status === 403) {
+                            window.location.href = 'login.html';
+                            return;
                         }
-                    }
+                        const data = await res.json();
 
-                    // 4. Recent Activity
-                    const activityContainer = document.getElementById('recent-activity-list');
-                    if (data.activity && activityContainer) {
-                        if (data.activity.length > 0) {
-                            activityContainer.innerHTML = data.activity.map(a => {
-                                let label = '';
-                                let colorClass = 'bg-primary/20 text-primary';
-                                let detail = '';
-                                
-                                if (a.type !== 'MILESTONE') return null;
+                        // 1. Stats Overview
+                        const learnersCount = document.getElementById('total-learners-count');
+                        if (learnersCount) learnersCount.innerText = data.stats.totalLearners.toLocaleString();
 
-                                if (a.milestone === 100) {
-                                    label = 'TRACK COMPLETED';
-                                    colorClass = 'bg-green-500/20 text-green-400';
-                                    detail = `🏅 Finished ${a.trackName}`;
-                                } else {
-                                    label = `${a.trackName} TRACK: ${a.milestone}%`;
-                                    colorClass = a.milestone === 75 ? 'bg-yellow-500/20 text-yellow-400' : 'bg-blue-500/20 text-blue-400';
-                                    detail = `🚀 Major milestone reached`;
-                                }
+                        // 2. Track Comparison
+                        if (data.trackComparison) {
+                            trackComparisonData = data.trackComparison;
+                            renderFilterDropdown(trackComparisonData.map(t => t.name));
+                            renderTrackComparison();
+                        }
 
-                                return `
+                        // 2.1 Top Modules Data
+                        if (data.topModules) {
+                            topModulesData = data.topModules;
+                            renderFilterDropdown(allTrackNames);
+                            renderTopModules();
+                        }
+
+                        // 3. Quiz Distribution
+                        if (data.quizStats) {
+                            const totalQuizText = document.getElementById('total-quizzes-count');
+                            if (totalQuizText) totalQuizText.innerText = data.quizStats.total.toLocaleString();
+
+                            const passedText = document.querySelector('.text-lg.font-bold.text-primary');
+                            if (passedText)
+                                passedText.innerText = `${data.quizStats.passedRaw} (${data.quizStats.passedRatio}%)`;
+
+                            const inProgressText = document.querySelector('.text-lg.font-bold.text-yellow-500');
+                            if (inProgressText)
+                                inProgressText.innerText = `${data.quizStats.inProgressRaw} (${data.quizStats.inProgressRatio}%)`;
+
+                            const retakeText = document.querySelector('.text-lg.font-bold.text-red-500');
+                            if (retakeText) retakeText.innerText = `${data.quizStats.retakeRaw} (0%)`;
+
+                            // Update SVG circles using ratios
+                            const circles = document.querySelectorAll('svg circle[stroke-dasharray]');
+                            if (circles.length >= 3) {
+                                const p = data.quizStats.passedRatio;
+                                const ip = data.quizStats.inProgressRatio;
+                                const r = data.quizStats.retakeRatio;
+
+                                // Circle 1: Passed (Blue)
+                                circles[0].setAttribute('stroke-dasharray', `${p} ${100 - p}`);
+
+                                // Circle 2: In Progress (Yellow)
+                                circles[1].setAttribute('stroke-dasharray', `${ip} ${100 - ip}`);
+                                circles[1].setAttribute('stroke-dashoffset', `-${p}`);
+
+                                // Circle 3: Retake (Red)
+                                circles[2].setAttribute('stroke-dasharray', `${r} ${100 - r}`);
+                                circles[2].setAttribute('stroke-dashoffset', `-${p + ip}`);
+                            }
+                        }
+
+                        // 4. Recent Activity
+                        const activityContainer = document.getElementById('recent-activity-list');
+                        if (data.activity && activityContainer) {
+                            if (data.activity.length > 0) {
+                                activityContainer.innerHTML = data.activity
+                                    .map(a => {
+                                        let label = '';
+                                        let colorClass = 'bg-primary/20 text-primary';
+                                        let detail = '';
+
+                                        if (a.type !== 'MILESTONE') return null;
+
+                                        if (a.milestone === 100) {
+                                            label = 'TRACK COMPLETED';
+                                            colorClass = 'bg-green-500/20 text-green-400';
+                                            detail = `🏅 Finished ${a.trackName}`;
+                                        } else {
+                                            label = `${a.trackName} TRACK: ${a.milestone}%`;
+                                            colorClass =
+                                                a.milestone === 75
+                                                    ? 'bg-yellow-500/20 text-yellow-400'
+                                                    : 'bg-blue-500/20 text-blue-400';
+                                            detail = `🚀 Major milestone reached`;
+                                        }
+
+                                        return `
                                     <div class="p-3 rounded-xl bg-slate-800/50 border border-slate-700/50">
                                         <p class="text-xs ${colorClass.split(' ')[1]} font-bold mb-1">
                                             ${new Date(a.timestamp).toLocaleTimeString()} · ${a.userName}
@@ -450,21 +633,143 @@
                                         </div>
                                     </div>
                                 `;
-                            }).filter(item => item !== null).join('');
-                        } else {
-                            activityContainer.innerHTML = '<p class="text-slate-500 text-center py-8">No recent milestones</p>';
+                                    })
+                                    .filter(item => item !== null)
+                                    .join('');
+                            } else {
+                                activityContainer.innerHTML =
+                                    '<p class="text-slate-500 text-center py-8">No recent milestones</p>';
+                            }
                         }
+
+                        // 5. Ratings Stats
+                        fetchRatingStats();
+                        fetchRatingDetails();
+                    } catch (err) {
+                        console.error('Error fetching analytics:', err);
                     }
-
-                } catch (err) {
-                    console.error('Error fetching analytics:', err);
                 }
-            }
 
-            fetchAnalytics();
-        })();
-    </script>
-    <ai-profile-modal></ai-profile-modal>
-</body>
+                // --- New Rating Report Functions ---
 
+                window.fetchRatingStats = async (trackId = 'ALL') => {
+                    const container = document.getElementById('rating-stats-list');
+                    try {
+                        const res = await fetch(`/api/ratings/admin/stats?trackId=${trackId}`, {
+                            credentials: 'include'
+                        });
+                        const stats = await res.json();
+
+                        if (!stats || stats.length === 0) {
+                            container.innerHTML =
+                                '<p class="text-slate-500 text-center py-8 text-sm italic">No ratings yet.</p>';
+                            return;
+                        }
+
+                        container.innerHTML = stats
+                            .map(
+                                s => `
+                        <div class="animate-fadeIn">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-slate-400 text-xs font-bold">${s.name}</span>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-amber-500 font-bold">${s.averageRating}</span>
+                                    <div class="flex text-amber-500 scale-75 origin-right">
+                                        ${[1, 2, 3, 4, 5].map(i => `<span class="material-symbols-outlined text-xs ${i <= Math.round(s.averageRating) ? 'fill-current' : 'text-slate-700'}">${i <= Math.round(s.averageRating) ? 'star' : 'star_outline'}</span>`).join('')}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <div class="flex-1 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                                    <div class="h-full bg-amber-500" style="width: ${(s.averageRating / 5) * 100}%"></div>
+                                </div>
+                                <span class="text-[9px] text-slate-500 font-bold uppercase">${s.totalRatings} notes</span>
+                            </div>
+                        </div>
+                    `
+                            )
+                            .join('');
+                    } catch (e) {
+                        console.error(e);
+                    }
+                };
+
+                window.fetchRatingDetails = async () => {
+                    const trackId = document.getElementById('rating-detail-track-filter').value;
+                    const search = document.getElementById('rating-search').value;
+                    const tbody = document.getElementById('rating-details-table');
+
+                    try {
+                        const res = await fetch(
+                            `/api/ratings/admin/details?trackId=${trackId}&search=${encodeURIComponent(search)}`,
+                            { credentials: 'include' }
+                        );
+                        const data = await res.json();
+
+                        if (!data || data.length === 0) {
+                            tbody.innerHTML =
+                                '<tr><td colspan="4" class="py-8 text-center text-slate-500 italic">No matching ratings found.</td></tr>';
+                            return;
+                        }
+
+                        tbody.innerHTML = data
+                            .map(
+                                r => `
+                        <tr class="border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors">
+                            <td class="py-3 pr-4">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-7 h-7 rounded-full bg-primary/20 flex items-center justify-center text-[10px] font-bold text-primary">
+                                        ${r.user.firstName[0]}${r.user.lastName[0]}
+                                    </div>
+                                    <div>
+                                        <p class="text-white font-medium text-xs leading-none">${r.user.firstName} ${r.user.lastName}</p>
+                                        <p class="text-[9px] text-slate-500 uppercase mt-0.5">${r.user.department || '-'}</p>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="py-3 pr-4 text-xs text-slate-400 font-medium">${r.track.name}</td>
+                            <td class="py-3 pr-4">
+                                <div class="flex text-amber-500 gap-0.5">
+                                    ${[1, 2, 3, 4, 5].map(i => `<span class="material-symbols-outlined text-xs ${i <= r.stars ? 'fill-current font-variation-fill-1' : 'text-slate-700'}">star</span>`).join('')}
+                                </div>
+                            </td>
+                            <td class="py-3 text-[10px] text-slate-500 font-bold uppercase">${new Date(r.createdAt).toLocaleDateString()}</td>
+                        </tr>
+                    `
+                            )
+                            .join('');
+                    } catch (e) {
+                        console.error(e);
+                    }
+                };
+
+                let searchTimeout;
+                window.debounceRatingSearch = () => {
+                    clearTimeout(searchTimeout);
+                    searchTimeout = setTimeout(fetchRatingDetails, 300);
+                };
+
+                // Enhance renderFilterDropdown to also update new rating filters
+                const originalRenderFilterDropdown = renderFilterDropdown;
+                window.renderFilterDropdown = tracks => {
+                    originalRenderFilterDropdown(tracks);
+                    const ratingStatFilter = document.getElementById('rating-track-filter');
+                    const ratingDetailFilter = document.getElementById('rating-detail-track-filter');
+                    if (!ratingStatFilter || !ratingDetailFilter) return;
+
+                    const sortedTracks = Array.from(new Set(tracks || [])).sort();
+                    let options = '<option value="ALL">All Tracks</option>';
+                    sortedTracks.forEach(track => {
+                        options += `<option value="${track}">${track}</option>`;
+                    });
+
+                    ratingStatFilter.innerHTML = options;
+                    ratingDetailFilter.innerHTML = options;
+                };
+
+                fetchAnalytics();
+            })();
+        </script>
+        <ai-profile-modal></ai-profile-modal>
+    </body>
 </html>

@@ -5,7 +5,10 @@ console.log('=========================================');
 
 // Critical environment variable checks
 console.log('🔍 Checking environment variables...');
-console.log('JWT_SECRET:', process.env.JWT_SECRET ? '✅ Set (' + process.env.JWT_SECRET.length + ' chars)' : '❌ MISSING');
+console.log(
+    'JWT_SECRET:',
+    process.env.JWT_SECRET ? '✅ Set (' + process.env.JWT_SECRET.length + ' chars)' : '❌ MISSING'
+);
 console.log('DATABASE_URL:', process.env.DATABASE_URL ? '✅ Set' : '❌ MISSING');
 console.log('NODE_ENV:', process.env.NODE_ENV || 'development');
 console.log('ALLOWED_ORIGINS:', process.env.ALLOWED_ORIGINS || 'default');
@@ -42,7 +45,7 @@ const corsOptions = {
         if (origin) {
             console.log(`CORS check for origin: ${origin}`);
         }
-        
+
         // Allow requests with no origin (same-origin, mobile apps, or curl)
         // or explicitly allowed origins
         if (!origin || allowedOrigins.includes(origin)) {
@@ -67,19 +70,21 @@ const isDev = currentEnv === 'development';
 
 console.log(`[SECURITY] Applying Helmet configuration for ${currentEnv} (CSP disabled: ${isDev})`);
 
-app.use(helmet({
-    contentSecurityPolicy: false, // Disable helmet's own CSP so we can set it manually below
-    crossOriginEmbedderPolicy: false,
-    crossOriginResourcePolicy: false,
-    hsts: {
-        maxAge: 31536000,
-        includeSubDomains: true,
-        preload: true
-    },
-    frameguard: { action: 'sameorigin' },
-    noSniff: true,
-    xssFilter: true
-}));
+app.use(
+    helmet({
+        contentSecurityPolicy: false, // Disable helmet's own CSP so we can set it manually below
+        crossOriginEmbedderPolicy: false,
+        crossOriginResourcePolicy: false,
+        hsts: {
+            maxAge: 31536000,
+            includeSubDomains: true,
+            preload: true
+        },
+        frameguard: { action: 'sameorigin' },
+        noSniff: true,
+        xssFilter: true
+    })
+);
 
 // Custom CSP Middleware - applied AFTER helmet
 app.use((req, res, next) => {
@@ -173,16 +178,19 @@ app.use('/api/upload', require('./routes/upload'));
 app.use('/api/progress', require('./routes/progress'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/notifications', require('./routes/notifications'));
+app.use('/api/ratings', require('./routes/ratings'));
 
 // Serve static frontend files from 'app' folder
-app.use(express.static(path.join(__dirname, '../app'), {
-    setHeaders: (res, path) => {
-        res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-        res.setHeader('Pragma', 'no-cache');
-        res.setHeader('Expires', '0');
-        res.setHeader('Surrogate-Control', 'no-store');
-    }
-}));
+app.use(
+    express.static(path.join(__dirname, '../app'), {
+        setHeaders: (res, path) => {
+            res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+            res.setHeader('Pragma', 'no-cache');
+            res.setHeader('Expires', '0');
+            res.setHeader('Surrogate-Control', 'no-store');
+        }
+    })
+);
 
 // Serve uploaded files statically
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
@@ -224,12 +232,12 @@ app.get('/api/proxy/quiz', async (req, res) => {
     try {
         const { url } = req.query;
         if (!url) return res.status(400).json({ error: 'URL is required' });
-        
+
         // Security: only allow r2.dev or cloudflarestorage.com or onrender.com
         const parsedUrl = new URL(url);
         const allowedHosts = ['.r2.dev', '.cloudflarestorage.com', 'fourjs-academy.onrender.com'];
         const isAllowed = allowedHosts.some(host => parsedUrl.hostname.endsWith(host));
-        
+
         if (!isAllowed) {
             console.error(`[Proxy] Blocked unauthorized host: ${parsedUrl.hostname}`);
             return res.status(403).json({ error: 'Host not allowed' });
@@ -238,7 +246,7 @@ app.get('/api/proxy/quiz', async (req, res) => {
         console.log(`[Proxy] Fetching quiz data from: ${url}`);
         const response = await fetch(url);
         if (!response.ok) throw new Error(`External fetch failed (HTTP ${response.status})`);
-        
+
         const data = await response.json();
         res.json(data);
     } catch (error) {
@@ -250,19 +258,19 @@ app.get('/api/proxy/quiz', async (req, res) => {
 // Start Server
 if (require.main === module && process.env.NODE_ENV !== 'test') {
     // Global Error Handling Middleware (MUST be last)
-app.use((err, req, res, next) => {
-    console.error('[Global Error Handler]', err);
-    
-    // Don't expose internal error details to client
-    const statusCode = err.statusCode || 500;
-    const isDev = process.env.NODE_ENV === 'development';
-    
-    res.status(statusCode).json({
-        error: isDev ? err.message : 'An error occurred. Please try again later.',
-        ...(isDev && { stack: err.stack })
+    app.use((err, req, res, next) => {
+        console.error('[Global Error Handler]', err);
+
+        // Don't expose internal error details to client
+        const statusCode = err.statusCode || 500;
+        const isDev = process.env.NODE_ENV === 'development';
+
+        res.status(statusCode).json({
+            error: isDev ? err.message : 'An error occurred. Please try again later.',
+            ...(isDev && { stack: err.stack })
+        });
     });
-});
-app.listen(port, () => {
+    app.listen(port, () => {
         console.log(`AI Academy backend listening at http://localhost:${port}`);
     });
 }
@@ -270,15 +278,16 @@ app.listen(port, () => {
 // Test database connection before starting server (only in production-like environments)
 if (require.main === module && process.env.NODE_ENV !== 'test') {
     console.log('🔍 Testing database connection...');
-    prisma.$connect()
+    prisma
+        .$connect()
         .then(() => {
             console.log('✅ Database connection successful');
             return prisma.user.count();
         })
-        .then((userCount) => {
+        .then(userCount => {
             console.log(`✅ Database contains ${userCount} users`);
         })
-        .catch((error) => {
+        .catch(error => {
             console.error('❌ Database connection failed:', error.message);
             console.error('❌ This may cause login issues. Check DATABASE_URL.');
         });
@@ -291,6 +300,3 @@ process.on('SIGINT', async () => {
 });
 
 module.exports = app;
-
-
-

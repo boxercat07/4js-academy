@@ -1,300 +1,382 @@
 <!doctype html>
 <html lang="en" class="dark">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Technical Track - Academy</title>
+        <!-- Tailwind CSS (Compiled) -->
+        <link href="dist/output.css" rel="stylesheet" />
+        <script src="components.js"></script>
+    </head>
 
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Technical Track - Academy</title>
-    <!-- Tailwind CSS (Compiled) -->
-    <link href="dist/output.css" rel="stylesheet">
-    <script src="components.js"></script>
-</head>
+    <body class="page-transition">
+        <learner-header></learner-header>
 
-<body class="page-transition">
-    <learner-header></learner-header>
+        <main class="max-w-5xl mx-auto px-6 py-12">
+            <!-- Preview Banner -->
+            <div
+                id="preview-banner"
+                class="hidden mb-8 p-4 bg-primary/20 border border-primary/30 rounded-xl flex items-center justify-between backdrop-blur-md"
+            >
+                <div class="flex items-center gap-3">
+                    <span class="material-symbols-outlined text-primary animate-pulse">visibility</span>
+                    <div>
+                        <h2 class="text-white font-bold text-sm uppercase tracking-widest">Preview Mode</h2>
+                        <p class="text-slate-400 text-[10px] uppercase tracking-tighter">
+                            You are viewing this track as a learner
+                        </p>
+                    </div>
+                </div>
+                <a
+                    href="admin-tracks.html"
+                    class="px-4 py-1.5 bg-primary text-white text-[10px] font-bold rounded-lg hover:bg-blue-600 transition-all uppercase tracking-widest group flex items-center gap-2"
+                >
+                    Exit Preview
+                    <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">
+                        logout
+                    </span>
+                </a>
+            </div>
 
-    <main class="max-w-5xl mx-auto px-6 py-12">
-        <!-- Preview Banner -->
-        <div id="preview-banner" class="hidden mb-8 p-4 bg-primary/20 border border-primary/30 rounded-xl flex items-center justify-between backdrop-blur-md">
-            <div class="flex items-center gap-3">
-                <span class="material-symbols-outlined text-primary animate-pulse">visibility</span>
-                <div>
-                    <h2 class="text-white font-bold text-sm uppercase tracking-widest">Preview Mode</h2>
-                    <p class="text-slate-400 text-[10px] uppercase tracking-tighter">You are viewing this track as a learner</p>
+            <div class="mb-8">
+                <a
+                    href="tracks.html"
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700 text-slate-400 hover:text-white hover:bg-slate-800 transition-all text-sm font-semibold group"
+                >
+                    <span class="material-symbols-outlined text-lg group-hover:-translate-x-1 transition-transform">
+                        arrow_back
+                    </span>
+                    Back to Track Selection
+                </a>
+            </div>
+            <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-3 font-display tracking-wider uppercase">
+                Technical Track
+            </h1>
+            <p class="text-slate-400 text-lg mb-10">
+                Welcome to your specialized technical learning journey.
+                <br />
+                The curriculum is currently being updated to provide you with the latest insights and expert knowledge.
+            </p>
+
+            <div
+                class="mb-10 p-6 rounded-2xl bg-slate-900 border border-slate-800 hidden"
+                id="track-progress-container"
+            >
+                <div class="flex items-center justify-between mb-4">
+                    <div>
+                        <h3 class="text-white font-bold uppercase tracking-widest text-xs">Track Progress</h3>
+                        <p class="text-[10px] text-slate-500 mt-1 uppercase tracking-tight">
+                            Your advancement in this track
+                        </p>
+                    </div>
+                    <div class="text-right">
+                        <span class="text-2xl font-black text-emerald-500 font-display" id="track-progress-percent">
+                            0%
+                        </span>
+                    </div>
+                </div>
+                <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
+                    <div
+                        class="h-full bg-emerald-500 transition-all duration-1000 shadow-[0_0_15px_rgba(16,185,129,0.3)]"
+                        id="track-progress-bar"
+                        style="width: 0%"
+                    ></div>
                 </div>
             </div>
-            <a href="admin-tracks.html" class="px-4 py-1.5 bg-primary text-white text-[10px] font-bold rounded-lg hover:bg-blue-600 transition-all uppercase tracking-widest group flex items-center gap-2">
-                Exit Preview
-                <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">logout</span>
-            </a>
-        </div>
 
-        <div class="mb-8">
-            <a href="tracks.html"
-                class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700 text-slate-400 hover:text-white hover:bg-slate-800 transition-all text-sm font-semibold group">
-                <span class="material-symbols-outlined text-lg group-hover:-translate-x-1 transition-transform">arrow_back</span>
-                Back to Track Selection
-            </a>
-        </div>
-        <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-3 font-display tracking-wider uppercase">
-            Technical Track
-        </h1>
-        <p class="text-slate-400 text-lg mb-10">
-            Welcome to your specialized technical learning journey. 
-            <br />
-            The curriculum is currently being updated to provide you with the latest insights and expert knowledge.
-        </p>
-
-        <div class="mb-10 p-6 rounded-2xl bg-slate-900 border border-slate-800 hidden" id="track-progress-container">
-            <div class="flex items-center justify-between mb-4">
-                <div>
-                    <h3 class="text-white font-bold uppercase tracking-widest text-xs">Track Progress</h3>
-                    <p class="text-[10px] text-slate-500 mt-1 uppercase tracking-tight">Your advancement in this track</p>
-                </div>
-                <div class="text-right">
-                    <span class="text-2xl font-black text-emerald-500 font-display" id="track-progress-percent">0%</span>
+            <div id="curriculum-container" class="space-y-8">
+                <!-- Dynamically populated -->
+                <div class="flex flex-col items-center justify-center p-20 text-slate-500 animate-pulse">
+                    <span class="material-symbols-outlined text-4xl mb-4">sync</span>
+                    <p class="font-display text-xs uppercase tracking-widest">Loading Curriculum...</p>
                 </div>
             </div>
-            <div class="w-full h-2 bg-slate-800 rounded-full overflow-hidden">
-                <div class="h-full bg-emerald-500 transition-all duration-1000 shadow-[0_0_15px_rgba(16,185,129,0.3)]" id="track-progress-bar" style="width: 0%"></div>
+
+            <!-- Rating Prompt (shown on 100% completion) -->
+            <div
+                id="rating-prompt"
+                class="mb-10 p-8 rounded-3xl bg-amber-500/10 border border-amber-500/20 hidden animate-in fade-in slide-in-from-bottom-4 duration-1000"
+            >
+                <div class="flex flex-col items-center text-center">
+                    <div
+                        class="w-16 h-16 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-500 mb-6 scale-110"
+                    >
+                        <span class="material-symbols-outlined text-4xl">emoji_events</span>
+                    </div>
+                    <h2 class="text-3xl font-black text-white mb-2 font-display uppercase tracking-tight">
+                        Track Completed! 🎉
+                    </h2>
+                    <p class="text-slate-400 mb-8 max-w-md">
+                        Congratulations on finishing this specialized technical track! How would you rate your
+                        experience?
+                    </p>
+                    <ai-rating id="completion-rating" class="scale-150 py-4"></ai-rating>
+                    <p class="text-xs text-slate-500 mt-6 font-bold uppercase tracking-widest">
+                        Your feedback helps us improve the Academy.
+                    </p>
+                </div>
             </div>
-        </div>
 
-        <div id="curriculum-container" class="space-y-8">
-            <!-- Dynamically populated -->
-            <div class="flex flex-col items-center justify-center p-20 text-slate-500 animate-pulse">
-                <span class="material-symbols-outlined text-4xl mb-4">sync</span>
-                <p class="font-display text-xs uppercase tracking-widest">Loading Curriculum...</p>
-            </div>
-        </div>
+            <script>
+                document.addEventListener('DOMContentLoaded', async () => {
+                    const container = document.getElementById('curriculum-container');
+                    const progressContainer = document.getElementById('track-progress-container');
+                    const progressBar = document.getElementById('track-progress-bar');
+                    const progressPercent = document.getElementById('track-progress-percent');
 
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const isPreview = urlParams.get('preview') === 'true';
+                    const previewTrackId = urlParams.get('id');
+                    const previewTrackSlug = urlParams.get('slug');
+                    const autoOpenQuizId = urlParams.get('quiz');
 
-        <script>
-            document.addEventListener('DOMContentLoaded', async () => {
-                const container = document.getElementById('curriculum-container');
-                const progressContainer = document.getElementById('track-progress-container');
-                const progressBar = document.getElementById('track-progress-bar');
-                const progressPercent = document.getElementById('track-progress-percent');
-                
-                const urlParams = new URLSearchParams(window.location.search);
-                const isPreview = urlParams.get('preview') === 'true';
-                const previewTrackId = urlParams.get('id');
-                const previewTrackSlug = urlParams.get('slug');
-                const autoOpenQuizId = urlParams.get('quiz');
-
-                if (isPreview) {
-                    const banner = document.getElementById('preview-banner');
-                    if (banner) {
-                        banner.classList.remove('hidden');
-                        const exitBtn = banner.querySelector('a');
-                        if (exitBtn) {
-                            exitBtn.href = `track-editor.html?id=${previewTrackId || ''}&slug=${previewTrackSlug || ''}`;
+                    if (isPreview) {
+                        const banner = document.getElementById('preview-banner');
+                        if (banner) {
+                            banner.classList.remove('hidden');
+                            const exitBtn = banner.querySelector('a');
+                            if (exitBtn) {
+                                exitBtn.href = `track-editor.html?id=${previewTrackId || ''}&slug=${previewTrackSlug || ''}`;
+                            }
                         }
+                        const backButton = document.querySelector('main > div.mb-8 > a[href="tracks.html"]');
+                        if (backButton) backButton.classList.add('hidden');
                     }
-                    const backButton = document.querySelector('main > div.mb-8 > a[href="tracks.html"]');
-                    if (backButton) backButton.classList.add('hidden');
-                }
 
-                let techTrack = null;
+                    let techTrack = null;
 
-                try {
-                    // 1. Fetch Tracks to find the right one
-                    const tracksRes = await fetch('/api/tracks', { credentials: 'include' });
-                    if (!tracksRes.ok) {
-                        if (tracksRes.status === 401 || tracksRes.status === 403) {
-                            window.location.href = 'login.html';
+                    try {
+                        // 1. Fetch Tracks to find the right one
+                        const tracksRes = await fetch('/api/tracks', { credentials: 'include' });
+                        if (!tracksRes.ok) {
+                            if (tracksRes.status === 401 || tracksRes.status === 403) {
+                                window.location.href = 'login.html';
+                                return;
+                            }
+                            throw new Error(`Failed to fetch tracks: ${tracksRes.status}`);
+                        }
+                        const tracks = await tracksRes.json();
+
+                        if (isPreview) {
+                            techTrack =
+                                tracks.find(t => t.id === previewTrackId) ||
+                                tracks.find(t => t.slug === previewTrackSlug);
+                        } else {
+                            const userTrackId = sessionStorage.getItem('userTrackId');
+                            techTrack =
+                                tracks.find(t => t.id === userTrackId) ||
+                                tracks.find(t => t.name.toUpperCase().includes('TECH'));
+                        }
+
+                        if (!techTrack) {
+                            console.error('Track not found. Parameters:', {
+                                isPreview,
+                                previewTrackId,
+                                previewTrackSlug
+                            });
+                            container.innerHTML = `<p class="text-center text-red-500 p-10">Track information not found.</p>`;
                             return;
                         }
-                        throw new Error(`Failed to fetch tracks: ${tracksRes.status}`);
-                    }
-                    const tracks = await tracksRes.json();
-                    
-                    if (isPreview) {
-                        techTrack = tracks.find(t => t.id === previewTrackId) || 
-                                   tracks.find(t => t.slug === previewTrackSlug);
-                    } else {
-                        const userTrackId = sessionStorage.getItem('userTrackId');
-                        techTrack = tracks.find(t => t.id === userTrackId) || 
-                                   tracks.find(t => t.name.toUpperCase().includes('TECH'));
-                    }
-                    
-                    if (!techTrack) {
-                        console.error('Track not found. Parameters:', { isPreview, previewTrackId, previewTrackSlug });
-                        container.innerHTML = `<p class="text-center text-red-500 p-10">Track information not found.</p>`;
-                        return;
-                    }
 
-                    // Update Hero Metadata
-                    document.querySelector('h1').textContent = techTrack.name + ' TRACK';
-                    const descPara = document.querySelector('h1 + p');
-                    if (descPara) {
-                        descPara.innerHTML = techTrack.description || 'Welcome to your specialized learning journey.';
-                    }
-
-                    // 2. Parallel fetch for Modules and Progress
-                    const [modulesRes, progressRes] = await Promise.all([
-                        fetch(`/api/tracks/${techTrack.id}/modules`, { credentials: 'include' }),
-                        fetch('/api/progress/summary', { credentials: 'include' })
-                    ]);
-                    
-                    if (!modulesRes.ok) throw new Error(`Failed to fetch modules: ${modulesRes.status}`);
-                    
-                    const modulesData = await modulesRes.json();
-                    let curriculumModules = [];
-
-                    // 1. Try Draft first if in preview
-                    if (isPreview && techTrack.curriculumDraft) {
-                        try {
-                            const draft = typeof techTrack.curriculumDraft === 'string' 
-                                ? JSON.parse(techTrack.curriculumDraft) 
-                                : techTrack.curriculumDraft;
-                            
-                            if (Array.isArray(draft)) {
-                                curriculumModules = draft.map(mod => ({
-                                    title: mod.title,
-                                    items: (mod.items || []).map(item => ({
-                                        title: item.title,
-                                        type: item.type,
-                                        id: item['module-id'] || item['file-id'] || item.moduleId || item.fileId || `preview-${Math.random()}`,
-                                        mediaUrl: item['blob-url'] || item['video-id'] || item.blobUrl || item.videoId || '',
-                                        raw: item
-                                    }))
-                                }));
-                            }
-                        } catch (e) {
-                            console.warn('[Preview] Failed to parse curriculumDraft:', e);
+                        // Update Hero Metadata
+                        document.querySelector('h1').textContent = techTrack.name + ' TRACK';
+                        const descPara = document.querySelector('h1 + p');
+                        if (descPara) {
+                            descPara.innerHTML =
+                                techTrack.description || 'Welcome to your specialized learning journey.';
                         }
-                    }
 
-                    // 2. Fallback to published modules
-                    if (curriculumModules.length === 0) {
-                        const grouped = {};
-                        (modulesData.modules || []).forEach(m => {
-                            const moduleTitle = m.description || 'General';
-                            if (!grouped[moduleTitle]) grouped[moduleTitle] = [];
-                            grouped[moduleTitle].push({
-                                title: m.title,
-                                type: m.type,
-                                id: m.id,
-                                mediaUrl: m.mediaUrl,
-                                raw: {}
+                        // 2. Parallel fetch for Modules and Progress
+                        const [modulesRes, progressRes] = await Promise.all([
+                            fetch(`/api/tracks/${techTrack.id}/modules`, { credentials: 'include' }),
+                            fetch('/api/progress/summary', { credentials: 'include' })
+                        ]);
+
+                        if (!modulesRes.ok) throw new Error(`Failed to fetch modules: ${modulesRes.status}`);
+
+                        const modulesData = await modulesRes.json();
+                        let curriculumModules = [];
+
+                        // 1. Try Draft first if in preview
+                        if (isPreview && techTrack.curriculumDraft) {
+                            try {
+                                const draft =
+                                    typeof techTrack.curriculumDraft === 'string'
+                                        ? JSON.parse(techTrack.curriculumDraft)
+                                        : techTrack.curriculumDraft;
+
+                                if (Array.isArray(draft)) {
+                                    curriculumModules = draft.map(mod => ({
+                                        title: mod.title,
+                                        items: (mod.items || []).map(item => ({
+                                            title: item.title,
+                                            type: item.type,
+                                            id:
+                                                item['module-id'] ||
+                                                item['file-id'] ||
+                                                item.moduleId ||
+                                                item.fileId ||
+                                                `preview-${Math.random()}`,
+                                            mediaUrl:
+                                                item['blob-url'] ||
+                                                item['video-id'] ||
+                                                item.blobUrl ||
+                                                item.videoId ||
+                                                '',
+                                            raw: item
+                                        }))
+                                    }));
+                                }
+                            } catch (e) {
+                                console.warn('[Preview] Failed to parse curriculumDraft:', e);
+                            }
+                        }
+
+                        // 2. Fallback to published modules
+                        if (curriculumModules.length === 0) {
+                            const grouped = {};
+                            (modulesData.modules || []).forEach(m => {
+                                const moduleTitle = m.description || 'General';
+                                if (!grouped[moduleTitle]) grouped[moduleTitle] = [];
+                                grouped[moduleTitle].push({
+                                    title: m.title,
+                                    type: m.type,
+                                    id: m.id,
+                                    mediaUrl: m.mediaUrl,
+                                    raw: {}
+                                });
                             });
-                        });
-                        curriculumModules = Object.entries(grouped).map(([title, items]) => ({ title, items }));
-                    }
+                            curriculumModules = Object.entries(grouped).map(([title, items]) => ({ title, items }));
+                        }
 
-                    let progressData = { progress: [] };
-                    if (progressRes.ok) {
-                        const summaryData = await progressRes.json();
-                        progressData.progress = summaryData.progress || [];
-                    }
+                        let progressData = { progress: [] };
+                        if (progressRes.ok) {
+                            const summaryData = await progressRes.json();
+                            progressData.progress = summaryData.progress || [];
+                        }
 
-                    const completedModuleIds = new Set((progressData.progress || []).map(p => p.moduleId));
+                        const completedModuleIds = new Set((progressData.progress || []).map(p => p.moduleId));
 
-                    if (curriculumModules.length === 0) {
-                        container.innerHTML = `
+                        if (curriculumModules.length === 0) {
+                            container.innerHTML = `
                             <div class="glass-card p-12 text-center text-slate-500 border-dashed border-2 border-slate-800">
                                 <span class="material-symbols-outlined text-6xl mb-4">construction</span>
                                 <p class="text-xl font-display uppercase tracking-widest">Curriculum Under Review</p>
                                 <p class="mt-2 text-sm italic">The administrator hasn't published the curriculum yet.</p>
                             </div>
                         `;
-                        return;
-                    }
+                            return;
+                        }
 
-                    // 4. Render
-                    container.innerHTML = '';
-                    let stepNum = 1;
-                    let totalItems = 0;
-                    let completedItemsCount = 0;
-                    
-                    curriculumModules.forEach(mod => {
-                        const modEl = document.createElement('ai-module');
-                        modEl.setAttribute('title', mod.title);
-                        modEl.setAttribute('step', stepNum.toString().padStart(2, '0'));
-                        
-                        mod.items.forEach(item => {
-                            totalItems++;
-                            const isCompleted = completedModuleIds.has(item.id);
-                            if (isCompleted) completedItemsCount++;
+                        // 4. Render
+                        container.innerHTML = '';
+                        let stepNum = 1;
+                        let totalItems = 0;
+                        let completedItemsCount = 0;
 
-                            const itemEl = document.createElement('ai-content-item');
-                            
-                            // Restore all custom attributes from draft if available
-                            if (item.raw) {
-                                Object.entries(item.raw).forEach(([k, v]) => {
-                                    if (v !== undefined && v !== null) itemEl.setAttribute(k, v);
-                                });
-                            }
+                        curriculumModules.forEach(mod => {
+                            const modEl = document.createElement('ai-module');
+                            modEl.setAttribute('title', mod.title);
+                            modEl.setAttribute('step', stepNum.toString().padStart(2, '0'));
 
-                            itemEl.setAttribute('title', item.title);
-                            itemEl.setAttribute('type', item.type);
-                            itemEl.setAttribute('module-id', item.id);
-                            if (isCompleted) itemEl.setAttribute('completed', 'true');
-                            
-                            // Map icon and color based on type
-                            const config = window.CONTENT_TYPE_CONFIG[item.type] || window.CONTENT_TYPE_CONFIG.DEFAULT;
-                            itemEl.setAttribute('icon', config.icon);
-                            itemEl.setAttribute('color', config.color);
-                            
-                            if (item.mediaUrl) {
-                                if (item.mediaUrl.startsWith('local:')) {
-                                    itemEl.setAttribute('blob-url', item.mediaUrl);
-                                    if (item.type === 'QUIZ' && item.mediaUrl.includes('|')) {
-                                        const threshold = item.mediaUrl.split('|')[1];
-                                        itemEl.setAttribute('success-threshold', threshold);
-                                    }
-                                } else if (item.type === 'VIDEO' && !item.mediaUrl.startsWith('blob:') && !item.mediaUrl.startsWith('http')) {
-                                    itemEl.setAttribute('video-id', item.mediaUrl);
-                                    itemEl.setAttribute('subtype', 'YOUTUBE');
-                                } else {
-                                    itemEl.setAttribute('blob-url', item.mediaUrl);
+                            mod.items.forEach(item => {
+                                totalItems++;
+                                const isCompleted = completedModuleIds.has(item.id);
+                                if (isCompleted) completedItemsCount++;
+
+                                const itemEl = document.createElement('ai-content-item');
+
+                                // Restore all custom attributes from draft if available
+                                if (item.raw) {
+                                    Object.entries(item.raw).forEach(([k, v]) => {
+                                        if (v !== undefined && v !== null) itemEl.setAttribute(k, v);
+                                    });
                                 }
-                            }
-                            
-                            modEl.appendChild(itemEl);
+
+                                itemEl.setAttribute('title', item.title);
+                                itemEl.setAttribute('type', item.type);
+                                itemEl.setAttribute('module-id', item.id);
+                                if (isCompleted) itemEl.setAttribute('completed', 'true');
+
+                                // Map icon and color based on type
+                                const config =
+                                    window.CONTENT_TYPE_CONFIG[item.type] || window.CONTENT_TYPE_CONFIG.DEFAULT;
+                                itemEl.setAttribute('icon', config.icon);
+                                itemEl.setAttribute('color', config.color);
+
+                                if (item.mediaUrl) {
+                                    if (item.mediaUrl.startsWith('local:')) {
+                                        itemEl.setAttribute('blob-url', item.mediaUrl);
+                                        if (item.type === 'QUIZ' && item.mediaUrl.includes('|')) {
+                                            const threshold = item.mediaUrl.split('|')[1];
+                                            itemEl.setAttribute('success-threshold', threshold);
+                                        }
+                                    } else if (
+                                        item.type === 'VIDEO' &&
+                                        !item.mediaUrl.startsWith('blob:') &&
+                                        !item.mediaUrl.startsWith('http')
+                                    ) {
+                                        itemEl.setAttribute('video-id', item.mediaUrl);
+                                        itemEl.setAttribute('subtype', 'YOUTUBE');
+                                    } else {
+                                        itemEl.setAttribute('blob-url', item.mediaUrl);
+                                    }
+                                }
+
+                                modEl.appendChild(itemEl);
+                            });
+
+                            container.appendChild(modEl);
+                            stepNum++;
                         });
-                        
-                        container.appendChild(modEl);
-                        stepNum++;
-                    });
 
-                    // 5. Update Track Progress
-                    const overallPercent = totalItems > 0 ? Math.round((completedItemsCount / totalItems) * 100) : 0;
-                    progressPercent.textContent = `${overallPercent}%`;
-                    progressBar.style.width = `${overallPercent}%`;
-                    progressContainer.classList.remove('hidden');
+                        const overallPercent =
+                            totalItems > 0 ? Math.round((completedItemsCount / totalItems) * 100) : 0;
+                        progressPercent.textContent = `${overallPercent}%`;
+                        progressBar.style.width = `${overallPercent}%`;
+                        progressContainer.classList.remove('hidden');
 
-                    // Auto-open quiz if deep-linked
-                    if (autoOpenQuizId) {
-                        setTimeout(() => {
-                            const quizItem = document.querySelector(`ai-content-item[module-id="${autoOpenQuizId}"]`);
-                            if (quizItem) {
-                                quizItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                                quizItem.click();
+                        // Show rating prompt if 100% complete
+                        if (overallPercent === 100 && !isPreview) {
+                            const ratingPrompt = document.getElementById('rating-prompt');
+                            if (ratingPrompt) {
+                                ratingPrompt.classList.remove('hidden');
+                                const starEl = document.getElementById('completion-rating');
+                                if (starEl) starEl.setAttribute('track-id', techTrack.id);
                             }
-                        }, 500); // Small delay to let custom elements render fully
-                    }
+                        }
 
-                    // 6. Listen for real-time updates to update track progress
-                    window.addEventListener('ai-progress-update', (e) => {
-                        console.log(`[Track] Progress update received for module ${e.detail?.moduleId}`);
-                        // Small delay to allow components to update their 'completed' attribute first
-                        setTimeout(() => {
-                            const allItems = Array.from(document.querySelectorAll('ai-content-item'));
-                            const completed = allItems.filter(i => i.getAttribute('completed') === 'true').length;
-                            const total = allItems.length;
-                            const newPercent = total > 0 ? Math.round((completed / total) * 100) : 0;
-                            
-                            progressPercent.textContent = `${newPercent}%`;
-                            progressBar.style.width = `${newPercent}%`;
-                            console.log(`[Track] Recalculated progress: ${newPercent}% (${completed}/${total})`);
-                        }, 100);
-                    });
+                        // Auto-open quiz if deep-linked
+                        if (autoOpenQuizId) {
+                            setTimeout(() => {
+                                const quizItem = document.querySelector(
+                                    `ai-content-item[module-id="${autoOpenQuizId}"]`
+                                );
+                                if (quizItem) {
+                                    quizItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    quizItem.click();
+                                }
+                            }, 500); // Small delay to let custom elements render fully
+                        }
 
-                } catch (error) {
-                    console.error('Error loading curriculum:', error);
-                    container.innerHTML = `
+                        // 6. Listen for real-time updates to update track progress
+                        window.addEventListener('ai-progress-update', e => {
+                            console.log(`[Track] Progress update received for module ${e.detail?.moduleId}`);
+                            // Small delay to allow components to update their 'completed' attribute first
+                            setTimeout(() => {
+                                const allItems = Array.from(document.querySelectorAll('ai-content-item'));
+                                const completed = allItems.filter(i => i.getAttribute('completed') === 'true').length;
+                                const total = allItems.length;
+                                const newPercent = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+                                progressPercent.textContent = `${newPercent}%`;
+                                progressBar.style.width = `${newPercent}%`;
+                                console.log(`[Track] Recalculated progress: ${newPercent}% (${completed}/${total})`);
+                            }, 100);
+                        });
+                    } catch (error) {
+                        console.error('Error loading curriculum:', error);
+                        container.innerHTML = `
                         <div class="glass-card p-12 text-center text-red-500 border border-red-500/20">
                             <span class="material-symbols-outlined text-4xl mb-4">error</span>
                             <p class="font-display uppercase tracking-widest">Failed to load curriculum</p>
@@ -302,15 +384,13 @@
                             <button onclick="window.location.reload()" class="mt-6 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-bold transition-all uppercase tracking-widest">Try Again</button>
                         </div>
                     `;
-                }
-            });
-        </script>
-    </main>
+                    }
+                });
+            </script>
+        </main>
 
-    <ai-media-viewer-modal></ai-media-viewer-modal>
-    <ai-quiz-modal></ai-quiz-modal>
-    <ai-profile-modal></ai-profile-modal>
-</body>
-
+        <ai-media-viewer-modal></ai-media-viewer-modal>
+        <ai-quiz-modal></ai-quiz-modal>
+        <ai-profile-modal></ai-profile-modal>
+    </body>
 </html>
-

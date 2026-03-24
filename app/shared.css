@@ -1,6 +1,4 @@
 /* Academy Portal - Shared Styles */
-@import url('https://fonts.googleapis.com/css2?family=Michroma&family=Noto+Sans:wght@300;400;500;600;700;800&display=swap');
-@import url('https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined');
 
 :root {
     --color-primary: 27 95 254;
@@ -203,8 +201,12 @@ a {
     scrollbar-color: #1e293b #0f172a;
 }
 /* Table Controls Visibility */
-.ql-table-controls { display: none !important; }
-.ql-editor .ql-table-controls { display: flex !important; }
+.ql-table-controls {
+    display: none !important;
+}
+.ql-editor .ql-table-controls {
+    display: flex !important;
+}
 
 /* Notifications UI */
 .notification-dot {

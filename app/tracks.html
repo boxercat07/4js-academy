@@ -1,237 +1,309 @@
 <!doctype html>
 <html lang="en" class="dark">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Choose Your Track - Smart Academy</title>
+        <!-- Tailwind CSS (Compiled) -->
+        <link href="dist/output.css" rel="stylesheet" />
+        <script src="video-utils.js"></script>
+        <script src="components.js" defer></script>
+    </head>
 
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Choose Your Track - Smart Academy</title>
-    <!-- Tailwind CSS (Compiled) -->
-    <link href="dist/output.css" rel="stylesheet">
-    <script src="video-utils.js"></script>
-    <script src="components.js" defer></script>
-</head>
+    <body class="page-transition">
+        <!-- Nav -->
+        <!-- Factored out Header Component -->
+        <learner-header></learner-header>
 
-<body class="page-transition">
-    <!-- Nav -->
-    <!-- Factored out Header Component -->
-    <learner-header></learner-header>
-
-    <main class="py-16 px-6">
-        <div class="max-w-6xl mx-auto flex flex-col md:flex-row items-center md:items-center justify-between gap-10 mb-20 animate-in fade-in slide-in-from-top-4 duration-700">
-            <div class="text-center md:text-left flex-1">
-                <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold tracking-widest uppercase mb-6 shadow-lg shadow-primary/5">
-                    🚀 Empower Your Knowledge
+        <main class="py-16 px-6">
+            <div
+                class="max-w-6xl mx-auto flex flex-col md:flex-row items-center md:items-center justify-between gap-10 mb-20 animate-in fade-in slide-in-from-top-4 duration-700"
+            >
+                <div class="text-center md:text-left flex-1">
+                    <div
+                        class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold tracking-widest uppercase mb-6 shadow-lg shadow-primary/5"
+                    >
+                        🚀 Empower Your Knowledge
+                    </div>
+                    <h1
+                        class="text-4xl md:text-6xl font-black text-white mb-3 font-display tracking-tight uppercase leading-none"
+                    >
+                        Welcome Back,
+                        <span
+                            id="user-name-display"
+                            class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400"
+                        >
+                            Learner
+                        </span>
+                    </h1>
+                    <p class="text-slate-400 text-sm md:text-lg max-w-xl font-medium leading-relaxed">
+                        Explore your tailored recommendations for the
+                        <span id="user-dept-display" class="text-white font-bold">...</span>
+                        department. Continue your journey to master new skills and expert knowledge.
+                    </p>
                 </div>
-                <h1 class="text-4xl md:text-6xl font-black text-white mb-3 font-display tracking-tight uppercase leading-none">
-                    Welcome Back, <span id="user-name-display" class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-blue-400">Learner</span>
-                </h1>
-                <p class="text-slate-400 text-sm md:text-lg max-w-xl font-medium leading-relaxed">
-                    Explore your tailored recommendations for the <span id="user-dept-display" class="text-white font-bold">...</span> department. 
-                    Continue your journey to master new skills and expert knowledge.
-                </p>
+
+                <div
+                    class="grid grid-cols-2 sm:grid-cols-3 md:flex gap-3 md:gap-4 w-full md:w-auto self-center md:self-auto"
+                >
+                    <div
+                        class="glass-card p-4 md:p-5 border-slate-700/50 bg-slate-900/40 backdrop-blur-md flex flex-col items-center justify-center min-w-[120px] md:min-w-[140px] group hover:border-primary/30 transition-all"
+                    >
+                        <div
+                            class="size-8 md:size-10 rounded-full bg-primary/10 flex items-center justify-center mb-2 text-primary group-hover:scale-110 transition-transform"
+                        >
+                            <span class="material-symbols-outlined text-lg md:text-xl">check_circle</span>
+                        </div>
+                        <span class="text-xl md:text-2xl font-black text-white mb-0.5" id="stat-tracks-completed">
+                            0
+                        </span>
+                        <span
+                            class="text-[8px] md:text-[9px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap text-center"
+                        >
+                            Tracks Completed
+                        </span>
+                    </div>
+
+                    <div
+                        class="glass-card p-4 md:p-5 border-slate-700/50 bg-slate-900/40 backdrop-blur-md flex flex-col items-center justify-center min-w-[120px] md:min-w-[140px] group hover:border-blue-400/30 transition-all"
+                    >
+                        <div
+                            class="size-8 md:size-10 rounded-full bg-blue-400/10 flex items-center justify-center mb-2 text-blue-400 group-hover:scale-110 transition-transform"
+                        >
+                            <span class="material-symbols-outlined text-lg md:text-xl">analytics</span>
+                        </div>
+                        <span class="text-xl md:text-2xl font-black text-blue-400 mb-0.5" id="stat-total-progress">
+                            -
+                        </span>
+                        <span
+                            class="text-[8px] md:text-[9px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap text-center"
+                        >
+                            Overall Progress
+                        </span>
+                    </div>
+
+                    <div
+                        class="glass-card p-4 md:p-5 border-slate-700/50 bg-slate-900/40 backdrop-blur-md flex flex-col items-center justify-center min-w-[120px] md:min-w-[140px] group hover:border-amber-400/30 transition-all col-span-2 sm:col-span-1"
+                    >
+                        <div
+                            class="size-8 md:size-10 rounded-full bg-amber-400/10 flex items-center justify-center mb-2 text-amber-400 group-hover:scale-110 transition-transform"
+                        >
+                            <span class="material-symbols-outlined text-lg md:text-xl">quiz</span>
+                        </div>
+                        <span class="text-xl md:text-2xl font-black text-amber-400 mb-0.5" id="stat-pending-quizzes">
+                            0
+                        </span>
+                        <span
+                            class="text-[8px] md:text-[9px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap text-center"
+                        >
+                            Pending Quizzes
+                        </span>
+                    </div>
+                </div>
             </div>
-            
-            <div class="grid grid-cols-2 sm:grid-cols-3 md:flex gap-3 md:gap-4 w-full md:w-auto self-center md:self-auto">
-                <div class="glass-card p-4 md:p-5 border-slate-700/50 bg-slate-900/40 backdrop-blur-md flex flex-col items-center justify-center min-w-[120px] md:min-w-[140px] group hover:border-primary/30 transition-all">
-                    <div class="size-8 md:size-10 rounded-full bg-primary/10 flex items-center justify-center mb-2 text-primary group-hover:scale-110 transition-transform">
-                        <span class="material-symbols-outlined text-lg md:text-xl">check_circle</span>
+            <div class="max-w-6xl mx-auto">
+                <!-- Grouped Milestones & Quizzes -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-16">
+                    <!-- Milestones Section -->
+                    <div id="milestones-section">
+                        <div class="glass-card h-full p-6 border-primary/20 bg-primary/5">
+                            <div class="flex items-center gap-3 mb-6">
+                                <div
+                                    class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary"
+                                >
+                                    <span class="material-symbols-outlined">emoji_events</span>
+                                </div>
+                                <div class="text-left">
+                                    <h2 class="text-xl font-bold text-white font-display">Your Recent Milestones</h2>
+                                    <p class="text-slate-400 text-sm">Great job! Here's your recent progress.</p>
+                                </div>
+                            </div>
+                            <div id="milestones-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <p class="text-slate-500 text-sm italic col-span-full">
+                                    No milestones yet. Keep learning to earn badges!
+                                </p>
+                            </div>
+                        </div>
                     </div>
-                    <span class="text-xl md:text-2xl font-black text-white mb-0.5" id="stat-tracks-completed">0</span>
-                    <span class="text-[8px] md:text-[9px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap text-center">Tracks Completed</span>
-                </div>
-                
-                <div class="glass-card p-4 md:p-5 border-slate-700/50 bg-slate-900/40 backdrop-blur-md flex flex-col items-center justify-center min-w-[120px] md:min-w-[140px] group hover:border-blue-400/30 transition-all">
-                    <div class="size-8 md:size-10 rounded-full bg-blue-400/10 flex items-center justify-center mb-2 text-blue-400 group-hover:scale-110 transition-transform">
-                        <span class="material-symbols-outlined text-lg md:text-xl">analytics</span>
-                    </div>
-                    <span class="text-xl md:text-2xl font-black text-blue-400 mb-0.5" id="stat-total-progress">-</span>
-                    <span class="text-[8px] md:text-[9px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap text-center">Overall Progress</span>
-                </div>
- 
-                <div class="glass-card p-4 md:p-5 border-slate-700/50 bg-slate-900/40 backdrop-blur-md flex flex-col items-center justify-center min-w-[120px] md:min-w-[140px] group hover:border-amber-400/30 transition-all col-span-2 sm:col-span-1">
-                    <div class="size-8 md:size-10 rounded-full bg-amber-400/10 flex items-center justify-center mb-2 text-amber-400 group-hover:scale-110 transition-transform">
-                        <span class="material-symbols-outlined text-lg md:text-xl">quiz</span>
-                    </div>
-                    <span class="text-xl md:text-2xl font-black text-amber-400 mb-0.5" id="stat-pending-quizzes">0</span>
-                    <span class="text-[8px] md:text-[9px] font-bold text-slate-500 uppercase tracking-widest whitespace-nowrap text-center">Pending Quizzes</span>
-                </div>
-            </div>
-        </div>
-        <div class="max-w-6xl mx-auto">
-            <!-- Grouped Milestones & Quizzes -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-16">
-                <!-- Milestones Section -->
-                <div id="milestones-section">
-                    <div class="glass-card h-full p-6 border-primary/20 bg-primary/5">
+
+                    <!-- Pending Quizzes Section -->
+                    <div id="pending-quizzes-section">
                         <div class="flex items-center gap-3 mb-6">
-                            <div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
-                                <span class="material-symbols-outlined">emoji_events</span>
-                            </div>
-                            <div class="text-left">
-                                <h2 class="text-xl font-bold text-white font-display">Your Recent Milestones</h2>
-                                <p class="text-slate-400 text-sm">Great job! Here's your recent progress.</p>
-                            </div>
+                            <span class="material-symbols-outlined text-amber-400">priority_high</span>
+                            <h2
+                                class="text-2xl font-extrabold text-white font-display uppercase tracking-tight leading-none"
+                            >
+                                Quizzes to take
+                            </h2>
                         </div>
-                        <div id="milestones-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <p class="text-slate-500 text-sm italic col-span-full">No milestones yet. Keep learning to earn badges!</p>
+                        <div id="pending-quizzes-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <!-- Pending quizzes here -->
                         </div>
                     </div>
                 </div>
- 
-                <!-- Pending Quizzes Section -->
-                <div id="pending-quizzes-section">
-                    <div class="flex items-center gap-3 mb-6">
-                        <span class="material-symbols-outlined text-amber-400">priority_high</span>
-                        <h2 class="text-2xl font-extrabold text-white font-display uppercase tracking-tight leading-none">Quizzes to take</h2>
+
+                <!-- Continue Learning Section -->
+                <div id="continue-section" class="hidden mb-16">
+                    <h2 class="text-3xl font-extrabold text-white mb-6 text-left font-display flex items-center gap-3">
+                        <span class="material-symbols-outlined text-blue-400">play_circle</span>
+                        Continue Learning
+                    </h2>
+                    <div id="continue-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                        <!-- Started tracks here -->
                     </div>
-                    <div id="pending-quizzes-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <!-- Pending quizzes here -->
+                </div>
+
+                <!-- Recommended Section -->
+                <div id="recommended-section" class="hidden mb-16">
+                    <h2 class="text-3xl font-extrabold text-white mb-6 text-left font-display flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary">verified</span>
+                        Recommended For You
+                    </h2>
+                    <div
+                        id="recommended-grid"
+                        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
+                    >
+                        <!-- Recommended tracks here -->
+                    </div>
+                    <div id="recommended-pagination" class="mt-8 flex justify-center gap-2 hidden"></div>
+                </div>
+
+                <!-- Completed Section -->
+                <div id="completed-section" class="hidden mb-16">
+                    <h2 class="text-3xl font-extrabold text-white mb-6 text-left font-display flex items-center gap-3">
+                        <span class="material-symbols-outlined text-green-400">check_circle</span>
+                        Completed Tracks
+                    </h2>
+                    <div
+                        id="completed-grid"
+                        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
+                    >
+                        <!-- Completed tracks here -->
                     </div>
                 </div>
-            </div>
 
-            <!-- Continue Learning Section -->
-            <div id="continue-section" class="hidden mb-16">
-                <h2 class="text-3xl font-extrabold text-white mb-6 text-left font-display flex items-center gap-3">
-                    <span class="material-symbols-outlined text-blue-400">play_circle</span>
-                    Continue Learning
-                </h2>
-                <div id="continue-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                    <!-- Started tracks here -->
+                <div id="loading-spinner" class="col-span-full py-20 text-center">
+                    <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"></div>
+                    <p class="text-slate-500 font-medium">Loading learning paths...</p>
+                </div>
+
+                <div id="no-tracks-message" class="hidden col-span-full glass-card p-12 text-center">
+                    <span class="material-symbols-outlined text-4xl text-slate-500 mb-4">info</span>
+                    <p class="text-white font-bold">No Published Tracks</p>
+                    <p class="text-slate-500">
+                        There are no learning paths available at the moment. Please check back later.
+                    </p>
+                </div>
+                <div id="catalogue-section" class="hidden pb-20">
+                    <h2 class="text-3xl font-extrabold text-white mb-6 text-left font-display flex items-center gap-3">
+                        <span class="material-symbols-outlined text-teal-400">library_books</span>
+                        Course Catalogue
+                    </h2>
+                    <div
+                        id="catalogue-grid"
+                        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
+                    >
+                        <!-- Catalogue tracks here -->
+                    </div>
+                    <div id="catalogue-pagination" class="mt-8 flex justify-center gap-2 hidden"></div>
                 </div>
             </div>
+        </main>
 
-            <!-- Recommended Section -->
-            <div id="recommended-section" class="hidden mb-16">
-                <h2 class="text-3xl font-extrabold text-white mb-6 text-left font-display flex items-center gap-3">
-                    <span class="material-symbols-outlined text-primary">verified</span>
-                    Recommended For You
-                </h2>
-                <div id="recommended-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                    <!-- Recommended tracks here -->
-                </div>
-                <div id="recommended-pagination" class="mt-8 flex justify-center gap-2 hidden"></div>
-            </div>
+        <script>
+            // --- Global State & Configuration ---
+            let continueTracks = [];
+            let recommendedTracks = [];
+            let completedTracks = [];
+            let catalogueTracks = [];
+            let progressGlobal = { trackProgress: [], pendingQuizzes: [], milestones: [] };
 
-            <!-- Completed Section -->
-            <div id="completed-section" class="hidden mb-16">
-                <h2 class="text-3xl font-extrabold text-white mb-6 text-left font-display flex items-center gap-3">
-                    <span class="material-symbols-outlined text-green-400">check_circle</span>
-                    Completed Tracks
-                </h2>
-                <div id="completed-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                    <!-- Completed tracks here -->
-                </div>
-            </div>
+            // Session Data
+            let userDept = (sessionStorage.getItem('userDepartment') || 'Other').trim();
+            if (!userDept || userDept === 'null') userDept = 'Other';
+            const userName = sessionStorage.getItem('userName') || 'Learner';
+            let userTrackId = sessionStorage.getItem('userTrackId');
 
+            // Pagination
+            let currentRecommendedPage = 1;
+            let currentCataloguePage = 1;
+            const itemsPerPage = 6;
 
-            <div id="loading-spinner" class="col-span-full py-20 text-center">
-                <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary mb-4"></div>
-                <p class="text-slate-500 font-medium">Loading learning paths...</p>
-            </div>
+            // --- Helper Functions ---
+            const getStatus = tid => {
+                if (!progressGlobal || !progressGlobal.trackProgress) return 'NOT_STARTED';
+                const p = progressGlobal.trackProgress.find(prog => prog.id === tid);
+                return p ? p.status : 'NOT_STARTED';
+            };
 
-            <div id="no-tracks-message" class="hidden col-span-full glass-card p-12 text-center">
-                <span class="material-symbols-outlined text-4xl text-slate-500 mb-4">info</span>
-                <p class="text-white font-bold">No Published Tracks</p>
-                <p class="text-slate-500">There are no learning paths available at the moment. Please check back later.</p>
-            </div>
-            <div id="catalogue-section" class="hidden pb-20">
-                <h2 class="text-3xl font-extrabold text-white mb-6 text-left font-display flex items-center gap-3">
-                    <span class="material-symbols-outlined text-teal-400">library_books</span>
-                    Course Catalogue
-                </h2>
-                <div id="catalogue-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                    <!-- Catalogue tracks here -->
-                </div>
-                <div id="catalogue-pagination" class="mt-8 flex justify-center gap-2 hidden"></div>
-            </div>
-        </div>
-    </main>
+            // --- Pagination Helpers ---
+            window.switchPage = (containerId, page) => {
+                window[`switchPage_${containerId}`](page);
+            };
 
-    <script>
-        // --- Global State & Configuration ---
-        let continueTracks = [];
-        let recommendedTracks = [];
-        let completedTracks = [];
-        let catalogueTracks = [];
-        let progressGlobal = { trackProgress: [], pendingQuizzes: [], milestones: [] };
-        
-        // Session Data
-        let userDept = (sessionStorage.getItem('userDepartment') || 'Other').trim();
-        if (!userDept || userDept === 'null') userDept = 'Other';
-        const userName = sessionStorage.getItem('userName') || 'Learner';
-        let userTrackId = sessionStorage.getItem('userTrackId');
-
-        // Pagination
-        let currentRecommendedPage = 1;
-        let currentCataloguePage = 1;
-        const itemsPerPage = 6;
-        
-        // --- Helper Functions ---
-        const getStatus = (tid) => {
-            if (!progressGlobal || !progressGlobal.trackProgress) return 'NOT_STARTED';
-            const p = progressGlobal.trackProgress.find(prog => prog.id === tid);
-            return p ? p.status : 'NOT_STARTED';
-        };
-
-        // --- Pagination Helpers ---
-        window.switchPage = (containerId, page) => {
-            window[`switchPage_${containerId}`](page);
-        };
-
-        function renderPagination(containerId, totalItems, currentPage, onPageChange) {
-            const container = document.getElementById(containerId);
-            const totalPages = Math.ceil(totalItems / itemsPerPage);
-            if (totalPages <= 1) {
-                container.classList.add('hidden');
-                return;
-            }
-            container.classList.remove('hidden');
-            let html = '';
-            for (let i = 1; i <= totalPages; i++) {
-                const isActive = i === currentPage;
-                html += `
+            function renderPagination(containerId, totalItems, currentPage, onPageChange) {
+                const container = document.getElementById(containerId);
+                const totalPages = Math.ceil(totalItems / itemsPerPage);
+                if (totalPages <= 1) {
+                    container.classList.add('hidden');
+                    return;
+                }
+                container.classList.remove('hidden');
+                let html = '';
+                for (let i = 1; i <= totalPages; i++) {
+                    const isActive = i === currentPage;
+                    html += `
                     <button onclick="window.switchPage('${containerId}', ${i})" 
                         class="w-8 h-8 rounded-lg flex items-center justify-center text-xs font-bold transition-all
                         ${isActive ? 'bg-primary text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}">
                         ${i}
                     </button>
                 `;
+                }
+                container.innerHTML = html;
+                window[`switchPage_${containerId}`] = onPageChange;
             }
-            container.innerHTML = html;
-            window[`switchPage_${containerId}`] = onPageChange;
-        }
 
-        // --- Render Track Card ---
-        function renderTrack(track) {
-            const trackName = track.name || 'Untitled Track';
-            const icon = track.icon || (trackName.toUpperCase().includes('TECH') ? 'terminal' : 'trending_up');
-            const colorClass = trackName.toUpperCase().includes('TECH') ? 'primary' : 'teal-400';
-            const gradient = trackName.toUpperCase().includes('TECH') 
-                ? 'from-slate-700 to-slate-900' 
-                : 'from-teal-900/30 to-slate-900';
-            
-            const truncatedName = trackName.length > 40 ? trackName.substring(0, 37) + '...' : trackName;
-            
-            const depts = (track.targetDepartments || '').split(',').map(d => d.trim()).filter(d => d && d !== 'Other');
-            const departmentBadges = depts.map(dept => `
+            // --- Render Track Card ---
+            function renderTrack(track) {
+                const trackName = track.name || 'Untitled Track';
+                const icon = track.icon || (trackName.toUpperCase().includes('TECH') ? 'terminal' : 'trending_up');
+                const colorClass = trackName.toUpperCase().includes('TECH') ? 'primary' : 'teal-400';
+                const gradient = trackName.toUpperCase().includes('TECH')
+                    ? 'from-slate-700 to-slate-900'
+                    : 'from-teal-900/30 to-slate-900';
+
+                const truncatedName = trackName.length > 40 ? trackName.substring(0, 37) + '...' : trackName;
+
+                const depts = (track.targetDepartments || '')
+                    .split(',')
+                    .map(d => d.trim())
+                    .filter(d => d && d !== 'Other');
+                const departmentBadges = depts
+                    .map(
+                        dept => `
                 <span class="status-badge bg-white/10 text-white text-[9px] px-2 py-0.5 uppercase tracking-widest font-bold border border-white/20 backdrop-blur-sm">
                     ${dept}
                 </span>
-            `).join('');
-            
-            const prog = progressGlobal.trackProgress.find(p => p.id === track.id) || { progress: 0, status: 'NOT_STARTED' };
-            let buttonText = 'Enroll →';
-            let btnClass = 'btn-primary';
+            `
+                    )
+                    .join('');
 
-            if (prog.status === 'COMPLETED') {
-                buttonText = 'Review Track →';
-            } else if (prog.status === 'IN_PROGRESS') {
-                buttonText = 'Continue Learning →';
-                btnClass = 'btn-secondary';
-            }
+                const prog = progressGlobal.trackProgress.find(p => p.id === track.id) || {
+                    progress: 0,
+                    status: 'NOT_STARTED'
+                };
+                let buttonText = 'Enroll →';
+                let btnClass = 'btn-primary';
 
-            return `
+                if (prog.status === 'COMPLETED') {
+                    buttonText = 'Review Track →';
+                } else if (prog.status === 'IN_PROGRESS') {
+                    buttonText = 'Continue Learning →';
+                    btnClass = 'btn-secondary';
+                }
+
+                return `
                 <div class="glass-card overflow-hidden text-left flex flex-col group hover:border-primary/50 transition-all duration-300">
                     <div class="h-28 bg-gradient-to-br ${gradient} relative overflow-hidden">
                         <div class="absolute inset-0 flex items-center justify-center opacity-30 group-hover:scale-110 transition-transform duration-500">
@@ -246,7 +318,12 @@
                         <p class="text-slate-400 leading-relaxed mb-4 text-[11px]">
                             ${track.description || 'Access dedicated expert training for this specialized track.'}
                         </p>
-                        ${prog.status !== 'NOT_STARTED' ? `
+                        <div class="mb-4">
+                             <ai-rating track-id="${track.id}"></ai-rating>
+                        </div>
+                        ${
+                            prog.status !== 'NOT_STARTED'
+                                ? `
                             <div class="mb-4">
                                 <div class="flex justify-between items-center mb-1.5">
                                     <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Progress</span>
@@ -256,7 +333,9 @@
                                     <div class="bg-primary h-full rounded-full transition-all duration-1000" style="width: ${prog.progress}%"></div>
                                 </div>
                             </div>
-                        ` : '<div class="flex-1"></div>'}
+                        `
+                                : '<div class="flex-1"></div>'
+                        }
                         <button id="btn-${track.id}" onclick="selectTrack('${track.id}', '${trackName.replace(/'/g, "\\'")}')"
                             class="${btnClass} w-full py-2.5 text-xs text-center font-bold">
                             ${buttonText}
@@ -264,110 +343,122 @@
                     </div>
                 </div>
             `;
-        }
-
-        // --- Select Track Logic ---
-        async function selectTrack(trackId, trackName) {
-            const btn = document.getElementById(`btn-${trackId}`);
-            const originalText = btn.textContent;
-            btn.textContent = 'Saving...';
-            btn.disabled = true;
-            try {
-                const saveRes = await fetch('/api/users/track', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify({ trackId })
-                });
-                const saveData = await saveRes.json();
-                if (!saveRes.ok) throw new Error(saveData.error || 'Failed to save track');
-                sessionStorage.setItem('userTrackId', trackId);
-                sessionStorage.setItem('userTrackName', trackName);
-                const targetPage = trackName.toUpperCase().includes('TECHNICAL') ? 'learning-track-technical.html' : 'learning-track-business.html';
-                window.location.href = targetPage;
-            } catch (err) {
-                console.error('Track selection error:', err);
-                alert('Could not save your track selection. Please try again.');
-                btn.textContent = originalText;
-                btn.disabled = false;
             }
-        }
 
-        /**
-         * Fetches all necessary data from the server.
-         */
-        async function fetchTracks() {
-            const loadingSpinner = document.getElementById('loading-spinner');
-            const noTracksMessage = document.getElementById('no-tracks-message');
-            const milestonesList = document.getElementById('milestones-list');
-            
-            userDept = (sessionStorage.getItem('userDepartment') || 'Other').trim();
-            if (!userDept || userDept === 'null') userDept = 'Other';
-            userTrackId = sessionStorage.getItem('userTrackId');
-            
-            document.getElementById('user-name-display').textContent = userName.split(' ')[0];
-            document.getElementById('user-dept-display').textContent = userDept;
-
-            try {
-                loadingSpinner.classList.remove('hidden');
-                noTracksMessage.classList.add('hidden');
-
-                const [tracksRes, progressRes] = await Promise.all([
-                    fetch('/api/tracks', { credentials: 'include' }),
-                    fetch('/api/progress/dashboard', { credentials: 'include' })
-                ]);
-                
-                if (!tracksRes.ok) throw new Error('Failed to fetch tracks');
-                
-                const allTracksData = await tracksRes.json();
-                progressGlobal = progressRes.ok ? await progressRes.json() : { trackProgress: [], pendingQuizzes: [], milestones: [] };
-                
-                const publishedTracks = allTracksData.filter(t => t.status === 'PUBLISHED');
-                loadingSpinner.classList.add('hidden');
-
-                if (publishedTracks.length === 0) {
-                    noTracksMessage.classList.remove('hidden');
-                    return;
+            // --- Select Track Logic ---
+            async function selectTrack(trackId, trackName) {
+                const btn = document.getElementById(`btn-${trackId}`);
+                const originalText = btn.textContent;
+                btn.textContent = 'Saving...';
+                btn.disabled = true;
+                try {
+                    const saveRes = await fetch('/api/users/track', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({ trackId })
+                    });
+                    const saveData = await saveRes.json();
+                    if (!saveRes.ok) throw new Error(saveData.error || 'Failed to save track');
+                    sessionStorage.setItem('userTrackId', trackId);
+                    sessionStorage.setItem('userTrackName', trackName);
+                    const targetPage = trackName.toUpperCase().includes('TECHNICAL')
+                        ? 'learning-track-technical.html'
+                        : 'learning-track-business.html';
+                    window.location.href = targetPage;
+                } catch (err) {
+                    console.error('Track selection error:', err);
+                    alert('Could not save your track selection. Please try again.');
+                    btn.textContent = originalText;
+                    btn.disabled = false;
                 }
+            }
 
-                const displayedIds = new Set();
-                continueTracks = publishedTracks.filter(t => {
-                    const status = getStatus(t.id);
-                    const isSelected = t.id === userTrackId;
-                    const isContinue = (status === 'IN_PROGRESS' || isSelected) && status !== 'COMPLETED';
-                    if (isContinue) displayedIds.add(t.id);
-                    return isContinue;
-                });
+            /**
+             * Fetches all necessary data from the server.
+             */
+            async function fetchTracks() {
+                const loadingSpinner = document.getElementById('loading-spinner');
+                const noTracksMessage = document.getElementById('no-tracks-message');
+                const milestonesList = document.getElementById('milestones-list');
 
-                completedTracks = publishedTracks.filter(t => {
-                    const isCompleted = getStatus(t.id) === 'COMPLETED';
-                    if (isCompleted) displayedIds.add(t.id);
-                    return isCompleted;
-                });
+                userDept = (sessionStorage.getItem('userDepartment') || 'Other').trim();
+                if (!userDept || userDept === 'null') userDept = 'Other';
+                userTrackId = sessionStorage.getItem('userTrackId');
 
-                recommendedTracks = publishedTracks.filter(t => {
-                    if (displayedIds.has(t.id) || getStatus(t.id) !== 'NOT_STARTED') return false;
-                    const depts = (t.targetDepartments || '').split(',').map(d => d.trim().toLowerCase());
-                    const matches = depts.includes(userDept.toLowerCase());
-                    if (matches) displayedIds.add(t.id);
-                    return matches;
-                });
+                document.getElementById('user-name-display').textContent = userName.split(' ')[0];
+                document.getElementById('user-dept-display').textContent = userDept;
 
-                catalogueTracks = publishedTracks.filter(t => {
-                    return !displayedIds.has(t.id) && getStatus(t.id) !== 'COMPLETED';
-                });
+                try {
+                    loadingSpinner.classList.remove('hidden');
+                    noTracksMessage.classList.add('hidden');
 
-                const hasStartedAny = progressGlobal.trackProgress && progressGlobal.trackProgress.length > 0;
-                const completedCount = hasStartedAny ? progressGlobal.trackProgress.filter(tp => tp.status === 'COMPLETED').length : 0;
-                const avgProgress = progressGlobal.overallProgress || 0;
-                const totalPendingQuizzes = progressGlobal.pendingQuizzes ? progressGlobal.pendingQuizzes.length : 0;
+                    const [tracksRes, progressRes] = await Promise.all([
+                        fetch('/api/tracks', { credentials: 'include' }),
+                        fetch('/api/progress/dashboard', { credentials: 'include' })
+                    ]);
 
-                document.getElementById('stat-tracks-completed').textContent = hasStartedAny ? completedCount : '0';
-                document.getElementById('stat-total-progress').textContent = hasStartedAny ? `${avgProgress}%` : '-';
-                document.getElementById('stat-pending-quizzes').textContent = totalPendingQuizzes;
+                    if (!tracksRes.ok) throw new Error('Failed to fetch tracks');
 
-                if (progressGlobal.milestones && progressGlobal.milestones.length > 0) {
-                    milestonesList.innerHTML = progressGlobal.milestones.map(m => `
+                    const allTracksData = await tracksRes.json();
+                    progressGlobal = progressRes.ok
+                        ? await progressRes.json()
+                        : { trackProgress: [], pendingQuizzes: [], milestones: [] };
+
+                    const publishedTracks = allTracksData.filter(t => t.status === 'PUBLISHED');
+                    loadingSpinner.classList.add('hidden');
+
+                    if (publishedTracks.length === 0) {
+                        noTracksMessage.classList.remove('hidden');
+                        return;
+                    }
+
+                    const displayedIds = new Set();
+                    continueTracks = publishedTracks.filter(t => {
+                        const status = getStatus(t.id);
+                        const isSelected = t.id === userTrackId;
+                        const isContinue = (status === 'IN_PROGRESS' || isSelected) && status !== 'COMPLETED';
+                        if (isContinue) displayedIds.add(t.id);
+                        return isContinue;
+                    });
+
+                    completedTracks = publishedTracks.filter(t => {
+                        const isCompleted = getStatus(t.id) === 'COMPLETED';
+                        if (isCompleted) displayedIds.add(t.id);
+                        return isCompleted;
+                    });
+
+                    recommendedTracks = publishedTracks.filter(t => {
+                        if (displayedIds.has(t.id) || getStatus(t.id) !== 'NOT_STARTED') return false;
+                        const depts = (t.targetDepartments || '').split(',').map(d => d.trim().toLowerCase());
+                        const matches = depts.includes(userDept.toLowerCase());
+                        if (matches) displayedIds.add(t.id);
+                        return matches;
+                    });
+
+                    catalogueTracks = publishedTracks.filter(t => {
+                        return !displayedIds.has(t.id) && getStatus(t.id) !== 'COMPLETED';
+                    });
+
+                    const hasStartedAny = progressGlobal.trackProgress && progressGlobal.trackProgress.length > 0;
+                    const completedCount = hasStartedAny
+                        ? progressGlobal.trackProgress.filter(tp => tp.status === 'COMPLETED').length
+                        : 0;
+                    const avgProgress = progressGlobal.overallProgress || 0;
+                    const totalPendingQuizzes = progressGlobal.pendingQuizzes
+                        ? progressGlobal.pendingQuizzes.length
+                        : 0;
+
+                    document.getElementById('stat-tracks-completed').textContent = hasStartedAny ? completedCount : '0';
+                    document.getElementById('stat-total-progress').textContent = hasStartedAny
+                        ? `${avgProgress}%`
+                        : '-';
+                    document.getElementById('stat-pending-quizzes').textContent = totalPendingQuizzes;
+
+                    if (progressGlobal.milestones && progressGlobal.milestones.length > 0) {
+                        milestonesList.innerHTML = progressGlobal.milestones
+                            .map(
+                                m => `
                         <div class="flex items-center gap-3 p-3 bg-slate-800/50 border border-slate-700 rounded-lg">
                             <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                                 <span class="material-symbols-outlined text-sm">stars</span>
@@ -377,137 +468,149 @@
                                 <p class="text-slate-400 text-[10px]">${m.trackName} Track</p>
                             </div>
                         </div>
-                    `).join('');
-                } else {
-                    milestonesList.innerHTML = '<p class="text-slate-500 text-sm italic col-span-full">No milestones yet. Keep learning to earn badges!</p>';
+                    `
+                            )
+                            .join('');
+                    } else {
+                        milestonesList.innerHTML =
+                            '<p class="text-slate-500 text-sm italic col-span-full">No milestones yet. Keep learning to earn badges!</p>';
+                    }
+
+                    renderSections();
+                } catch (err) {
+                    console.error('Fatal Dashboard Error:', err);
+                    loadingSpinner.classList.add('hidden');
+                    noTracksMessage.classList.remove('hidden');
+                    noTracksMessage.innerHTML = `<p class="text-red-400">Failed to load tracks. Please refresh.</p>`;
+                }
+            }
+
+            function renderSections() {
+                const continueSection = document.getElementById('continue-section');
+                const continueGrid = document.getElementById('continue-grid');
+                const recommendedSection = document.getElementById('recommended-section');
+                const recommendedGrid = document.getElementById('recommended-grid');
+                const completedSection = document.getElementById('completed-section');
+                const completedGrid = document.getElementById('completed-grid');
+                const catalogueSection = document.getElementById('catalogue-section');
+                const catalogueGrid = document.getElementById('catalogue-grid');
+                const noTracksMessage = document.getElementById('no-tracks-message');
+                const pendingQuizzesList = document.getElementById('pending-quizzes-list');
+
+                // 1. Continue Learning
+                const hasContinue = continueTracks.length > 0;
+                continueSection.classList.toggle('hidden', !hasContinue);
+                if (hasContinue) {
+                    continueGrid.innerHTML = continueTracks.map(t => renderTrack(t)).join('');
                 }
 
-                renderSections();
+                // 2. Completed
+                completedSection.classList.toggle('hidden', completedTracks.length === 0);
+                if (completedTracks.length > 0) {
+                    completedGrid.innerHTML = completedTracks.map(t => renderTrack(t)).join('');
+                }
 
-            } catch (err) {
-                console.error('Fatal Dashboard Error:', err);
-                loadingSpinner.classList.add('hidden');
-                noTracksMessage.classList.remove('hidden');
-                noTracksMessage.innerHTML = `<p class="text-red-400">Failed to load tracks. Please refresh.</p>`;
-            }
-        }
-
-        function renderSections() {
-            const continueSection = document.getElementById('continue-section');
-            const continueGrid = document.getElementById('continue-grid');
-            const recommendedSection = document.getElementById('recommended-section');
-            const recommendedGrid = document.getElementById('recommended-grid');
-            const completedSection = document.getElementById('completed-section');
-            const completedGrid = document.getElementById('completed-grid');
-            const catalogueSection = document.getElementById('catalogue-section');
-            const catalogueGrid = document.getElementById('catalogue-grid');
-            const noTracksMessage = document.getElementById('no-tracks-message');
-            const pendingQuizzesList = document.getElementById('pending-quizzes-list');
-
-            // 1. Continue Learning
-            const hasContinue = continueTracks.length > 0;
-            continueSection.classList.toggle('hidden', !hasContinue);
-            if (hasContinue) {
-                continueGrid.innerHTML = continueTracks.map(t => renderTrack(t)).join('');
-            }
-
-            // 2. Completed
-            completedSection.classList.toggle('hidden', completedTracks.length === 0);
-            if (completedTracks.length > 0) {
-                completedGrid.innerHTML = completedTracks.map(t => renderTrack(t)).join('');
-            }
-
-            // 3. Quizzes
-            if (progressGlobal.pendingQuizzes && progressGlobal.pendingQuizzes.length > 0) {
-                pendingQuizzesList.innerHTML = progressGlobal.pendingQuizzes.map(pq => {
-                    const tName = pq.trackName || 'Track';
-                    return `
+                // 3. Quizzes
+                if (progressGlobal.pendingQuizzes && progressGlobal.pendingQuizzes.length > 0) {
+                    pendingQuizzesList.innerHTML = progressGlobal.pendingQuizzes
+                        .map(pq => {
+                            const tName = pq.trackName || 'Track';
+                            return `
                         <div class="glass-card p-5 border-amber-500/30 bg-amber-500/5 hover:border-amber-500 transition-all group">
                             <h3 class="text-white font-bold text-sm tracking-wide line-clamp-1">${pq.moduleTitle || 'Untitled Quiz'}</h3>
                             <p class="text-[10px] text-amber-500 uppercase tracking-widest font-extrabold mt-1">${tName}</p>
                             <button onclick="jumpToQuiz('${pq.trackSlug || ''}', '${pq.trackId || ''}', '${pq.quizId || ''}', '${tName.replace(/'/g, "\\'")}')" class="w-full mt-4 py-2 bg-amber-500 text-slate-900 text-xs font-bold rounded-lg transition-all">Take Quiz Now</button>
                         </div>
                     `;
-                }).join('');
-            } else {
-                pendingQuizzesList.innerHTML = '<p class="text-slate-500 text-xs col-span-full py-6 italic text-left">No quizzes pending at this stage.</p>';
-            }
+                        })
+                        .join('');
+                } else {
+                    pendingQuizzesList.innerHTML =
+                        '<p class="text-slate-500 text-xs col-span-full py-6 italic text-left">No quizzes pending at this stage.</p>';
+                }
 
-            // 4. Recommended (Persistent)
-            recommendedSection.classList.remove('hidden');
-            if (recommendedTracks.length > 0) {
-                const start = (currentRecommendedPage - 1) * itemsPerPage;
-                const paginated = recommendedTracks.slice(start, start + itemsPerPage);
-                recommendedGrid.innerHTML = paginated.map(t => renderTrack(t)).join('');
-                renderPagination('recommended-pagination', recommendedTracks.length, currentRecommendedPage, (p) => { currentRecommendedPage = p; renderSections(); });
-            } else {
-                recommendedGrid.innerHTML = `
+                // 4. Recommended (Persistent)
+                recommendedSection.classList.remove('hidden');
+                if (recommendedTracks.length > 0) {
+                    const start = (currentRecommendedPage - 1) * itemsPerPage;
+                    const paginated = recommendedTracks.slice(start, start + itemsPerPage);
+                    recommendedGrid.innerHTML = paginated.map(t => renderTrack(t)).join('');
+                    renderPagination('recommended-pagination', recommendedTracks.length, currentRecommendedPage, p => {
+                        currentRecommendedPage = p;
+                        renderSections();
+                    });
+                } else {
+                    recommendedGrid.innerHTML = `
                     <div class="col-span-full py-8 text-left">
                         <p class="text-slate-500 text-xs italic">All recommended tracks for ${userDept} are currently in progress or completed. Great work!</p>
                     </div>
                 `;
-                document.getElementById('recommended-pagination').classList.add('hidden');
-            }
+                    document.getElementById('recommended-pagination').classList.add('hidden');
+                }
 
-            // 5. Catalogue (Persistent)
-            catalogueSection.classList.remove('hidden');
-            if (catalogueTracks.length > 0) {
-                const start = (currentCataloguePage - 1) * itemsPerPage;
-                const paginated = catalogueTracks.slice(start, start + itemsPerPage);
-                catalogueGrid.innerHTML = paginated.map(t => renderTrack(t)).join('');
-                renderPagination('catalogue-pagination', catalogueTracks.length, currentCataloguePage, (p) => { currentCataloguePage = p; renderSections(); });
-            } else {
-                catalogueGrid.innerHTML = `
+                // 5. Catalogue (Persistent)
+                catalogueSection.classList.remove('hidden');
+                if (catalogueTracks.length > 0) {
+                    const start = (currentCataloguePage - 1) * itemsPerPage;
+                    const paginated = catalogueTracks.slice(start, start + itemsPerPage);
+                    catalogueGrid.innerHTML = paginated.map(t => renderTrack(t)).join('');
+                    renderPagination('catalogue-pagination', catalogueTracks.length, currentCataloguePage, p => {
+                        currentCataloguePage = p;
+                        renderSections();
+                    });
+                } else {
+                    catalogueGrid.innerHTML = `
                     <div class="col-span-full py-8 text-left">
                         <p class="text-slate-500 text-xs italic">No other courses available in the catalogue at this time.</p>
                     </div>
                 `;
-                document.getElementById('catalogue-pagination').classList.add('hidden');
+                    document.getElementById('catalogue-pagination').classList.add('hidden');
+                }
+
+                // Hide overall no-tracks message if any section has content
+                const totalTracksAvailable =
+                    continueTracks.length + recommendedTracks.length + completedTracks.length + catalogueTracks.length;
+                noTracksMessage.classList.toggle('hidden', totalTracksAvailable > 0);
             }
 
-            // Hide overall no-tracks message if any section has content
-            const totalTracksAvailable = continueTracks.length + recommendedTracks.length + completedTracks.length + catalogueTracks.length;
-            noTracksMessage.classList.toggle('hidden', totalTracksAvailable > 0);
-        }
+            // Navigate to the track page and auto-open the specific quiz
+            function jumpToQuiz(trackSlug, trackId, quizId, trackName) {
+                // Build the URL - prefer slug if available
+                let url;
+                if (trackSlug) {
+                    url = `learning-track-business.html?slug=${encodeURIComponent(trackSlug)}`;
+                } else if (trackId) {
+                    url = `learning-track-business.html?id=${encodeURIComponent(trackId)}`;
+                } else {
+                    console.error('jumpToQuiz: no slug or trackId provided');
+                    return;
+                }
+                // Append quiz deep-link param
+                if (quizId) {
+                    url += `&quiz=${encodeURIComponent(quizId)}`;
+                }
+                window.location.href = url;
+            }
 
-        // Navigate to the track page and auto-open the specific quiz
-        function jumpToQuiz(trackSlug, trackId, quizId, trackName) {
-            // Build the URL - prefer slug if available
-            let url;
-            if (trackSlug) {
-                url = `learning-track-business.html?slug=${encodeURIComponent(trackSlug)}`;
-            } else if (trackId) {
-                url = `learning-track-business.html?id=${encodeURIComponent(trackId)}`;
-            } else {
-                console.error('jumpToQuiz: no slug or trackId provided');
-                return;
+            // Navigate to the track page and auto-open the specific quiz
+            function jumpToQuiz(trackSlug, trackId, quizId, trackName) {
+                let url;
+                if (trackSlug) {
+                    url = `learning-track-business.html?slug=${encodeURIComponent(trackSlug)}`;
+                } else if (trackId) {
+                    url = `learning-track-business.html?id=${encodeURIComponent(trackId)}`;
+                } else {
+                    console.error('jumpToQuiz: no slug or trackId provided');
+                    return;
+                }
+                if (quizId) {
+                    url += `&quiz=${encodeURIComponent(quizId)}`;
+                }
+                window.location.href = url;
             }
-            // Append quiz deep-link param
-            if (quizId) {
-                url += `&quiz=${encodeURIComponent(quizId)}`;
-            }
-            window.location.href = url;
-        }
 
-        // Navigate to the track page and auto-open the specific quiz
-        function jumpToQuiz(trackSlug, trackId, quizId, trackName) {
-            let url;
-            if (trackSlug) {
-                url = `learning-track-business.html?slug=${encodeURIComponent(trackSlug)}`;
-            } else if (trackId) {
-                url = `learning-track-business.html?id=${encodeURIComponent(trackId)}`;
-            } else {
-                console.error('jumpToQuiz: no slug or trackId provided');
-                return;
-            }
-            if (quizId) {
-                url += `&quiz=${encodeURIComponent(quizId)}`;
-            }
-            window.location.href = url;
-        }
-
-        document.addEventListener('DOMContentLoaded', fetchTracks);
-    </script>
-    <ai-profile-modal></ai-profile-modal>
-</body>
+            document.addEventListener('DOMContentLoaded', fetchTracks);
+        </script>
+        <ai-profile-modal></ai-profile-modal>
+    </body>
 </html>

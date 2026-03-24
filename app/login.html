@@ -1,175 +1,187 @@
 <!doctype html>
 <html lang="en" class="dark">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Welcome - Academy</title>
+        <!-- Tailwind CSS (Compiled) -->
+        <link href="dist/output.css" rel="stylesheet" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" />
+    </head>
 
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Welcome - Academy</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="shared.css" />
-    <script src="tailwind-config.js"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined" />
-</head>
+    <body class="page-transition flex flex-col items-center justify-center min-h-screen relative">
+        <!-- Back Button -->
+        <a
+            href="index.html"
+            class="absolute top-6 left-6 flex items-center gap-2 text-slate-400 hover:text-white transition-colors bg-slate-800/50 hover:bg-slate-700 px-4 py-2 rounded-lg font-semibold text-sm border border-slate-700"
+        >
+            ← Back to Home
+        </a>
 
-<body class="page-transition flex flex-col items-center justify-center min-h-screen relative">
-    <!-- Back Button -->
-    <a href="index.html"
-        class="absolute top-6 left-6 flex items-center gap-2 text-slate-400 hover:text-white transition-colors bg-slate-800/50 hover:bg-slate-700 px-4 py-2 rounded-lg font-semibold text-sm border border-slate-700">
-        ← Back to Home
-    </a>
+        <div class="w-full max-w-md mx-auto px-6 py-12 text-center">
+            <div class="mb-8 flex items-center justify-center gap-2">
+                <img alt="Four Js Logo" class="h-10 w-auto object-contain" src="logo.png" />
+            </div>
+            <h1 class="text-4xl font-extrabold text-white mb-2 font-display leading-tight">
+                Welcome to the
+                <br />
+                Academy
+            </h1>
+            <p class="text-slate-400 mb-8">Let's get started with your profile.</p>
 
-    <div class="w-full max-w-md mx-auto px-6 py-12 text-center">
-        <div class="mb-8 flex items-center justify-center gap-2">
-            <img alt="Four Js Logo" class="h-10 w-auto object-contain" src="logo.png" />
-        </div>
-        <h1 class="text-4xl font-extrabold text-white mb-2 font-display leading-tight">
-            Welcome to the
-            <br />
-            Academy
-        </h1>
-        <p class="text-slate-400 mb-8">Let's get started with your profile.</p>
+            <!-- Tabs (Removed Register) -->
+            <div class="hidden" id="auth-tabs"></div>
 
-        <!-- Tabs (Removed Register) -->
-        <div class="hidden" id="auth-tabs"></div>
+            <!-- Form Container to prevent height jumping -->
+            <div class="h-[432px] relative w-full">
+                <!-- Register Form (Removed) -->
 
-        <!-- Form Container to prevent height jumping -->
-        <div class="h-[432px] relative w-full">
-            <!-- Register Form (Removed) -->
-
-            <!-- Sign In Form -->
-            <form id="form-signin"
-                class="text-left space-y-5 absolute top-0 left-0 w-full block opacity-100 transition-opacity duration-300">
-                <div>
-                    <label class="block text-sm font-semibold text-slate-300 mb-2">Work Email</label>
-                    <input type="email" id="signin-email" placeholder="email@4js.com"
-                        class="w-full px-4 py-3 rounded-lg bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-primary transition-colors" />
-                </div>
-                <div>
-                    <label class="block text-sm font-semibold text-slate-300 mb-2">Password</label>
-                    <div class="relative">
-                        <input type="password" id="signin-password" placeholder="••••••••"
-                            class="w-full px-4 py-3 rounded-lg bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-primary transition-colors pr-12" />
-                        <button type="button" id="toggle-password-btn"
-                            class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors flex items-center justify-center w-8 h-8">
-                            <span class="material-symbols-outlined text-xl">visibility</span>
-                        </button>
+                <!-- Sign In Form -->
+                <form
+                    id="form-signin"
+                    class="text-left space-y-5 absolute top-0 left-0 w-full block opacity-100 transition-opacity duration-300"
+                >
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-300 mb-2">Work Email</label>
+                        <input
+                            type="email"
+                            id="signin-email"
+                            placeholder="email@4js.com"
+                            class="w-full px-4 py-3 rounded-lg bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-primary transition-colors"
+                        />
                     </div>
-                </div>
-                <!-- Spacer to push button down -->
-                <div class="h-[104px]"></div>
-                <button type="submit" class="btn-primary w-full py-4 text-lg mt-4">Sign In →</button>
-            </form>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-300 mb-2">Password</label>
+                        <div class="relative">
+                            <input
+                                type="password"
+                                id="signin-password"
+                                placeholder="••••••••"
+                                class="w-full px-4 py-3 rounded-lg bg-slate-800/50 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:border-primary transition-colors pr-12"
+                            />
+                            <button
+                                type="button"
+                                id="toggle-password-btn"
+                                class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-white transition-colors flex items-center justify-center w-8 h-8"
+                            >
+                                <span class="material-symbols-outlined text-xl">visibility</span>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Spacer to push button down -->
+                    <div class="h-[104px]"></div>
+                    <button type="submit" class="btn-primary w-full py-4 text-lg mt-4">Sign In →</button>
+                </form>
+            </div>
+
+            <p class="text-slate-600 text-xs mt-8 uppercase tracking-wider font-semibold">Powered by Four Js</p>
         </div>
+        <script>
+            async function handleAuth(event, type) {
+                event.preventDefault();
 
-        <p class="text-slate-600 text-xs mt-8 uppercase tracking-wider font-semibold">Powered by Four Js</p>
-    </div>
-    <script>
-        async function handleAuth(event, type) {
-            event.preventDefault();
+                try {
+                    let response;
+                    const email = document.getElementById('signin-email').value;
+                    const password = document.getElementById('signin-password').value;
 
-            try {
-                let response;
-                const email = document.getElementById('signin-email').value;
-                const password = document.getElementById('signin-password').value;
+                    response = await fetch('/api/auth/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ email, password })
+                    });
 
-                response = await fetch('/api/auth/login', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
+                    const data = await response.json();
 
-                const data = await response.json();
-
-                if (!response.ok) {
-                    alert('Error: ' + (data.error || 'Authentication failed'));
-                    return;
-                }
-
-                // Setup local session info and redirect
-                const fullName = `${data.user.firstName || ''} ${data.user.lastName || ''}`.trim() || 'User';
-                sessionStorage.setItem('userName', fullName);
-                sessionStorage.setItem('userRole', data.user.role);
-                sessionStorage.setItem('userId', data.user.id);
-                sessionStorage.setItem('userDepartment', data.user.department || '');
-
-                if (data.user.role === 'ADMIN') {
-                    window.location.href = 'admin-dashboard.html';
-                } else {
-                    // Update session storage if track exists
-                    if (data.user.trackId) {
-                        sessionStorage.setItem('userTrackId', data.user.trackId);
-                        sessionStorage.setItem('userTrackName', data.user.trackName || '');
+                    if (!response.ok) {
+                        alert('Error: ' + (data.error || 'Authentication failed'));
+                        return;
                     }
-                    window.location.href = 'tracks.html';
+
+                    // Setup local session info and redirect
+                    const fullName = `${data.user.firstName || ''} ${data.user.lastName || ''}`.trim() || 'User';
+                    sessionStorage.setItem('userName', fullName);
+                    sessionStorage.setItem('userRole', data.user.role);
+                    sessionStorage.setItem('userId', data.user.id);
+                    sessionStorage.setItem('userDepartment', data.user.department || '');
+
+                    if (data.user.role === 'ADMIN') {
+                        window.location.href = 'admin-dashboard.html';
+                    } else {
+                        // Update session storage if track exists
+                        if (data.user.trackId) {
+                            sessionStorage.setItem('userTrackId', data.user.trackId);
+                            sessionStorage.setItem('userTrackName', data.user.trackName || '');
+                        }
+                        window.location.href = 'tracks.html';
+                    }
+                } catch (error) {
+                    console.error('Authentication Error:', error);
+                    alert('A network error occurred.');
                 }
-            } catch (error) {
-                console.error('Authentication Error:', error);
-                alert('A network error occurred.');
             }
-        }
 
-        function switchTab(tab) {
-            // Registration disabled
-        }
+            function switchTab(tab) {
+                // Registration disabled
+            }
 
-        function togglePasswordVisibility(inputId, buttonId) {
-            console.log('Toggle called for', inputId);
-            const input = document.getElementById(inputId);
-            const button = document.getElementById(buttonId);
-            const icon = button.querySelector('.material-symbols-outlined');
-            console.log('Input found:', !!input, 'Button found:', !!button, 'Icon found:', !!icon);
-            if (input && icon) {
-                if (input.type === 'password') {
-                    input.type = 'text';
-                    icon.textContent = 'visibility_off';
-                    console.log('Changed to text');
+            function togglePasswordVisibility(inputId, buttonId) {
+                console.log('Toggle called for', inputId);
+                const input = document.getElementById(inputId);
+                const button = document.getElementById(buttonId);
+                const icon = button.querySelector('.material-symbols-outlined');
+                console.log('Input found:', !!input, 'Button found:', !!button, 'Icon found:', !!icon);
+                if (input && icon) {
+                    if (input.type === 'password') {
+                        input.type = 'text';
+                        icon.textContent = 'visibility_off';
+                        console.log('Changed to text');
+                    } else {
+                        input.type = 'password';
+                        icon.textContent = 'visibility';
+                        console.log('Changed to password');
+                    }
                 } else {
-                    input.type = 'password';
-                    icon.textContent = 'visibility';
-                    console.log('Changed to password');
+                    console.error('Input, button or icon not found');
                 }
-            } else {
-                console.error('Input, button or icon not found');
-            }
-        }
-
-        // Handle initial tab selection via URL parameter
-        window.addEventListener('DOMContentLoaded', () => {
-            const params = new URLSearchParams(window.location.search);
-            const tab = params.get('tab');
-            // Only sign-in is supported now
-            const signinForm = document.getElementById('form-signin');
-            if (signinForm) {
-                signinForm.classList.remove('hidden', 'opacity-0');
-                signinForm.classList.add('block', 'opacity-100');
             }
 
-            // Add event listener for password toggle button
-            const toggleBtn = document.getElementById('toggle-password-btn');
-            if (toggleBtn) {
-                toggleBtn.addEventListener('click', () => {
-                    togglePasswordVisibility('signin-password', 'toggle-password-btn');
-                });
-                console.log('Password toggle event listener added');
-            } else {
-                console.error('Toggle password button not found');
+            // Handle initial tab selection via URL parameter
+            window.addEventListener('DOMContentLoaded', () => {
+                const params = new URLSearchParams(window.location.search);
+                const tab = params.get('tab');
+                // Only sign-in is supported now
+                const signinForm = document.getElementById('form-signin');
+                if (signinForm) {
+                    signinForm.classList.remove('hidden', 'opacity-0');
+                    signinForm.classList.add('block', 'opacity-100');
+                }
+
+                // Add event listener for password toggle button
+                const toggleBtn = document.getElementById('toggle-password-btn');
+                if (toggleBtn) {
+                    toggleBtn.addEventListener('click', () => {
+                        togglePasswordVisibility('signin-password', 'toggle-password-btn');
+                    });
+                    console.log('Password toggle event listener added');
+                } else {
+                    console.error('Toggle password button not found');
+                }
+
+                // Add event listener for form submit
+                if (signinForm) {
+                    signinForm.addEventListener('submit', event => {
+                        handleAuth(event, 'signin');
+                    });
+                    console.log('Form submit event listener added');
+                } else {
+                    console.error('Signin form not found');
+                }
+            });
+
+            function validateRegistrationForm() {
+                // Registration disabled
             }
-
-            // Add event listener for form submit
-            if (signinForm) {
-                signinForm.addEventListener('submit', (event) => {
-                    handleAuth(event, 'signin');
-                });
-                console.log('Form submit event listener added');
-            } else {
-                console.error('Signin form not found');
-            }
-        });
-
-        function validateRegistrationForm() {
-            // Registration disabled
-        }
-    </script>
-</body>
-
+        </script>
+    </body>
 </html>
