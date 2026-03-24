@@ -95,11 +95,11 @@ app.use((req, res, next) => {
             "style-src-attr 'unsafe-inline'",
             "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://*.youtube.com https://*.youtube-nocookie.com https://*.google.com https://*.gstatic.com https://cdn.quilljs.com https://cdn.jsdelivr.net",
             "script-src-attr 'unsafe-inline'",
-            "img-src 'self' data: https: blob: https://fourjs-academy.onrender.com",
-            "connect-src 'self' blob: https://fonts.googleapis.com https://fonts.gstatic.com https://*.youtube.com https://*.google.com https://fourjs-academy.onrender.com",
+            "img-src 'self' data: https: blob: https://*.r2.dev https://*.cloudflarestorage.com https://fourjs-academy.onrender.com",
+            "connect-src 'self' blob: https://*.r2.dev https://*.cloudflarestorage.com https://fonts.googleapis.com https://fonts.gstatic.com https://*.youtube.com https://*.google.com https://fourjs-academy.onrender.com",
             "font-src 'self' https://fonts.gstatic.com",
             "frame-src 'self' https://*.youtube.com https://*.youtube-nocookie.com https://*.google.com",
-            "media-src 'self' blob: https://*.googlevideo.com https://*.youtube.com",
+            "media-src 'self' blob: https://*.r2.dev https://*.cloudflarestorage.com https://*.googlevideo.com https://*.youtube.com",
             "object-src 'none'"
         ].join('; ');
         res.setHeader('Content-Security-Policy', csp);
