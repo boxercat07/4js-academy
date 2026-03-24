@@ -670,15 +670,18 @@ router.post('/track', verifyToken, async (req, res) => {
             return res.status(404).json({ error: 'Track not found' });
         }
 
+        // We update the user without connecting tracks to avoid Neon HTTP transaction errors
         const updatedUser = await prisma.user.update({
             where: { id: userId },
-            data: {
-                tracks: {
-                    connect: { id: trackId }
-                }
-            },
-            include: { tracks: true }
+            data: {}
         });
+
+        // Manually handle the many-to-many relationship without a transaction
+        const existingRel =
+            await prisma.$queryRaw`SELECT 1 FROM "_TrackToUser" WHERE "A" = ${trackId} AND "B" = ${userId}`;
+        if (!existingRel || existingRel.length === 0) {
+            await prisma.$executeRaw`INSERT INTO "_TrackToUser" ("A", "B") VALUES (${trackId}, ${userId})`;
+        }
 
         res.json({ message: 'Track selection saved', trackId, trackName: track.name });
     } catch (error) {
