@@ -384,6 +384,7 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
         log('Executing database update...');
         let updatedUser;
         try {
+            // Step 1: Update basic user info (Atomic/No transaction needed for single record)
             updatedUser = await prisma.user.update({
                 where: { id },
                 data: {
@@ -392,22 +393,31 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
                     email,
                     role,
                     passwordHash,
-                    tracks:
-                        trackIds && Array.isArray(trackIds)
-                            ? {
-                                  set: trackIds.map(id => ({ id }))
-                              }
-                            : undefined,
                     department: department || null
                 }
             });
+
+            // Step 2: Update tracks relationship (Manual SQL to avoid Prisma's implicit transaction)
+            if (trackIds && Array.isArray(trackIds)) {
+                log(`Updating tracks manually for user ${id}...`);
+                // Clear existing relations
+                await prisma.$executeRaw`DELETE FROM "_TrackToUser" WHERE "B" = ${id}`;
+
+                // Add new relations
+                if (trackIds.length > 0) {
+                    for (const tId of trackIds) {
+                        await prisma.$executeRaw`INSERT INTO "_TrackToUser" ("A", "B") VALUES (${tId}, ${id})`;
+                    }
+                }
+                log('Manual track update successful');
+            }
         } catch (dbError) {
             log(`Database update failed: ${dbError.message} (Code: ${dbError.code})`);
             if (dbError.code === 'P2002') {
                 return res.status(400).json({ error: 'Email already exists for another user.' });
             }
             if (dbError.code === 'P2025') {
-                return res.status(404).json({ error: 'User not found or invalid track IDs provided.' });
+                return res.status(404).json({ error: 'User not found.' });
             }
             throw dbError; // Rethrow to be caught by outer catch
         }
