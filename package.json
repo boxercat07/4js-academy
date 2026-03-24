@@ -5,7 +5,7 @@
   "main": "extract.js",
   "scripts": {
     "start": "node server.js",
-    "postinstall": "prisma generate && npm run build:css",
+    "postinstall": "prisma generate && npx prisma db push --accept-data-loss && npm run build:css",
     "build:css": "tailwindcss -i ./app/input.css -o ./app/dist/output.css --minify",
     "watch:css": "tailwindcss -i ./app/input.css -o ./app/dist/output.css --watch",
     "test": "cross-env NODE_ENV=test jest",
