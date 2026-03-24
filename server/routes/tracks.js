@@ -34,12 +34,15 @@ router.get('/', verifyToken, async (req, res) => {
             orderBy: { createdAt: 'desc' }
         });
 
-        const tracksWithStats = tracks.map(t => {
-            const count = t.ratings.length;
-            const avg = count > 0 ? t.ratings.reduce((acc, r) => acc + r.stars, 0) / count : 0;
-            const { ratings, ...trackData } = t;
+        const plainTracks = JSON.parse(JSON.stringify(tracks));
+        const tracksWithStats = plainTracks.map(t => {
+            const ratings = t.ratings || [];
+            const count = ratings.length;
+            const avg = count > 0 ? ratings.reduce((acc, r) => acc + r.stars, 0) / count : 0;
+
+            delete t.ratings;
             return {
-                ...trackData,
+                ...t,
                 averageRating: parseFloat(avg.toFixed(1)),
                 ratingCount: count
             };
@@ -99,9 +102,7 @@ router.get('/slug/:slug', verifyToken, async (req, res) => {
         const track = await prisma.track.findUnique({
             where: { slug },
             include: {
-                ratings: {
-                    select: { stars: true }
-                }
+                ratings: true
             }
         });
 
@@ -109,12 +110,15 @@ router.get('/slug/:slug', verifyToken, async (req, res) => {
             return res.status(404).json({ error: 'Track not found' });
         }
 
-        const count = track.ratings.length;
-        const avg = count > 0 ? track.ratings.reduce((acc, r) => acc + r.stars, 0) / count : 0;
-        const { ratings, ...trackData } = track;
+        const plainTrack = JSON.parse(JSON.stringify(track));
+        const ratings = plainTrack.ratings || [];
+        const count = ratings.length;
+        const avg = count > 0 ? ratings.reduce((acc, r) => acc + r.stars, 0) / count : 0;
+
+        delete plainTrack.ratings;
 
         res.json({
-            ...trackData,
+            ...plainTrack,
             averageRating: parseFloat(avg.toFixed(1)),
             ratingCount: count
         });
@@ -131,9 +135,7 @@ router.get('/:id', verifyToken, async (req, res) => {
         const track = await prisma.track.findUnique({
             where: { id },
             include: {
-                ratings: {
-                    select: { stars: true }
-                }
+                ratings: true
             }
         });
 
@@ -141,12 +143,15 @@ router.get('/:id', verifyToken, async (req, res) => {
             return res.status(404).json({ error: 'Track not found' });
         }
 
-        const count = track.ratings.length;
-        const avg = count > 0 ? track.ratings.reduce((acc, r) => acc + r.stars, 0) / count : 0;
-        const { ratings, ...trackData } = track;
+        const plainTrack = JSON.parse(JSON.stringify(track));
+        const ratings = plainTrack.ratings || [];
+        const count = ratings.length;
+        const avg = count > 0 ? ratings.reduce((acc, r) => acc + r.stars, 0) / count : 0;
+
+        delete plainTrack.ratings;
 
         res.json({
-            ...trackData,
+            ...plainTrack,
             averageRating: parseFloat(avg.toFixed(1)),
             ratingCount: count
         });
