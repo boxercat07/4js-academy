@@ -2965,7 +2965,14 @@ class AiQuiz extends HTMLElement {
         } else if (src) {
             try {
                 if (!src || src === '#') throw new Error('Quiz source URL is missing or invalid.');
-                const response = await fetch(src, { credentials: 'include' });
+                
+                let fetchUrl = src;
+                const isR2 = src.includes('.r2.dev') || src.includes('.cloudflarestorage.com');
+                if (isR2) {
+                    fetchUrl = `/api/proxy/quiz?url=${encodeURIComponent(src)}`;
+                }
+
+                const response = await fetch(fetchUrl, { credentials: 'include' });
                 if (!response.ok) throw new Error(`Could not access the quiz file (HTTP ${response.status}).`);
                 this.quizData = await response.json();
                 this.renderStart();

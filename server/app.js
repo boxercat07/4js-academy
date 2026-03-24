@@ -219,6 +219,34 @@ app.use('/api', (err, req, res, next) => {
     }
 });
 
+// Proxy route for Quiz JSON to bypass CORS for R2
+app.get('/api/proxy/quiz', async (req, res) => {
+    try {
+        const { url } = req.query;
+        if (!url) return res.status(400).json({ error: 'URL is required' });
+        
+        // Security: only allow r2.dev or cloudflarestorage.com or onrender.com
+        const parsedUrl = new URL(url);
+        const allowedHosts = ['.r2.dev', '.cloudflarestorage.com', 'fourjs-academy.onrender.com'];
+        const isAllowed = allowedHosts.some(host => parsedUrl.hostname.endsWith(host));
+        
+        if (!isAllowed) {
+            console.error(`[Proxy] Blocked unauthorized host: ${parsedUrl.hostname}`);
+            return res.status(403).json({ error: 'Host not allowed' });
+        }
+
+        console.log(`[Proxy] Fetching quiz data from: ${url}`);
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`External fetch failed (HTTP ${response.status})`);
+        
+        const data = await response.json();
+        res.json(data);
+    } catch (error) {
+        console.error('[Proxy] Error:', error.message);
+        res.status(500).json({ error: error.message });
+    }
+});
+
 // Start Server
 if (require.main === module && process.env.NODE_ENV !== 'test') {
     // Global Error Handling Middleware (MUST be last)
