@@ -188,15 +188,20 @@ router.post('/', verifyToken, verifyAdmin, async (req, res) => {
                 email,
                 passwordHash,
                 role: role || 'LEARNER',
-                tracks:
-                    trackIds && Array.isArray(trackIds)
-                        ? {
-                              connect: trackIds.map(id => ({ id }))
-                          }
-                        : undefined,
                 department: department || 'Other'
             }
         });
+
+        // Step 2: Update tracks relationship via Raw SQL (avoid transactions)
+        if (trackIds && Array.isArray(trackIds) && trackIds.length > 0) {
+            try {
+                for (const tId of trackIds) {
+                    await prisma.$executeRaw`INSERT INTO "_TrackToUser" ("A", "B") VALUES (${tId}, ${newUser.id})`;
+                }
+            } catch (err) {
+                console.error('Error connecting tracks on creation:', err);
+            }
+        }
 
         // --- NEW TRACK NOTIFICATION LOGIC ---
         if (newUser.role === 'LEARNER' && trackIds && trackIds.length > 0) {
@@ -668,12 +673,17 @@ router.post('/track', verifyToken, async (req, res) => {
         const updatedUser = await prisma.user.update({
             where: { id: userId },
             data: {
-                tracks: {
-                    connect: { id: trackId }
-                }
+                // No relation update here to avoid transaction
             },
             include: { tracks: true }
         });
+
+        // Manual connect via Raw SQL
+        await prisma.$executeRaw`INSERT INTO "_TrackToUser" ("A", "B") 
+                                 SELECT ${trackId}, ${userId}
+                                 WHERE NOT EXISTS (
+                                     SELECT 1 FROM "_TrackToUser" WHERE "A" = ${trackId} AND "B" = ${userId}
+                                 )`;
 
         res.json({ message: 'Track selection saved', trackId, trackName: track.name });
     } catch (error) {
