@@ -573,7 +573,7 @@
 
                             const inProgressText = document.querySelector('.text-lg.font-bold.text-yellow-500');
                             if (inProgressText)
-                                inProgressText.innerText = `${data.quizStats.inProgressRaw} (${data.quizStats.inProgressRatio}%)`;
+                                inProgressText.innerText = `${data.quizStats.pendingRaw} (${data.quizStats.pendingRatio}%)`;
 
                             const retakeText = document.querySelector('.text-lg.font-bold.text-red-500');
                             if (retakeText) retakeText.innerText = `${data.quizStats.retakeRaw} (0%)`;
@@ -582,7 +582,7 @@
                             const circles = document.querySelectorAll('svg circle[stroke-dasharray]');
                             if (circles.length >= 3) {
                                 const p = data.quizStats.passedRatio;
-                                const ip = data.quizStats.inProgressRatio;
+                                const ip = data.quizStats.pendingRatio;
                                 const r = data.quizStats.retakeRatio;
 
                                 // Circle 1: Passed (Blue)
