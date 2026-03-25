@@ -1682,6 +1682,18 @@ class AiContentItem extends HTMLElement {
                         this.setAttribute('blob-url', result.url);
                     }
                 }
+            } else if (type === 'VIDEO') {
+                const videoModal = document.querySelector('ai-video-insert-modal');
+                if (videoModal) {
+                    const result = await videoModal.show({
+                        title: this.getAttribute('title'),
+                        url: this.getAttribute('blob-url')
+                    });
+                    if (result && result.url) {
+                        this.setAttribute('title', result.title);
+                        this.setAttribute('blob-url', result.url);
+                    }
+                }
             } else {
                 const modal = document.querySelector('ai-confirm-modal');
                 if (modal) {
