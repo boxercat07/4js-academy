@@ -141,6 +141,7 @@ router.get('/', verifyToken, verifyAdmin, async (req, res) => {
     }
 });
 
+/*
 // GET /api/tracks - Get available tracks
 router.get('/tracks', async (req, res) => {
     try {
@@ -150,6 +151,7 @@ router.get('/tracks', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch tracks' });
     }
 });
+*/
 
 // POST /api/users - Create a new employee (Admin only)
 router.post('/', verifyToken, verifyAdmin, async (req, res) => {

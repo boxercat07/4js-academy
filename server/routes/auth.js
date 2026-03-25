@@ -8,7 +8,7 @@ const { verifyToken, JWT_SECRET } = require('../middleware/auth');
 const router = express.Router();
 
 const loginLimiter = rateLimit({
-    windowMs: process.env.NODE_ENV === 'production' ? 15 * 60 * 1000 : 1000, 
+    windowMs: process.env.NODE_ENV === 'production' ? 15 * 60 * 1000 : 1000,
     max: process.env.NODE_ENV === 'production' ? 5 : 10,
     message: { error: 'Too many login attempts. Please try again later.' },
     skipSuccessfulRequests: true
@@ -19,7 +19,7 @@ router.post('/login', loginLimiter, async (req, res) => {
     console.log('=== LOGIN ROUTE STARTED ===');
     console.log('Request body:', req.body);
     console.log('Request headers:', req.headers);
-    
+
     try {
         const { email, password } = req.body;
         console.log('Login attempt for:', email);
@@ -44,20 +44,22 @@ router.post('/login', loginLimiter, async (req, res) => {
         // Handle both hashed and plain text passwords
         let isPasswordValid = false;
         const isHashed = user.passwordHash.startsWith('$');
-        
+
         if (isHashed) {
             isPasswordValid = await bcrypt.compare(password, user.passwordHash);
         } else {
-            isPasswordValid = (password === user.passwordHash);
+            isPasswordValid = password === user.passwordHash;
             // If plain text match, we should hash it for the future
             if (isPasswordValid) {
                 console.log(`[AUTH] Hashing legacy plain-text password for ${email}`);
                 const salt = await bcrypt.genSalt(10);
                 const hashedPassword = await bcrypt.hash(password, salt);
-                await prisma.user.update({
-                    where: { id: user.id },
-                    data: { passwordHash: hashedPassword }
-                }).catch(err => console.error('[AUTH] Failed to upgrade password hash:', err));
+                await prisma.user
+                    .update({
+                        where: { id: user.id },
+                        data: { passwordHash: hashedPassword }
+                    })
+                    .catch(err => console.error('[AUTH] Failed to upgrade password hash:', err));
             }
         }
 
@@ -100,7 +102,6 @@ router.post('/login', loginLimiter, async (req, res) => {
             }
         });
         console.log('Response sent successfully');
-
     } catch (error) {
         console.error('Login error:', error.message);
         console.error('Stack trace:', error.stack);
@@ -143,6 +144,7 @@ router.get('/test', (req, res) => {
     });
 });
 
+/*
 // GET /api/users - List users (for debugging)
 router.get('/users', async (req, res) => {
     try {
@@ -155,5 +157,6 @@ router.get('/users', async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch users' });
     }
 });
+*/
 
 module.exports = router;

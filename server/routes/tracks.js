@@ -16,7 +16,7 @@ function slugify(text) {
 }
 
 // GET /api/tracks - Get available tracks (with optional status filter)
-router.get('/', async (req, res) => {
+router.get('/', verifyToken, async (req, res) => {
     try {
         const { status } = req.query;
         const where = {};
