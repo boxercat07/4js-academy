@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'ai-academy-super-secret-key-for-dev';
+const JWT_SECRET = process.env.JWT_SECRET;
 
 // Middleware to verify JWT token from HTTP-only cookie
 const verifyToken = (req, res, next) => {
