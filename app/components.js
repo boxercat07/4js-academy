@@ -2742,7 +2742,22 @@ class AiMediaViewerModal extends HTMLElement {
                 }
             } else if (type === 'PAGE') {
                 if (this.pageContent) {
-                    this.pageContent.innerHTML = url || '<p class="text-slate-400 italic">No content on this page.</p>';
+                    const rawContent = url || '<p class="text-slate-400 italic">No content on this page.</p>';
+                    this.pageContent.innerHTML = window.DOMPurify
+                        ? window.DOMPurify.sanitize(rawContent, {
+                              ADD_TAGS: ['iframe'],
+                              ADD_ATTR: [
+                                  'allow',
+                                  'allowfullscreen',
+                                  'frameborder',
+                                  'scrolling',
+                                  'target',
+                                  'class',
+                                  'style',
+                                  'src'
+                              ]
+                          })
+                        : '<p class="text-amber-500 italic p-6">Loading security module...</p>';
                     this.pageContent.classList.remove('hidden');
                     // Ensure YouTube embeds are responsive
                     this.pageContent.querySelectorAll('iframe').forEach(ifr => {
