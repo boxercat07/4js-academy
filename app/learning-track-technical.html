@@ -55,7 +55,12 @@
                 <h1 class="text-4xl md:text-5xl font-extrabold text-white font-display tracking-wider uppercase">
                     Technical Track
                 </h1>
-                <ai-rating id="header-rating" readonly="true" show-count="true"></ai-rating>
+                <ai-rating
+                    id="header-rating"
+                    class="cursor-default transition-all"
+                    readonly="true"
+                    show-count="true"
+                ></ai-rating>
             </div>
             <p class="text-slate-400 text-lg mb-10">
                 Welcome to your specialized technical learning journey.
@@ -191,10 +196,13 @@
                         if (headerRating) {
                             headerRating.setAttribute('track-id', techTrack.id);
                             headerRating.addEventListener('rating-click', () => {
-                                const prompt = document.getElementById('rating-prompt');
-                                if (prompt) {
-                                    prompt.classList.remove('hidden');
-                                    prompt.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                const percentText = document.getElementById('progress-percent')?.textContent;
+                                if (percentText === '100%') {
+                                    const prompt = document.getElementById('rating-prompt');
+                                    if (prompt) {
+                                        prompt.classList.remove('hidden');
+                                        prompt.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                    }
                                 }
                             });
                         }
@@ -362,6 +370,9 @@
                                 const starEl = document.getElementById('completion-rating');
                                 if (starEl) starEl.setAttribute('track-id', techTrack.id);
                             }
+                            if (headerRating) {
+                                headerRating.classList.replace('cursor-default', 'cursor-pointer');
+                            }
                         }
 
                         // Auto-open quiz if deep-linked
@@ -398,6 +409,9 @@
                                         ratingPrompt.classList.remove('hidden');
                                         const starEl = document.getElementById('completion-rating');
                                         if (starEl) starEl.setAttribute('track-id', techTrack.id);
+                                    }
+                                    if (headerRating) {
+                                        headerRating.classList.replace('cursor-default', 'cursor-pointer');
                                     }
                                 }
                             }, 100);
