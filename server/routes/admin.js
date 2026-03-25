@@ -21,11 +21,11 @@ router.get('/analytics', verifyToken, verifyAdmin, async (req, res) => {
         const dateFilter = startDate ? { updatedAt: { gte: startDate } } : {};
 
         // 1. Stats Overview
-        const totalUsers = await prisma.user.count({ 
-            where: { 
+        const totalUsers = await prisma.user.count({
+            where: {
                 role: 'LEARNER',
                 tracks: { some: { status: 'PUBLISHED' } }
-            } 
+            }
         });
 
         // 2. Track Comparison
@@ -35,30 +35,36 @@ router.get('/analytics', verifyToken, verifyAdmin, async (req, res) => {
                 modules: { where: { status: 'PUBLISHED' } },
                 users: {
                     where: { role: 'LEARNER' },
-                    include: { 
+                    include: {
                         enrollments: {
                             where: { completed: true, ...dateFilter }
-                        } 
+                        }
                     }
                 }
             }
         });
 
-        const trackComparison = tracks.map(track => {
-            const totalModules = track.modules.length;
-            const userProgressions = track.users.map(user => {
-                const userCompleted = user.enrollments.length;
-                return totalModules > 0 ? (userCompleted / totalModules) * 100 : 0;
-            });
-            const avgProgress = userProgressions.length > 0 
-                ? userProgressions.reduce((a, b) => a + b, 0) / userProgressions.length 
-                : 0;
+        const trackComparison = tracks
+            .map(track => {
+                const totalModules = track.modules.length;
+                const trackModuleIds = new Set(track.modules.map(m => m.id));
 
-            return {
-                name: track.name,
-                avgProgress: Math.round(avgProgress)
-            };
-        }).sort((a, b) => b.avgProgress - a.avgProgress);
+                const userProgressions = track.users.map(user => {
+                    const userCompleted = user.enrollments.filter(e => trackModuleIds.has(e.moduleId)).length;
+                    return totalModules > 0 ? (Math.min(userCompleted, totalModules) / totalModules) * 100 : 0;
+                });
+
+                const avgProgress =
+                    userProgressions.length > 0
+                        ? userProgressions.reduce((a, b) => a + b, 0) / userProgressions.length
+                        : 0;
+
+                return {
+                    name: track.name,
+                    avgProgress: Math.round(avgProgress)
+                };
+            })
+            .sort((a, b) => b.avgProgress - a.avgProgress);
 
         // 3. Recent Activity - Milestones
         const recentCompletions = await prisma.enrollment.findMany({
@@ -75,7 +81,7 @@ router.get('/analytics', verifyToken, verifyAdmin, async (req, res) => {
                 }
             },
             orderBy: { updatedAt: 'desc' },
-            include: { 
+            include: {
                 user: { include: { tracks: true } },
                 module: { include: { track: { include: { modules: { where: { status: 'PUBLISHED' } } } } } }
             }
@@ -95,8 +101,8 @@ router.get('/analytics', verifyToken, verifyAdmin, async (req, res) => {
 
             const trackModuleIds = track.modules.map(m => m.id);
             const completionsInTrack = await prisma.enrollment.count({
-                where: { 
-                    userId: e.userId, 
+                where: {
+                    userId: e.userId,
                     completed: true,
                     moduleId: { in: trackModuleIds }
                 }
@@ -130,9 +136,9 @@ router.get('/analytics', verifyToken, verifyAdmin, async (req, res) => {
         let totalNotStartedRaw = 0;
         let totalRetakeRaw = 0;
         let totalAssignedQuizzes = 0;
-        
+
         const learners = await prisma.user.findMany({
-            where: { 
+            where: {
                 role: 'LEARNER',
                 tracks: { some: { status: 'PUBLISHED' } }
             },
@@ -167,7 +173,7 @@ router.get('/analytics', verifyToken, verifyAdmin, async (req, res) => {
 
                     const quizEnrollment = learner.enrollments.find(e => e.moduleId === quiz.id);
                     const isPassed = quizEnrollment && quizEnrollment.completed;
-                    
+
                     if (isPassed) {
                         totalPassedRaw++;
                         continue;
@@ -200,7 +206,8 @@ router.get('/analytics', verifyToken, verifyAdmin, async (req, res) => {
             total: totalAssignedQuizzes,
             passedRatio: totalAssignedQuizzes > 0 ? Math.round((totalPassedRaw / totalAssignedQuizzes) * 100) : 0,
             pendingRatio: totalAssignedQuizzes > 0 ? Math.round((totalPendingRaw / totalAssignedQuizzes) * 100) : 0,
-            notStartedRatio: totalAssignedQuizzes > 0 ? Math.round((totalNotStartedRaw / totalAssignedQuizzes) * 100) : 0,
+            notStartedRatio:
+                totalAssignedQuizzes > 0 ? Math.round((totalNotStartedRaw / totalAssignedQuizzes) * 100) : 0,
             retakeRatio: totalAssignedQuizzes > 0 ? Math.round((totalRetakeRaw / totalAssignedQuizzes) * 100) : 0,
             passedRaw: totalPassedRaw,
             pendingRaw: totalPendingRaw,
@@ -210,40 +217,41 @@ router.get('/analytics', verifyToken, verifyAdmin, async (req, res) => {
 
         // 5. Top Performing Modules
         const modules = await prisma.module.findMany({
-            where: { 
+            where: {
                 status: 'PUBLISHED',
                 track: { status: 'PUBLISHED' }
             },
             include: {
                 enrollments: {
-                    where: dateFilter 
+                    where: dateFilter
                 },
                 track: true
             }
         });
 
-        const topModules = modules.map(m => {
-            const enrollments = m.enrollments;
-            const completed = enrollments.filter(e => e.completed).length;
-            const enrolled = enrollments.length;
-            const trackName = m.track ? m.track.name : 'Unassigned';
-            
-            return {
-                id: m.id,
-                title: m.title,
-                track: trackName,
-                enrolled: enrolled,
-                rate: enrolled > 0 ? Math.round((completed / enrolled) * 100) : 0,
-                completed: completed
-            };
-        })
-        .filter(m => m.enrolled > 0) 
-        .sort((a, b) => b.enrolled - a.enrolled || b.completed - a.completed);
+        const topModules = modules
+            .map(m => {
+                const enrollments = m.enrollments;
+                const completed = enrollments.filter(e => e.completed).length;
+                const enrolled = enrollments.length;
+                const trackName = m.track ? m.track.name : 'Unassigned';
+
+                return {
+                    id: m.id,
+                    title: m.title,
+                    track: trackName,
+                    enrolled: enrolled,
+                    rate: enrolled > 0 ? Math.round((completed / enrolled) * 100) : 0,
+                    completed: completed
+                };
+            })
+            .filter(m => m.enrolled > 0)
+            .sort((a, b) => b.enrolled - a.enrolled || b.completed - a.completed);
 
         // 6. Department Distribution
         const usersByDept = await prisma.user.groupBy({
             by: ['department'],
-            where: { 
+            where: {
                 role: 'LEARNER',
                 tracks: { some: { status: 'PUBLISHED' } }
             },

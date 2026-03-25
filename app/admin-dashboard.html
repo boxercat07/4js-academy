@@ -552,7 +552,13 @@
                         // 2.1 Top Modules Data
                         if (data.topModules) {
                             topModulesData = data.topModules;
-                            renderFilterDropdown(allTrackNames);
+                            const uniqueTracks = [
+                                ...new Set([
+                                    ...trackComparisonData.map(t => t.name),
+                                    ...topModulesData.map(m => m.track)
+                                ])
+                            ];
+                            renderFilterDropdown(uniqueTracks);
                             renderTopModules();
                         }
 
