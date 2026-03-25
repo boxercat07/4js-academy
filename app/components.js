@@ -4910,7 +4910,7 @@ class AiRating extends HTMLElement {
 
         this.innerHTML = `
             <div class="flex items-center ${containerClass}">
-                <div class="flex text-amber-500">
+                <div class="flex text-amber-500 shrink-0">
                     ${[1, 2, 3, 4, 5]
                         .map(
                             i => `
@@ -4923,8 +4923,8 @@ class AiRating extends HTMLElement {
                         )
                         .join('')}
                 </div>
-                ${this.showCount && this.totalRatings > 0 ? `<span class="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">(${this.currentRating}/5 · ${this.totalRatings} ${this.totalRatings > 1 ? 'votes' : 'vote'})</span>` : ''}
-                ${!this.showCount && this.readonly && this.totalRatings > 0 ? `<span class="text-[9px] font-bold text-slate-400">${this.currentRating}</span>` : ''}
+                ${this.showCount && this.totalRatings > 0 ? `<span class="text-[10px] whitespace-nowrap font-bold text-slate-400 uppercase tracking-tighter ml-1">(${this.currentRating}/5 · ${this.totalRatings} ${this.totalRatings > 1 ? 'votes' : 'vote'})</span>` : ''}
+                ${!this.showCount && this.readonly && this.totalRatings > 0 ? `<span class="text-[10px] whitespace-nowrap font-bold text-slate-400 ml-1">${this.currentRating}</span>` : ''}
             </div>
         `;
 
