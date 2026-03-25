@@ -102,6 +102,39 @@
                 </div>
             </div>
             <div class="max-w-6xl mx-auto">
+                <!-- Language Filter -->
+                <div class="flex items-center gap-2 mb-10 overflow-x-auto pb-2">
+                    <span class="text-slate-400 text-xs font-bold uppercase tracking-widest mr-2">Language:</span>
+                    <button
+                        onclick="setLanguageFilter('ALL')"
+                        id="lang-btn-ALL"
+                        class="lang-btn px-4 py-1.5 rounded-full bg-primary text-white text-xs font-bold transition-all whitespace-nowrap"
+                    >
+                        All
+                    </button>
+                    <button
+                        onclick="setLanguageFilter('EN')"
+                        id="lang-btn-EN"
+                        class="lang-btn px-4 py-1.5 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition-all whitespace-nowrap"
+                    >
+                        English (EN)
+                    </button>
+                    <button
+                        onclick="setLanguageFilter('FR')"
+                        id="lang-btn-FR"
+                        class="lang-btn px-4 py-1.5 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition-all whitespace-nowrap"
+                    >
+                        French (FR)
+                    </button>
+                    <button
+                        onclick="setLanguageFilter('ES')"
+                        id="lang-btn-ES"
+                        class="lang-btn px-4 py-1.5 rounded-full bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-bold transition-all whitespace-nowrap"
+                    >
+                        Spanish (ES)
+                    </button>
+                </div>
+
                 <!-- Grouped Milestones & Quizzes -->
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-16">
                     <!-- Milestones Section -->
@@ -217,6 +250,7 @@
             let completedTracks = [];
             let catalogueTracks = [];
             let progressGlobal = { trackProgress: [], pendingQuizzes: [], milestones: [] };
+            let activeLanguageFilter = 'ALL';
 
             // Session Data
             let userDept = (sessionStorage.getItem('userDepartment') || 'Other').trim();
@@ -234,6 +268,25 @@
                 if (!progressGlobal || !progressGlobal.trackProgress) return 'NOT_STARTED';
                 const p = progressGlobal.trackProgress.find(prog => prog.id === tid);
                 return p ? p.status : 'NOT_STARTED';
+            };
+
+            window.setLanguageFilter = lang => {
+                activeLanguageFilter = lang;
+
+                document.querySelectorAll('.lang-btn').forEach(btn => {
+                    btn.classList.remove('bg-primary', 'text-white');
+                    btn.classList.add('bg-slate-800', 'text-slate-300');
+                });
+
+                const activeBtn = document.getElementById(`lang-btn-${lang}`);
+                if (activeBtn) {
+                    activeBtn.classList.remove('bg-slate-800', 'text-slate-300');
+                    activeBtn.classList.add('bg-primary', 'text-white');
+                }
+
+                currentRecommendedPage = 1;
+                currentCataloguePage = 1;
+                renderSections();
             };
 
             // --- Pagination Helpers ---
@@ -288,6 +341,12 @@
             `
                     )
                     .join('');
+
+                const languageBadge = `
+                <span class="status-badge bg-primary/20 text-primary border-primary/30 text-[9px] px-2 py-0.5 uppercase tracking-widest font-bold backdrop-blur-sm hidden sm:inline-block">
+                    ${track.language || 'EN'}
+                </span>
+                `;
 
                 const prog = progressGlobal.trackProgress.find(p => p.id === track.id) || {
                     progress: 0,
@@ -486,6 +545,16 @@
             }
 
             function renderSections() {
+                const filterByLang = arr => {
+                    if (activeLanguageFilter === 'ALL') return arr;
+                    return arr.filter(t => (t.language || 'EN') === activeLanguageFilter);
+                };
+
+                const filteredContinue = filterByLang(continueTracks);
+                const filteredRecommended = filterByLang(recommendedTracks);
+                const filteredCompleted = filterByLang(completedTracks);
+                const filteredCatalogue = filterByLang(catalogueTracks);
+
                 const continueSection = document.getElementById('continue-section');
                 const continueGrid = document.getElementById('continue-grid');
                 const recommendedSection = document.getElementById('recommended-section');
@@ -498,16 +567,16 @@
                 const pendingQuizzesList = document.getElementById('pending-quizzes-list');
 
                 // 1. Continue Learning
-                const hasContinue = continueTracks.length > 0;
+                const hasContinue = filteredContinue.length > 0;
                 continueSection.classList.toggle('hidden', !hasContinue);
                 if (hasContinue) {
-                    continueGrid.innerHTML = continueTracks.map(t => renderTrack(t)).join('');
+                    continueGrid.innerHTML = filteredContinue.map(t => renderTrack(t)).join('');
                 }
 
                 // 2. Completed
-                completedSection.classList.toggle('hidden', completedTracks.length === 0);
-                if (completedTracks.length > 0) {
-                    completedGrid.innerHTML = completedTracks.map(t => renderTrack(t)).join('');
+                completedSection.classList.toggle('hidden', filteredCompleted.length === 0);
+                if (filteredCompleted.length > 0) {
+                    completedGrid.innerHTML = filteredCompleted.map(t => renderTrack(t)).join('');
                 }
 
                 // 3. Quizzes
@@ -531,18 +600,23 @@
 
                 // 4. Recommended (Persistent)
                 recommendedSection.classList.remove('hidden');
-                if (recommendedTracks.length > 0) {
+                if (filteredRecommended.length > 0) {
                     const start = (currentRecommendedPage - 1) * itemsPerPage;
-                    const paginated = recommendedTracks.slice(start, start + itemsPerPage);
+                    const paginated = filteredRecommended.slice(start, start + itemsPerPage);
                     recommendedGrid.innerHTML = paginated.map(t => renderTrack(t)).join('');
-                    renderPagination('recommended-pagination', recommendedTracks.length, currentRecommendedPage, p => {
-                        currentRecommendedPage = p;
-                        renderSections();
-                    });
+                    renderPagination(
+                        'recommended-pagination',
+                        filteredRecommended.length,
+                        currentRecommendedPage,
+                        p => {
+                            currentRecommendedPage = p;
+                            renderSections();
+                        }
+                    );
                 } else {
                     recommendedGrid.innerHTML = `
                     <div class="col-span-full py-8 text-left">
-                        <p class="text-slate-500 text-xs italic">All recommended tracks for ${userDept} are currently in progress or completed. Great work!</p>
+                        <p class="text-slate-500 text-xs italic">All recommended tracks matching this language are currently in progress or completed. Great work!</p>
                     </div>
                 `;
                     document.getElementById('recommended-pagination').classList.add('hidden');
@@ -550,18 +624,18 @@
 
                 // 5. Catalogue (Persistent)
                 catalogueSection.classList.remove('hidden');
-                if (catalogueTracks.length > 0) {
+                if (filteredCatalogue.length > 0) {
                     const start = (currentCataloguePage - 1) * itemsPerPage;
-                    const paginated = catalogueTracks.slice(start, start + itemsPerPage);
+                    const paginated = filteredCatalogue.slice(start, start + itemsPerPage);
                     catalogueGrid.innerHTML = paginated.map(t => renderTrack(t)).join('');
-                    renderPagination('catalogue-pagination', catalogueTracks.length, currentCataloguePage, p => {
+                    renderPagination('catalogue-pagination', filteredCatalogue.length, currentCataloguePage, p => {
                         currentCataloguePage = p;
                         renderSections();
                     });
                 } else {
                     catalogueGrid.innerHTML = `
                     <div class="col-span-full py-8 text-left">
-                        <p class="text-slate-500 text-xs italic">No other courses available in the catalogue at this time.</p>
+                        <p class="text-slate-500 text-xs italic">No other courses available in the catalogue matching this language at this time.</p>
                     </div>
                 `;
                     document.getElementById('catalogue-pagination').classList.add('hidden');
@@ -569,7 +643,10 @@
 
                 // Hide overall no-tracks message if any section has content
                 const totalTracksAvailable =
-                    continueTracks.length + recommendedTracks.length + completedTracks.length + catalogueTracks.length;
+                    filteredContinue.length +
+                    filteredRecommended.length +
+                    filteredCompleted.length +
+                    filteredCatalogue.length;
                 noTracksMessage.classList.toggle('hidden', totalTracksAvailable > 0);
             }
 

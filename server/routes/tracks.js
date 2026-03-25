@@ -39,7 +39,7 @@ router.get('/', async (req, res) => {
 // POST /api/tracks - Create a new track (Admin only)
 router.post('/', verifyToken, verifyAdmin, async (req, res) => {
     try {
-        const { name, description, icon, targetDepartments } = req.body;
+        const { name, description, icon, targetDepartments, language } = req.body;
 
         if (!name) {
             return res.status(400).json({ error: 'Track name is required.' });
@@ -64,6 +64,7 @@ router.post('/', verifyToken, verifyAdmin, async (req, res) => {
                 slug,
                 description: description || '',
                 icon: icon || 'terminal',
+                language: language || 'EN',
                 targetDepartments: targetDepartments || 'Other',
                 status: 'DRAFT'
             }
@@ -146,7 +147,7 @@ router.get('/:id', verifyToken, async (req, res) => {
 router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
     try {
         const { id } = req.params;
-        const { name, description, icon, targetDepartments, status, curriculumDraft } = req.body;
+        const { name, description, icon, targetDepartments, status, curriculumDraft, language } = req.body;
 
         console.log(`[TRACKS] PUT /api/tracks/${id} - Updating metadata/curriculum`);
         if (curriculumDraft) {
@@ -185,6 +186,7 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
                 slug,
                 description,
                 icon,
+                language,
                 targetDepartments,
                 status,
                 curriculumDraft

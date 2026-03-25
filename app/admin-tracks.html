@@ -81,6 +81,19 @@
                                 name.
                             </p>
                         </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-widest">
+                                Track Language
+                            </label>
+                            <select
+                                id="track-language"
+                                class="w-full px-3 py-2 bg-slate-800/50 border border-slate-700 rounded text-white focus:border-primary focus:outline-none"
+                            >
+                                <option value="EN">English (EN)</option>
+                                <option value="FR">French (FR)</option>
+                                <option value="ES">Spanish (ES)</option>
+                            </select>
+                        </div>
                         <div id="status-container" class="hidden">
                             <label class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-widest">
                                 Status
@@ -332,8 +345,11 @@
                         return `
                 <div class="glass-card flex flex-col group p-4 hover:border-primary/40 transition-all duration-300">
                     <div class="flex justify-between items-start mb-4">
-                        <div class="w-10 h-10 rounded-xl bg-slate-800/80 flex items-center justify-center text-primary border border-slate-700 group-hover:bg-primary group-hover:text-white transition-all">
-                            <span class="material-symbols-outlined text-xl">${icon}</span>
+                        <div class="flex items-center gap-2">
+                            <div class="w-10 h-10 rounded-xl bg-slate-800/80 flex items-center justify-center text-primary border border-slate-700 group-hover:bg-primary group-hover:text-white transition-all">
+                                <span class="material-symbols-outlined text-xl">${icon}</span>
+                            </div>
+                            <span class="text-[9px] font-bold text-slate-400 bg-slate-800 px-1.5 py-0.5 rounded-sm border border-slate-700 uppercase">${track.language || 'EN'}</span>
                         </div>
                         <span class="status-badge border ${statusColor} text-[10px] px-2 py-0.5">${track.status}</span>
                     </div>
@@ -354,7 +370,7 @@
                         <button onclick="previewTrack('${track.id}', '${safeName}', '${track.slug || ''}')" class="p-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-all" title="Preview as Learner">
                             <span class="material-symbols-outlined text-base">visibility</span>
                         </button>
-                        <button onclick="openEditMetadataModal('${track.id}', '${safeName}', '${safeDesc}', '${track.status}', '${track.icon || ''}', '${track.targetDepartments || ''}')" class="p-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-all" title="Edit Metadata">
+                        <button onclick="openEditMetadataModal('${track.id}', '${safeName}', '${safeDesc}', '${track.status}', '${track.icon || ''}', '${track.targetDepartments || ''}', '${track.language || 'EN'}')" class="p-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-all" title="Edit Metadata">
                             <span class="material-symbols-outlined text-base">settings</span>
                         </button>
                         <button onclick="deleteTrack('${track.id}', '${safeName}', '${track.status}')" 
@@ -373,6 +389,7 @@
                 document.getElementById('trackForm').reset();
                 document.getElementById('track-id').value = '';
                 document.getElementById('track-icon').value = 'terminal';
+                if (document.getElementById('track-language')) document.getElementById('track-language').value = 'EN';
                 document.getElementById('icon-preview').textContent = 'terminal';
                 // Clear checkboxes
                 document.querySelectorAll('#dept-checkboxes input').forEach(cb => (cb.checked = false));
@@ -381,12 +398,14 @@
                 document.getElementById('trackModal').classList.remove('hidden');
             }
 
-            function openEditMetadataModal(id, name, description, status, icon, targetDepartments) {
+            function openEditMetadataModal(id, name, description, status, icon, targetDepartments, language) {
                 document.getElementById('track-id').value = id;
                 document.getElementById('track-name').value = name;
                 document.getElementById('track-description').value = description;
                 document.getElementById('track-status').value = status;
                 document.getElementById('track-icon').value = icon || 'terminal';
+                if (document.getElementById('track-language'))
+                    document.getElementById('track-language').value = language || 'EN';
                 document.getElementById('icon-preview').textContent = icon || 'terminal';
 
                 // Set checkboxes based on targetDepartments (comma separated string)
@@ -411,11 +430,13 @@
             async function submitTrackForm(e) {
                 e.preventDefault();
                 const id = document.getElementById('track-id').value;
+                const langEl = document.getElementById('track-language');
                 const payload = {
                     name: document.getElementById('track-name').value,
                     description: document.getElementById('track-description').value,
                     status: document.getElementById('track-status').value,
                     icon: document.getElementById('track-icon').value,
+                    language: langEl ? langEl.value : 'EN',
                     targetDepartments: Array.from(document.querySelectorAll('#dept-checkboxes input:checked'))
                         .map(cb => cb.value)
                         .join(',')

@@ -32,6 +32,7 @@ model Track {
   slug              String?  @unique
   description       String?
   icon              String?
+  language          String   @default("EN")
   targetDepartments String?
   status            String   @default("DRAFT")
   curriculumDraft   String?
