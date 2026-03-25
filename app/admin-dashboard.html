@@ -241,13 +241,31 @@
                     <div class="lg:col-span-2 glass-card p-5">
                         <div class="flex justify-between items-center mb-6">
                             <h3 class="font-bold text-white">Recent Employee Progress</h3>
-                            <div class="flex gap-1">
-                                <button class="p-1 rounded bg-slate-800 text-slate-400">
-                                    <span class="material-symbols-outlined text-sm">chevron_left</span>
-                                </button>
-                                <button class="p-1 rounded bg-slate-800 text-slate-400">
-                                    <span class="material-symbols-outlined text-sm">chevron_right</span>
-                                </button>
+                            <div class="flex items-center gap-3">
+                                <span
+                                    id="activity-pagination-info"
+                                    class="text-[10px] font-bold text-slate-500 uppercase tracking-widest hidden sm:block"
+                                >
+                                    Page 1 of 1
+                                </span>
+                                <div class="flex gap-1">
+                                    <button
+                                        id="prev-activity-btn"
+                                        onclick="changeActivityPage(-1)"
+                                        disabled
+                                        class="p-1 rounded bg-slate-800 text-slate-400 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-700 transition-colors"
+                                    >
+                                        <span class="material-symbols-outlined text-sm">chevron_left</span>
+                                    </button>
+                                    <button
+                                        id="next-activity-btn"
+                                        onclick="changeActivityPage(1)"
+                                        disabled
+                                        class="p-1 rounded bg-slate-800 text-slate-400 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-700 transition-colors"
+                                    >
+                                        <span class="material-symbols-outlined text-sm">chevron_right</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <div id="recent-activity-list" class="space-y-4">
@@ -349,6 +367,9 @@
                 let currentPeriod = 'all';
                 let trackPage = 0;
                 const trackLimit = 5;
+                let activityData = [];
+                let activityPage = 0;
+                const activityLimit = 5;
 
                 window.updatePeriod = period => {
                     currentPeriod = period;
@@ -527,6 +548,77 @@
                     renderTopModules();
                 };
 
+                function renderActivity() {
+                    const activityContainer = document.getElementById('recent-activity-list');
+                    if (!activityContainer || !activityData) return;
+
+                    const totalPages = Math.ceil(activityData.length / activityLimit);
+                    if (activityPage >= totalPages && totalPages > 0) activityPage = totalPages - 1;
+                    if (activityPage < 0) activityPage = 0;
+
+                    const start = activityPage * activityLimit;
+                    const paginated = activityData.slice(start, start + activityLimit);
+
+                    if (paginated.length > 0) {
+                        activityContainer.innerHTML = paginated
+                            .map(a => {
+                                let label = '';
+                                let colorClass = 'bg-primary/20 text-primary';
+                                let detail = '';
+
+                                if (a.type !== 'MILESTONE') return null;
+
+                                if (a.milestone === 100) {
+                                    label = 'TRACK COMPLETED';
+                                    colorClass = 'bg-green-500/20 text-green-400';
+                                    detail = `🏅 Finished ${a.trackName}`;
+                                } else {
+                                    label = `${a.trackName} TRACK: ${a.milestone}%`;
+                                    colorClass =
+                                        a.milestone === 75
+                                            ? 'bg-yellow-500/20 text-yellow-400'
+                                            : 'bg-blue-500/20 text-blue-400';
+                                    detail = `🚀 Major milestone reached`;
+                                }
+
+                                return `
+                                <div class="p-3 rounded-xl bg-slate-800/50 border border-slate-700/50 animate-fadeIn">
+                                    <p class="text-xs ${colorClass.split(' ')[1]} font-bold mb-1">
+                                        ${new Date(a.timestamp).toLocaleTimeString()} · ${a.userName}
+                                    </p>
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-9 h-9 rounded-full ${colorClass.split(' ')[0]} flex items-center justify-center ${colorClass.split(' ')[1]} font-bold text-sm">
+                                            ${a.userInitials}
+                                        </div>
+                                        <div>
+                                            <p class="text-white font-semibold">${label}</p>
+                                            <p class="text-slate-500 text-xs">${detail}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            })
+                            .filter(Boolean)
+                            .join('');
+                    } else {
+                        activityContainer.innerHTML =
+                            '<p class="text-slate-500 text-center py-8 text-sm italic">No recent milestones</p>';
+                    }
+
+                    const info = document.getElementById('activity-pagination-info');
+                    const prevBtn = document.getElementById('prev-activity-btn');
+                    const nextBtn = document.getElementById('next-activity-btn');
+
+                    if (info) info.innerText = `Page ${totalPages > 0 ? activityPage + 1 : 0} of ${totalPages}`;
+                    if (prevBtn) prevBtn.disabled = activityPage === 0;
+                    if (nextBtn) nextBtn.disabled = activityPage >= totalPages - 1 || totalPages === 0;
+                }
+
+                window.changeActivityPage = delta => {
+                    activityPage += delta;
+                    renderActivity();
+                };
+
                 async function fetchAnalytics() {
                     try {
                         const res = await fetch(`/api/admin/analytics?period=${currentPeriod}`, {
@@ -599,53 +691,10 @@
                         }
 
                         // 4. Recent Activity
-                        const activityContainer = document.getElementById('recent-activity-list');
-                        if (data.activity && activityContainer) {
-                            if (data.activity.length > 0) {
-                                activityContainer.innerHTML = data.activity
-                                    .map(a => {
-                                        let label = '';
-                                        let colorClass = 'bg-primary/20 text-primary';
-                                        let detail = '';
-
-                                        if (a.type !== 'MILESTONE') return null;
-
-                                        if (a.milestone === 100) {
-                                            label = 'TRACK COMPLETED';
-                                            colorClass = 'bg-green-500/20 text-green-400';
-                                            detail = `🏅 Finished ${a.trackName}`;
-                                        } else {
-                                            label = `${a.trackName} TRACK: ${a.milestone}%`;
-                                            colorClass =
-                                                a.milestone === 75
-                                                    ? 'bg-yellow-500/20 text-yellow-400'
-                                                    : 'bg-blue-500/20 text-blue-400';
-                                            detail = `🚀 Major milestone reached`;
-                                        }
-
-                                        return `
-                                    <div class="p-3 rounded-xl bg-slate-800/50 border border-slate-700/50">
-                                        <p class="text-xs ${colorClass.split(' ')[1]} font-bold mb-1">
-                                            ${new Date(a.timestamp).toLocaleTimeString()} · ${a.userName}
-                                        </p>
-                                        <div class="flex items-center gap-3">
-                                            <div class="w-9 h-9 rounded-full ${colorClass.split(' ')[0]} flex items-center justify-center ${colorClass.split(' ')[1]} font-bold text-sm">
-                                                ${a.userInitials}
-                                            </div>
-                                            <div>
-                                                <p class="text-white font-semibold">${label}</p>
-                                                <p class="text-slate-500 text-xs">${detail}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                `;
-                                    })
-                                    .filter(item => item !== null)
-                                    .join('');
-                            } else {
-                                activityContainer.innerHTML =
-                                    '<p class="text-slate-500 text-center py-8">No recent milestones</p>';
-                            }
+                        if (data.activity) {
+                            activityData = data.activity;
+                            activityPage = 0;
+                            renderActivity();
                         }
 
                         // 5. Ratings Stats

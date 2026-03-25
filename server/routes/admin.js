@@ -91,7 +91,7 @@ router.get('/analytics', verifyToken, verifyAdmin, async (req, res) => {
         const activity = [];
 
         for (const e of recentCompletions) {
-            if (activity.length >= 5) break;
+            if (activity.length >= 20) break;
 
             const track = e.module.track;
             if (!track) continue;
