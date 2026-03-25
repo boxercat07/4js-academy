@@ -712,7 +712,7 @@
                             emp.role === 'ADMIN'
                                 ? ' <span class="ml-2 px-1.5 py-0.5 text-[9px] font-bold bg-primary/20 text-primary border border-primary/30 rounded uppercase tracking-wider">Admin</span>'
                                 : '';
-                        const progressFill = emp.progress >= 100 ? 'bg-emerald-500' : 'bg-primary';
+                        const progressColor = emp.progress >= 100 ? '#10b981' : '#1b5ffe';
                         const quizStatusText =
                             emp.quizTotal > 0
                                 ? `<span class="text-xs font-semibold ${emp.quizCompleted >= emp.quizTotal ? 'text-emerald-400' : 'text-slate-400'}">${emp.quizCompleted}/${emp.quizTotal} Passed</span>`
@@ -759,7 +759,7 @@
                             <td class="p-4" id="progress-cell-${emp.id}">
                                 <div class="flex items-center gap-2">
                                     <div class="progress-bar flex-1 max-w-[120px] bg-slate-800 overflow-hidden h-2 rounded-full">
-                                        <div class="h-full rounded-full ${progressFill}" style="width:${emp.progress}%"></div>
+                                        <div class="h-full rounded-full" style="width:${emp.progress}%; background-color:${progressColor}; box-shadow: 0 0 10px ${progressColor}40;"></div>
                                     </div>
                                     <span class="text-white text-xs font-bold">${emp.progress}%</span>
                                 </div>
@@ -827,12 +827,12 @@
 
                 // Update Progress Bar
                 const progressCell = document.getElementById(`progress-cell-${userId}`);
-                const progressFill = progress >= 100 ? 'bg-emerald-500' : 'bg-primary';
+                const progressColor = progress >= 100 ? '#10b981' : '#1b5ffe';
 
                 progressCell.innerHTML = `
                 <div class="flex items-center gap-2">
                     <div class="progress-bar flex-1 max-w-[120px] bg-slate-800 overflow-hidden h-2 rounded-full">
-                        <div class="h-full rounded-full ${progressFill}" style="width:${progress}%"></div>
+                        <div class="h-full rounded-full" style="width:${progress}%; background-color:${progressColor}; box-shadow: 0 0 10px ${progressColor}40;"></div>
                     </div>
                     <span class="text-white text-xs font-bold">${progress}%</span>
                 </div>
