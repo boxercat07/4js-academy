@@ -8,7 +8,7 @@ const { auditLog } = require('../utils/auditLog');
 
 const router = express.Router();
 
-const LEGACY_PASSWORD_RETIREMENT_DATE = new Date('2026-12-31');
+const LEGACY_PASSWORD_RETIREMENT_DATE = new Date(process.env.LEGACY_PASSWORD_RETIREMENT_DATE || '2026-12-31');
 
 const loginLimiter = rateLimit({
     windowMs: process.env.NODE_ENV === 'production' ? 15 * 60 * 1000 : 1000,

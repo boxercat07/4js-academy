@@ -1,5 +1,6 @@
 const express = require('express');
 const path = require('path');
+const rateLimit = require('express-rate-limit');
 const prisma = require('../prisma');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
@@ -8,6 +9,12 @@ const { validateEmail, validatePassword } = require('../utils/validation');
 const { auditLog } = require('../utils/auditLog');
 
 const router = express.Router();
+
+const profileUpdateLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10,
+    message: { error: 'Too many profile update attempts. Please try again later.' }
+});
 
 // Helper to validate UUID format to mitigate injection risks in raw SQL
 const isUuid = id => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
@@ -617,7 +624,7 @@ router.delete('/:id', verifyToken, verifyAdmin, async (req, res) => {
 });
 
 // PUT /api/users/profile - Update personal profile (Any logged in user)
-router.put('/profile', verifyToken, async (req, res) => {
+router.put('/profile', verifyToken, profileUpdateLimiter, async (req, res) => {
     try {
         const userId = req.user.id;
         const { firstName, lastName, email } = req.body;
