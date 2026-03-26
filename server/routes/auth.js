@@ -8,6 +8,8 @@ const { auditLog } = require('../utils/auditLog');
 
 const router = express.Router();
 
+const LEGACY_PASSWORD_RETIREMENT_DATE = new Date('2026-12-31');
+
 const loginLimiter = rateLimit({
     windowMs: process.env.NODE_ENV === 'production' ? 15 * 60 * 1000 : 1000,
     max: process.env.NODE_ENV === 'production' ? 5 : 10,
@@ -40,6 +42,12 @@ router.post('/login', loginLimiter, async (req, res) => {
         if (isHashed) {
             isPasswordValid = await bcrypt.compare(password, user.passwordHash);
         } else {
+            // Check if legacy plaintext support has expired
+            if (new Date() > LEGACY_PASSWORD_RETIREMENT_DATE) {
+                console.warn(`[AUTH] Rejected legacy plaintext login for ${email} - support expired.`);
+                return res.status(401).json({ error: 'Account requires password reset. Please contact support.' });
+            }
+
             isPasswordValid = password === user.passwordHash;
             // If plain text match, we should hash it for the future
             if (isPasswordValid) {

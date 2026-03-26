@@ -706,7 +706,7 @@ router.post('/track', verifyToken, async (req, res) => {
         res.json({ message: 'Track selection saved', trackId, trackName: track.name });
     } catch (error) {
         console.error('Save track error:', error);
-        res.status(500).json({ error: 'Failed to save track selection', message: error.message, stack: error.stack });
+        res.status(500).json({ error: 'Failed to save track selection', message: error.message });
     }
 });
 
