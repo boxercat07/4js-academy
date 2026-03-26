@@ -12,6 +12,26 @@ window.CONTENT_TYPE_CONFIG = {
 };
 const CONTENT_TYPE_CONFIG = window.CONTENT_TYPE_CONFIG;
 
+// // Security: DOMPurify Sanitization Helpers
+const sanitizeHTML = (content, config = {}) => {
+    if (!window.DOMPurify) return content;
+    const defaultConfig = {
+        ADD_TAGS: ['iframe'],
+        ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'target', 'class', 'style', 'src']
+    };
+    return window.DOMPurify.sanitize(content, { ...defaultConfig, ...config });
+};
+
+const sanitizeText = str => {
+    if (!str) return '';
+    if (!window.DOMPurify) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+    return window.DOMPurify.sanitize(str, { ALLOWED_TAGS: [] });
+};
+
 // Shared Design System Variables
 const injectSharedStyles = () => {
     if (document.getElementById('ai-academy-shared-styles')) return;
@@ -392,8 +412,8 @@ class LearnerHeader extends HTMLElement {
                                     <span class="material-symbols-outlined text-[16px]">close</span>
                                 </button>
                             </div>
-                            <div class="title">${n.title}</div>
-                            <div class="message">${n.message}</div>
+                            <div class="title">${sanitizeHTML(n.title)}</div>
+                            <div class="message">${sanitizeHTML(n.message)}</div>
                         </div>
                     `
                         )
@@ -632,8 +652,8 @@ class AdminHeader extends HTMLElement {
                                     <span class="material-symbols-outlined text-[16px]">close</span>
                                 </button>
                             </div>
-                            <div class="title">${n.title}</div>
-                            <div class="message">${n.message}</div>
+                            <div class="title">${sanitizeHTML(n.title)}</div>
+                            <div class="message">${sanitizeHTML(n.message)}</div>
                         </div>
                     `
                         )
@@ -948,13 +968,13 @@ class AiModule extends HTMLElement {
                         <div>
                             <div class="flex items-center gap-3">
                                 <span class="text-[10px] font-bold text-primary uppercase tracking-[0.2em]">
-                                    Module ${step}
+                                    Module ${sanitizeText(step)}
                                 </span>
                                 <div id="module-progress-stat" class="text-[9px] font-bold text-slate-500 bg-slate-800/50 px-2 py-0.5 rounded-full uppercase tracking-widest hidden">
                                     0/0 Completed
                                 </div>
                             </div>
-                            <h3 class="text-lg font-bold">${title}</h3>
+                            <h3 class="text-lg font-bold">${sanitizeHTML(title)}</h3>
                             <div class="w-48 h-1 bg-slate-800 rounded-full mt-2 overflow-hidden hidden" id="module-progress-bar-container">
                                 <div class="h-full bg-emerald-500 transition-all duration-500" id="module-progress-bar" style="width: 0%"></div>
                             </div>
@@ -1539,10 +1559,10 @@ class AiContentItem extends HTMLElement {
                         ${isLocked ? '<span class="material-symbols-outlined absolute -top-1 -right-1 text-[12px] bg-slate-900 rounded-full p-0.5 text-slate-400">lock</span>' : ''}
                     </div>
                     <div>
-                        <p class="text-sm font-semibold">${title}</p>
+                        <p class="text-sm font-semibold">${sanitizeHTML(title)}</p>
                         <div class="flex items-center gap-2">
                             <p class="text-[10px] text-slate-500 uppercase tracking-wider font-bold">
-                                ${type}
+                                ${sanitizeText(type)}
                             </p>
                             ${this.renderQuizStatus()}
                             ${this.getAttribute('completed') === 'true' ? '<span class="text-[9px] font-bold text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded uppercase tracking-tight flex items-center gap-1"><span class="material-symbols-outlined text-[10px]">check_circle</span>Done</span>' : ''}
@@ -2743,21 +2763,7 @@ class AiMediaViewerModal extends HTMLElement {
             } else if (type === 'PAGE') {
                 if (this.pageContent) {
                     const rawContent = url || '<p class="text-slate-400 italic">No content on this page.</p>';
-                    this.pageContent.innerHTML = window.DOMPurify
-                        ? window.DOMPurify.sanitize(rawContent, {
-                              ADD_TAGS: ['iframe'],
-                              ADD_ATTR: [
-                                  'allow',
-                                  'allowfullscreen',
-                                  'frameborder',
-                                  'scrolling',
-                                  'target',
-                                  'class',
-                                  'style',
-                                  'src'
-                              ]
-                          })
-                        : '<p class="text-amber-500 italic p-6">Loading security module...</p>';
+                    this.pageContent.innerHTML = sanitizeHTML(rawContent);
                     this.pageContent.classList.remove('hidden');
                     // Ensure YouTube embeds are responsive
                     this.pageContent.querySelectorAll('iframe').forEach(ifr => {
@@ -3136,7 +3142,7 @@ class AiQuiz extends HTMLElement {
                                 <span class="material-symbols-outlined text-5xl text-amber-500">folder_off</span>
                             </div>
                             <h3 class="text-xl font-bold text-white mb-2">Quiz File Not Found</h3>
-                            <p class="text-slate-400 mb-6 font-medium">This quiz file (ID: ${fileId}) is missing from your local browser storage. You may need to re-import it.</p>
+                            <p class="text-slate-400 mb-6 font-medium">This quiz file (ID: ${sanitizeText(fileId)}) is missing from your local browser storage. You may need to re-import it.</p>
                             <button class="btn-outline px-8 py-3" onclick="location.reload()">Refresh Page</button>
                         </div>
                     `;
@@ -3176,7 +3182,7 @@ class AiQuiz extends HTMLElement {
                             <span class="material-symbols-outlined text-5xl">error</span>
                         </div>
                         <h3 class="text-xl font-bold text-white mb-2">Error Loading Quiz</h3>
-                        <p class="text-slate-400 mb-6">We couldn't reach the quiz data. ${e.message}</p>
+                        <p class="text-slate-400 mb-6">We couldn't reach the quiz data. ${sanitizeText(e.message)}</p>
                         <button class="btn-outline px-8 py-3" onclick="location.reload()">Retry Page</button>
                     </div>
                 `;
@@ -3213,8 +3219,8 @@ class AiQuiz extends HTMLElement {
                 <div class="size-20 rounded-full bg-teal-500/10 text-teal-500 flex items-center justify-center mx-auto mb-6">
                     <span class="material-symbols-outlined text-5xl">quiz</span>
                 </div>
-                <h2 class="text-3xl font-bold text-white mb-4 font-display">${this.quizData.title}</h2>
-                <p class="text-slate-400 mb-8">Test your knowledge on the recent module contents. Success threshold: <span class="text-teal-400 font-bold">${this.getAttribute('success-threshold') || 80}%</span></p>
+                <h2 class="text-3xl font-bold text-white mb-4 font-display">${sanitizeHTML(this.quizData.title)}</h2>
+                <p class="text-slate-400 mb-8">Test your knowledge on the recent module contents. Success threshold: <span class="text-teal-400 font-bold">${sanitizeText(this.getAttribute('success-threshold') || 80)}%</span></p>
                 <button class="btn-primary start-quiz-btn w-full py-4 text-lg">Start Knowledge Check</button>
             </div>
         `;
@@ -3322,7 +3328,7 @@ class AiQuiz extends HTMLElement {
                         <div class="h-full bg-teal-500 transition-all duration-500" style="width: ${progress}%"></div>
                     </div>
                 </div>
-                <h3 class="text-xl font-bold text-white mb-8 text-left">${q.question || q.text || ''}</h3>
+                <h3 class="text-xl font-bold text-white mb-8 text-left">${sanitizeHTML(q.question || q.text || '')}</h3>
                 <div class="space-y-3 mb-8">
                     ${optionsToRender
                         .map((shuffled, i) => {
@@ -3357,7 +3363,7 @@ class AiQuiz extends HTMLElement {
                                     <span class="size-6 rounded-full border flex items-center justify-center text-xs font-bold transition-colors ${iconClass}">
                                         ${this.showingFeedback ? `<span class="material-symbols-outlined text-sm font-bold flex items-center justify-center">${icon}</span>` : icon}
                                     </span>
-                                    <span class="text-left">${this.getOptionText(shuffled.opt)}</span>
+                                    <span class="text-left">${sanitizeHTML(this.getOptionText(shuffled.opt))}</span>
                                 </div>
                             </button>
                         `;
@@ -3376,7 +3382,7 @@ class AiQuiz extends HTMLElement {
                             <div class="text-left">
                                 <p class="text-[10px] font-bold text-teal-400 uppercase tracking-widest mb-1.5 opacity-80">Explanation</p>
                                 <div class="text-sm text-slate-300 leading-relaxed font-medium">
-                                    ${this.getRationale(q, this.selectedAnswer)}
+                                    ${sanitizeHTML(this.getRationale(q, this.selectedAnswer))}
                                 </div>
                             </div>
                         </div>
@@ -3538,7 +3544,7 @@ class AiQuiz extends HTMLElement {
                     ${this.passed ? 'Congratulations! You passed.' : 'Knowledge check failed.'}
                 </p>
                 <div class="p-4 rounded-xl bg-slate-900 border border-slate-800 mb-8 inline-block mx-auto">
-                    <p class="text-sm text-slate-500 uppercase tracking-widest font-bold">Passing Score: ${threshold}%</p>
+                    <p class="text-sm text-slate-500 uppercase tracking-widest font-bold">Passing Score: ${sanitizeText(threshold)}%</p>
                 </div>
                 <div class="flex gap-4">
                     <button class="btn-outline flex-1 py-4 text-sm font-bold retry-btn">Retake Quiz</button>
@@ -4786,7 +4792,7 @@ class AiPageEditorModal extends HTMLElement {
         this.initQuill();
 
         this.titleInput.value = data.title || '';
-        this.quill.root.innerHTML = data.content || '';
+        this.quill.root.innerHTML = sanitizeHTML(data.content || '');
 
         this.container.classList.remove('opacity-0', 'pointer-events-none');
         this.card.classList.remove('scale-95');
@@ -4923,8 +4929,8 @@ class AiRating extends HTMLElement {
                         )
                         .join('')}
                 </div>
-                ${this.showCount && this.totalRatings > 0 ? `<span class="text-[10px] whitespace-nowrap font-bold text-slate-400 uppercase tracking-tighter ml-1">(${this.currentRating}/5 · ${this.totalRatings} ${this.totalRatings > 1 ? 'votes' : 'vote'})</span>` : ''}
-                ${!this.showCount && this.readonly && this.totalRatings > 0 ? `<span class="text-[10px] whitespace-nowrap font-bold text-slate-400 ml-1">${this.currentRating}</span>` : ''}
+                ${this.showCount && this.totalRatings > 0 ? `<span class="text-[10px] whitespace-nowrap font-bold text-slate-400 uppercase tracking-tighter ml-1">(${sanitizeText(this.currentRating)}/5 · ${sanitizeText(this.totalRatings)} ${this.totalRatings > 1 ? 'votes' : 'vote'})</span>` : ''}
+                ${!this.showCount && this.readonly && this.totalRatings > 0 ? `<span class="text-[10px] whitespace-nowrap font-bold text-slate-400 ml-1">${sanitizeText(this.currentRating)}</span>` : ''}
             </div>
         `;
 
