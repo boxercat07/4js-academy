@@ -178,7 +178,10 @@ router.post('/', verifyToken, verifyAdmin, async (req, res) => {
             return res.status(400).json({ error: emailValidation.error });
         }
 
-        const passwordToHash = password || 'Stitch2026!';
+        if (!password) {
+            return res.status(400).json({ error: 'Password is required' });
+        }
+        const passwordToHash = password;
         const passwordValidation = validatePassword(passwordToHash);
         if (!passwordValidation.isValid) {
             return res.status(400).json({ error: passwordValidation.error });
@@ -280,7 +283,10 @@ router.post('/bulk', verifyToken, verifyAdmin, async (req, res) => {
                     throw new Error(`${email}: ${emailValidation.error}`);
                 }
 
-                const passwordToHash = password || 'Stitch2026!#';
+                if (!password) {
+                    throw new Error(`${email}: password is required`);
+                }
+                const passwordToHash = password;
                 const passwordValidation = validatePassword(passwordToHash);
                 if (!passwordValidation.isValid) {
                     throw new Error(`${email}: ${passwordValidation.error}`);
@@ -485,11 +491,7 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
     } catch (error) {
         log(`CRITICAL ERROR during User Update: ${error.message} \nStack: ${error.stack}`);
         console.error('Update employee error:', error);
-        res.status(500).json({
-            error: 'Failed to update user',
-            details: error.message,
-            code: error.code
-        });
+        res.status(500).json({ error: 'Failed to update user' });
     }
 });
 

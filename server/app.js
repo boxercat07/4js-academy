@@ -216,19 +216,6 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'ok', message: 'Four Js Academy Backend is running' });
 });
 
-// Test route for debugging
-app.get('/api/test', (req, res) => {
-    res.json({
-        status: 'ok',
-        timestamp: new Date().toISOString(),
-        env: {
-            NODE_ENV: process.env.NODE_ENV,
-            JWT_SECRET: !!process.env.JWT_SECRET,
-            DATABASE_URL: !!process.env.DATABASE_URL
-        }
-    });
-});
-
 // Seed Initial Data Route (DISABLED for security)
 app.post('/api/seed', (req, res) => {
     return res.status(403).json({ error: 'Seed endpoint disabled' });

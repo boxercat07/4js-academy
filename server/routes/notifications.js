@@ -31,10 +31,14 @@ router.patch('/:id/read', verifyToken, async (req, res) => {
         const { id } = req.params;
         const userId = req.user.id;
 
-        const notification = await prisma.notification.updateMany({
+        const result = await prisma.notification.updateMany({
             where: { id, userId },
             data: { read: true }
         });
+
+        if (result.count === 0) {
+            return res.status(404).json({ error: 'Notification not found' });
+        }
 
         res.json({ message: 'Notification marked as read' });
     } catch (error) {
