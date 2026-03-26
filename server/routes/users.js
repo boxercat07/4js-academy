@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { verifyToken, verifyAdmin, JWT_SECRET } = require('../middleware/auth');
 const { validateEmail, validatePassword } = require('../utils/validation');
+const { auditLog } = require('../utils/auditLog');
 
 const router = express.Router();
 
@@ -194,12 +195,17 @@ router.post('/', verifyToken, verifyAdmin, async (req, res) => {
             }
         });
 
-        // Step 2: Update tracks relationship via Raw SQL (avoid transactions)
+        // Step 2: Update tracks relationship via Prisma connect (Safe & Atomic)
         if (trackIds && Array.isArray(trackIds) && trackIds.length > 0) {
             try {
-                for (const tId of trackIds) {
-                    await prisma.$executeRaw`INSERT INTO "_TrackToUser" ("A", "B") VALUES (${tId}, ${newUser.id})`;
-                }
+                await prisma.user.update({
+                    where: { id: newUser.id },
+                    data: {
+                        tracks: {
+                            connect: trackIds.map(id => ({ id }))
+                        }
+                    }
+                });
             } catch (err) {
                 console.error('Error connecting tracks on creation:', err);
             }
@@ -404,19 +410,18 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
                 }
             });
 
-            // Step 2: Update tracks relationship (Manual SQL to avoid Prisma's implicit transaction)
+            // Step 2: Update tracks relationship (Standard Prisma set handles delete+insert atomically)
             if (trackIds && Array.isArray(trackIds)) {
-                log(`Updating tracks manually for user ${id}...`);
-                // Clear existing relations
-                await prisma.$executeRaw`DELETE FROM "_TrackToUser" WHERE "B" = ${id}`;
-
-                // Add new relations
-                if (trackIds.length > 0) {
-                    for (const tId of trackIds) {
-                        await prisma.$executeRaw`INSERT INTO "_TrackToUser" ("A", "B") VALUES (${tId}, ${id})`;
+                log(`Updating tracks via Prisma set for user ${id}...`);
+                await prisma.user.update({
+                    where: { id },
+                    data: {
+                        tracks: {
+                            set: trackIds.map(tId => ({ id: tId }))
+                        }
                     }
-                }
-                log('Manual track update successful');
+                });
+                log('Prisma track update successful');
             }
         } catch (dbError) {
             log(`Database update failed: ${dbError.message} (Code: ${dbError.code})`);
@@ -461,6 +466,17 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
 
         log('Update successful');
         res.json({ user: updatedUser });
+
+        // Audit log if password was changed
+        if (passwordHash) {
+            auditLog(req.user.id, 'CHANGE_PASSWORD', {
+                resourceType: 'USER',
+                resourceId: id,
+                details: { adminAction: true },
+                ipAddress: req.ip,
+                userAgent: req.headers['user-agent']
+            });
+        }
     } catch (error) {
         log(`CRITICAL ERROR during User Update: ${error.message} \nStack: ${error.stack}`);
         console.error('Update employee error:', error);
@@ -672,18 +688,15 @@ router.post('/track', verifyToken, async (req, res) => {
             return res.status(404).json({ error: 'Track not found' });
         }
 
-        // We update the user without connecting tracks to avoid Neon HTTP transaction errors
-        const updatedUser = await prisma.user.update({
+        // Standard Prisma connect handles the relationship safely and ignores duplicates
+        await prisma.user.update({
             where: { id: userId },
-            data: {}
+            data: {
+                tracks: {
+                    connect: { id: trackId }
+                }
+            }
         });
-
-        // Manually handle the many-to-many relationship without a transaction
-        const existingRel =
-            await prisma.$queryRaw`SELECT 1 FROM "_TrackToUser" WHERE "A" = ${trackId} AND "B" = ${userId}`;
-        if (!existingRel || existingRel.length === 0) {
-            await prisma.$executeRaw`INSERT INTO "_TrackToUser" ("A", "B") VALUES (${trackId}, ${userId})`;
-        }
 
         res.json({ message: 'Track selection saved', trackId, trackName: track.name });
     } catch (error) {

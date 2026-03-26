@@ -2,6 +2,8 @@ const express = require('express');
 const prisma = require('../prisma');
 const { verifyToken, verifyAdmin } = require('../middleware/auth');
 const { deleteFileByUrl } = require('../utils/fileCleanup');
+const { sanitizeInput, validateLength } = require('../utils/validation');
+const { auditLog } = require('../utils/auditLog');
 
 const router = express.Router();
 
@@ -39,11 +41,18 @@ router.get('/', verifyToken, async (req, res) => {
 // POST /api/tracks - Create a new track (Admin only)
 router.post('/', verifyToken, verifyAdmin, async (req, res) => {
     try {
-        const { name, description, icon, targetDepartments, language } = req.body;
+        let { name, description, icon, targetDepartments, language } = req.body;
 
-        if (!name) {
-            return res.status(400).json({ error: 'Track name is required.' });
-        }
+        // Sanitize
+        name = sanitizeInput(name);
+        description = sanitizeInput(description);
+
+        // Validate
+        const nameValid = validateLength(name, 'Track name', 3, 100);
+        if (!nameValid.isValid) return res.status(400).json({ error: nameValid.error });
+
+        const descValid = validateLength(description, 'Description', 0, 2000);
+        if (!descValid.isValid) return res.status(400).json({ error: descValid.error });
 
         const slug = slugify(name);
 
@@ -71,6 +80,15 @@ router.post('/', verifyToken, verifyAdmin, async (req, res) => {
         });
 
         res.status(201).json(track);
+
+        // Audit log
+        auditLog(req.user.id, 'CREATE_TRACK', {
+            resourceType: 'TRACK',
+            resourceId: track.id,
+            details: { name: track.name, slug: track.slug },
+            ipAddress: req.ip,
+            userAgent: req.headers['user-agent']
+        });
     } catch (error) {
         console.error('Track creation error:', error);
         res.status(500).json({ error: 'Failed to create track.' });
@@ -147,7 +165,20 @@ router.get('/:id', verifyToken, async (req, res) => {
 router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
     try {
         const { id } = req.params;
-        const { name, description, icon, targetDepartments, status, curriculumDraft, language } = req.body;
+        let { name, description, icon, targetDepartments, status, curriculumDraft, language } = req.body;
+
+        // Sanitize and validate if provided
+        if (name !== undefined) {
+            name = sanitizeInput(name);
+            const nameValid = validateLength(name, 'Track name', 3, 100);
+            if (!nameValid.isValid) return res.status(400).json({ error: nameValid.error });
+        }
+
+        if (description !== undefined) {
+            description = sanitizeInput(description);
+            const descValid = validateLength(description, 'Description', 0, 2000);
+            if (!descValid.isValid) return res.status(400).json({ error: descValid.error });
+        }
 
         console.log(`[TRACKS] PUT /api/tracks/${id} - Updating metadata/curriculum`);
         if (curriculumDraft) {
@@ -290,6 +321,15 @@ router.delete('/:id', verifyToken, verifyAdmin, async (req, res) => {
         });
 
         res.json({ message: 'Track and its modules deleted successfully' });
+
+        // Audit log
+        auditLog(req.user.id, 'DELETE_TRACK', {
+            resourceType: 'TRACK',
+            resourceId: id,
+            details: { trackId: id },
+            ipAddress: req.ip,
+            userAgent: req.headers['user-agent']
+        });
     } catch (error) {
         console.error('Error deleting track:', error);
         res.status(500).json({ error: 'Failed to delete track.' });

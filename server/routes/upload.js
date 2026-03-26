@@ -5,6 +5,7 @@ const prisma = require('../prisma');
 const { S3Client, PutObjectCommand } = require('@aws-sdk/client-s3');
 const { v4: uuidv4 } = require('uuid');
 const { verifyToken, verifyAdmin } = require('../middleware/auth');
+const { auditLog } = require('../utils/auditLog');
 
 const router = express.Router();
 
@@ -97,6 +98,20 @@ router.post('/', (req, res, next) => {
             filename: finalFilename,
             originalname: req.file.originalname,
             size: req.file.size
+        });
+
+        // Async audit log - don't block response
+        auditLog(req.user.id, 'UPLOAD_FILE', {
+            resourceType: 'FILE',
+            resourceId: finalFilename,
+            details: {
+                originalname: req.file.originalname,
+                mimetype: req.file.mimetype,
+                size: req.file.size,
+                url: fileUrl
+            },
+            ipAddress: req.ip,
+            userAgent: req.headers['user-agent']
         });
     } catch (error) {
         console.error('[Upload Route] R2 Upload error:', error);

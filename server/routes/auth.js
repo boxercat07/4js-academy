@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const prisma = require('../prisma');
 const { verifyToken, JWT_SECRET } = require('../middleware/auth');
+const { auditLog } = require('../utils/auditLog');
 
 const router = express.Router();
 
@@ -58,6 +59,15 @@ router.post('/login', loginLimiter, async (req, res) => {
                     .update({
                         where: { id: user.id },
                         data: { passwordHash: hashedPassword }
+                    })
+                    .then(() => {
+                        auditLog(user.id, 'PASSWORD_UPGRADE', {
+                            resourceType: 'USER',
+                            resourceId: user.id,
+                            details: { automatic: true },
+                            ipAddress: req.ip,
+                            userAgent: req.headers['user-agent']
+                        });
                     })
                     .catch(err => console.error('[AUTH] Failed to upgrade password hash:', err));
             }

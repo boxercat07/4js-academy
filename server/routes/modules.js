@@ -1,6 +1,7 @@
 const express = require('express');
 const prisma = require('../prisma');
 const { verifyToken, verifyAdmin } = require('../middleware/auth');
+const { sanitizeInput, validateLength } = require('../utils/validation');
 
 const router = express.Router();
 
@@ -33,9 +34,20 @@ router.get('/', verifyToken, async (req, res) => {
 // POST /api/modules - Create a new module (Admin only)
 router.post('/', verifyToken, verifyAdmin, async (req, res) => {
     try {
-        const { title, description, trackId, duration, type, mediaUrl, status, order } = req.body;
+        let { title, description, trackId, duration, type, mediaUrl, status, order } = req.body;
 
-        if (!title || !description || !trackId || !duration || !type || !status) {
+        // Sanitize
+        title = sanitizeInput(title);
+        description = sanitizeInput(description);
+
+        // Validate
+        const titleValid = validateLength(title, 'Module title', 3, 100);
+        if (!titleValid.isValid) return res.status(400).json({ error: titleValid.error });
+
+        const descValid = validateLength(description, 'Description', 3, 2000); // Modules require description
+        if (!descValid.isValid) return res.status(400).json({ error: descValid.error });
+
+        if (!trackId || !duration || !type || !status) {
             return res.status(400).json({ error: 'Missing required configuration fields' });
         }
 

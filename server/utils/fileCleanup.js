@@ -25,10 +25,21 @@ async function deleteFileByUrl(mediaUrl) {
     try {
         // Fallback: Delete old local files
         if (mediaUrl.includes('/uploads/')) {
-            const filename = mediaUrl.split('/uploads/').pop();
+            const parts = mediaUrl.split('/uploads/');
+            let filename = parts.pop();
             if (!filename) return;
 
-            const filePath = path.join(__dirname, '../uploads', filename);
+            // Fix for path traversal: ensure we only take the base filename
+            filename = path.basename(filename);
+
+            const uploadsDir = path.resolve(__dirname, '../uploads');
+            const filePath = path.join(uploadsDir, filename);
+
+            // Double check that the resolved path is still inside the uploads directory
+            if (!filePath.startsWith(uploadsDir)) {
+                console.error(`[FileCleanup] Security blocked: Attempted path traversal for ${filename}`);
+                return;
+            }
 
             if (fs.existsSync(filePath)) {
                 console.log(`[FileCleanup] Deleting local file: ${filePath}`);

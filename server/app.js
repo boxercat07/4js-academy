@@ -29,9 +29,27 @@ const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const prisma = require('./prisma');
 const path = require('path');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+// Rate Limiting
+const generalLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    max: 100, // Limit each IP to 100 requests per 15 minutes
+    message: { error: 'Too many requests from this IP, please try again after 15 minutes.' },
+    standardHeaders: true,
+    legacyHeaders: false
+});
+
+const uploadLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 10, // Limit each IP to 10 uploads per 15 minutes
+    message: { error: 'Too many upload attempts, please try again later.' },
+    standardHeaders: true,
+    legacyHeaders: false
+});
 
 // Middleware
 // CORS Configuration - Restrict to allowed origins
@@ -170,6 +188,9 @@ app.use((req, res, next) => {
 });
 
 // API Routes
+app.use('/api', generalLimiter); // Apply general limits to all API endpoints
+app.use('/api/upload', uploadLimiter); // Stricter limits for uploads
+
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/modules', require('./routes/modules'));
 app.use('/api/users', require('./routes/users'));

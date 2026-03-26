@@ -20,14 +20,34 @@ const validatePassword = password => {
 
 const validateEmail = email => {
     if (!email) return { isValid: false, error: 'Email is required.' };
-    const emailLower = email.toLowerCase();
-    if (!emailLower.endsWith('@4js.com') && !emailLower.endsWith('@fourjs.com')) {
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@(4js\.com|fourjs\.com)$/i;
+    if (!emailRegex.test(email)) {
         return { isValid: false, error: 'Only @4js.com or @fourjs.com email addresses are allowed.' };
     }
     return { isValid: true };
 };
 
+/**
+ * Strips HTML tags and trims the string.
+ */
+const sanitizeInput = text => {
+    if (typeof text !== 'string') return '';
+    return text.replace(/<[^>]*>?/gm, '').trim();
+};
+
+/**
+ * Validates that a string is within length bounds.
+ */
+const validateLength = (text, fieldName, min, max) => {
+    const len = (text || '').length;
+    if (len < min) return { isValid: false, error: `${fieldName} must be at least ${min} characters.` };
+    if (len > max) return { isValid: false, error: `${fieldName} cannot exceed ${max} characters.` };
+    return { isValid: true };
+};
+
 module.exports = {
     validatePassword,
-    validateEmail
+    validateEmail,
+    sanitizeInput,
+    validateLength
 };
