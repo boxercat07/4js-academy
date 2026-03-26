@@ -405,7 +405,7 @@ class LearnerHeader extends HTMLElement {
                     list.innerHTML = data.notifications
                         .map(
                             n => `
-                        <div class="notification-item ${n.read ? '' : 'unread'}" data-id="${n.id}">
+                        <div class="notification-item ${n.read ? '' : 'unread'}" data-id="${sanitizeText(String(n.id))}">
                             <div class="flex justify-between items-start">
                                 <div class="time">${new Date(n.createdAt).toLocaleTimeString()} · ${new Date(n.createdAt).toLocaleDateString()}</div>
                                 <button class="delete-notification-btn text-[var(--ai-text-muted)] hover:text-[var(--ai-danger)] transition-colors" title="Delete notification">
@@ -645,7 +645,7 @@ class AdminHeader extends HTMLElement {
                     list.innerHTML = data.notifications
                         .map(
                             n => `
-                        <div class="notification-item ${n.read ? '' : 'unread'}" data-id="${n.id}">
+                        <div class="notification-item ${n.read ? '' : 'unread'}" data-id="${sanitizeText(String(n.id))}">
                             <div class="flex justify-between items-start">
                                 <div class="time">${new Date(n.createdAt).toLocaleTimeString()} · ${new Date(n.createdAt).toLocaleDateString()}</div>
                                 <button class="delete-notification-btn text-[var(--ai-text-muted)] hover:text-[var(--ai-danger)] transition-colors" title="Delete notification">

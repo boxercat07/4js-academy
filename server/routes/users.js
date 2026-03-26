@@ -555,7 +555,7 @@ router.delete('/bulk', verifyToken, verifyAdmin, async (req, res) => {
         });
     } catch (error) {
         log(`ERROR: ${error.message}`);
-        res.status(500).json({ error: `Server Error: ${error.message}` });
+        res.status(500).json({ error: 'Server error' });
     }
 });
 
@@ -610,7 +610,7 @@ router.delete('/:id', verifyToken, verifyAdmin, async (req, res) => {
         res.json({ message: 'Employee deleted successfully (V2)' });
     } catch (error) {
         log(`ERROR for ${req.params.id}: ${error.message}`);
-        res.status(500).json({ error: `Server Error: ${error.message}` });
+        res.status(500).json({ error: 'Server error' });
     }
 });
 
@@ -706,7 +706,7 @@ router.post('/track', verifyToken, async (req, res) => {
         res.json({ message: 'Track selection saved', trackId, trackName: track.name });
     } catch (error) {
         console.error('Save track error:', error);
-        res.status(500).json({ error: 'Failed to save track selection', message: error.message });
+        res.status(500).json({ error: 'Failed to save track selection' });
     }
 });
 

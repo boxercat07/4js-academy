@@ -104,7 +104,6 @@ router.post('/login', loginLimiter, async (req, res) => {
         });
     } catch (error) {
         console.error('Login error:', error.message);
-        console.error('Stack trace:', error.stack);
         res.status(500).json({ error: 'Internal server error during login.' });
     }
 });
@@ -133,15 +132,6 @@ router.get('/me', verifyToken, async (req, res) => {
         console.error('Error in /api/me:', error);
         res.status(500).json({ error: 'Internal server error' });
     }
-});
-
-// Test auth endpoint
-router.get('/test', (req, res) => {
-    res.json({
-        status: 'ok',
-        message: 'Auth module working',
-        timestamp: new Date().toISOString()
-    });
 });
 
 /*

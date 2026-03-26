@@ -113,11 +113,7 @@ router.get('/:trackId/stats', verifyToken, async (req, res) => {
         });
     } catch (error) {
         console.error('[RATINGS] Error fetching track stats:', error);
-        res.status(500).json({
-            error: 'Failed to fetch rating statistics',
-            message: error.message,
-            stack: error.stack
-        });
+        res.status(500).json({ error: 'Failed to fetch rating statistics' });
     }
 });
 

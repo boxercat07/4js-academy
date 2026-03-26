@@ -180,11 +180,9 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
             if (!descValid.isValid) return res.status(400).json({ error: descValid.error });
         }
 
-        console.log(`[TRACKS] PUT /api/tracks/${id} - Updating metadata/curriculum`);
         if (curriculumDraft) {
             try {
-                const parsed = JSON.parse(curriculumDraft);
-                console.log(`[TRACKS] Curriculum draft received: ${parsed.length} module(s)`);
+                JSON.parse(curriculumDraft);
             } catch (e) {
                 console.warn('[TRACKS] Failed to parse curriculumDraft JSON');
             }

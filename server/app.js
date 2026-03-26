@@ -59,11 +59,6 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
 
 const corsOptions = {
     origin: (origin, callback) => {
-        // Log for debugging (ensure it's visible in Render logs)
-        if (origin) {
-            console.log(`CORS check for origin: ${origin}`);
-        }
-
         // Allow requests with no origin (same-origin, mobile apps, or curl)
         // or explicitly allowed origins
         if (!origin || allowedOrigins.includes(origin)) {
@@ -257,7 +252,9 @@ app.get('/api/proxy/quiz', async (req, res) => {
         // Security: only allow r2.dev or cloudflarestorage.com or onrender.com
         const parsedUrl = new URL(url);
         const allowedHosts = ['.r2.dev', '.cloudflarestorage.com', 'fourjs-academy.onrender.com'];
-        const isAllowed = allowedHosts.some(host => parsedUrl.hostname.endsWith(host));
+        const isAllowed = allowedHosts.some(
+            host => parsedUrl.hostname === host || parsedUrl.hostname.endsWith('.' + host)
+        );
 
         if (!isAllowed) {
             console.error(`[Proxy] Blocked unauthorized host: ${parsedUrl.hostname}`);
