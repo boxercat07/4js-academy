@@ -13,13 +13,19 @@ Stitch AI Academy Portal — a full-stack LMS (Learning Management System) built
 node server.js
 
 # Run all tests
-cross-env NODE_ENV=test jest
+npm test
 
 # Run a single test file
 cross-env NODE_ENV=test jest server/tests/auth.test.js
 
 # Format code (Prettier)
 npm run format
+
+# Compile Tailwind CSS (one-time)
+npm run build:css
+
+# Watch and recompile Tailwind CSS during development
+npm run watch:css
 
 # Regenerate Prisma client after schema changes
 npx prisma generate
@@ -31,7 +37,7 @@ npx prisma migrate dev
 ## Architecture
 
 ### Entry Points
-- `server.js` — starts the Express server
+- `server.js` — starts the Express server, runs `prisma db push` on startup
 - `server/app.js` — configures middleware, mounts all API routes, and serves static files with JWT protection
 
 ### Route Protection Pattern
@@ -48,14 +54,17 @@ npx prisma migrate dev
 | `/api/upload` | `server/routes/upload.js` | File uploads to Cloudflare R2 via Multer |
 | `/api/admin` | `server/routes/admin.js` | Admin-only analytics and operations |
 | `/api/notifications` | `server/routes/notifications.js` | User notifications |
+| `/api/ratings` | `server/routes/ratings.js` | Track ratings and reviews |
 
 ### Database Models (Prisma)
-`User` → `Enrollment` ← `Track` → `Module`; `User` → `UserMilestone`; `User` → `Notification`
+`User` → `Enrollment` ← `Track` → `Module`; `User` → `UserMilestone`; `User` → `Notification`; `User` → `Rating` ← `Track`; `AuditLog` (standalone)
 
 Roles: `LEARNER` (default), `ADMIN`. Registration is admin-only — there is no public sign-up flow.
 
+Legacy plain-text passwords are automatically upgraded to bcrypt on next login.
+
 ### Frontend
-Pages live in `app/`. `app/components.js` is a large (~229KB) file containing all reusable UI components as JS functions that render HTML strings. Styling uses Tailwind (configured in `app/tailwind-config.js`) plus `app/shared.css`.
+Pages live in `app/`. `app/components.js` is a large (~245KB) file containing all reusable UI components as JS functions that render HTML strings. Styling uses Tailwind (configured in `tailwind.config.js` at the root) compiled to `app/dist/output.css`, plus `app/shared.css`.
 
 ## Environment Variables
 
@@ -69,4 +78,4 @@ R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, R2_BUCKET_NAME, R2_PUBLIC
 
 ## Code Style
 
-Prettier enforces: 120-char line width, 4-space tabs, single quotes, no trailing commas, LF line endings. Pre-commit hooks run Prettier automatically via Husky + lint-staged on staged `app/**` and `server/**` files.
+Prettier enforces: 120-char line width, 4-space indentation, single quotes, no trailing commas, LF line endings. Pre-commit hooks run Prettier automatically via Husky + lint-staged on staged `app/**` and `server/**` files.

@@ -657,6 +657,7 @@ router.put('/profile', verifyToken, async (req, res) => {
         res.cookie('token', newToken, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
+            sameSite: 'Strict',
             maxAge: 24 * 60 * 60 * 1000 // 24 hours
         });
 
@@ -695,7 +696,8 @@ router.post('/track', verifyToken, async (req, res) => {
 
         // Manual handle many-to-many to avoid transactions in HTTP mode
         if (isUuid(trackId) && isUuid(userId)) {
-            const existingRel = await prisma.$queryRaw`SELECT 1 FROM "_TrackToUser" WHERE "A" = ${trackId} AND "B" = ${userId}`;
+            const existingRel =
+                await prisma.$queryRaw`SELECT 1 FROM "_TrackToUser" WHERE "A" = ${trackId} AND "B" = ${userId}`;
             if (!existingRel || existingRel.length === 0) {
                 await prisma.$executeRaw`INSERT INTO "_TrackToUser" ("A", "B") VALUES (${trackId}, ${userId})`;
             }

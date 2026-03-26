@@ -17,29 +17,20 @@ const loginLimiter = rateLimit({
 
 // POST /api/login
 router.post('/login', loginLimiter, async (req, res) => {
-    console.log('=== LOGIN ROUTE STARTED ===');
-    console.log('Request body:', req.body);
-    console.log('Request headers:', req.headers);
-
     try {
         const { email, password } = req.body;
-        console.log('Login attempt for:', email);
 
         if (!email || !password) {
-            console.log('Missing email or password');
             return res.status(400).json({ error: 'Email and password are required.' });
         }
 
         const user = await prisma.user.findUnique({ where: { email }, include: { tracks: true } });
-        console.log('User found:', user ? 'yes' : 'no');
         if (!user) {
-            console.log(`[AUTH_DEBUG] Invalid credentials for ${email}`);
             return res.status(401).json({ error: 'Invalid credentials' });
         }
 
         if (!user.passwordHash) {
-            console.log('User has no password hash');
-            return res.status(401).json({ error: 'Invalid credentials' }); // Changed error message for consistency
+            return res.status(401).json({ error: 'Invalid credentials' });
         }
 
         // Handle both hashed and plain text passwords
@@ -52,7 +43,6 @@ router.post('/login', loginLimiter, async (req, res) => {
             isPasswordValid = password === user.passwordHash;
             // If plain text match, we should hash it for the future
             if (isPasswordValid) {
-                console.log(`[AUTH] Hashing legacy plain-text password for ${email}`);
                 const salt = await bcrypt.genSalt(10);
                 const hashedPassword = await bcrypt.hash(password, salt);
                 await prisma.user
@@ -73,32 +63,25 @@ router.post('/login', loginLimiter, async (req, res) => {
             }
         }
 
-        console.log(`[AUTH_DEBUG] Password valid (${isHashed ? 'hashed' : 'plain'}): ${isPasswordValid}`);
-
         if (!isPasswordValid) {
-            console.log(`[AUTH_DEBUG] Invalid password for ${email}`);
             return res.status(401).json({ error: 'Invalid credentials' });
         }
 
         // Create JWT token
-        console.log('Creating JWT token for user:', user.id);
         const token = jwt.sign(
             { id: user.id, email: user.email, role: user.role, firstName: user.firstName, lastName: user.lastName },
             JWT_SECRET,
             { expiresIn: '24h' }
         );
-        console.log('JWT token created successfully');
 
         // Set HttpOnly cookie
-        console.log('Setting cookie');
         res.cookie('token', token, {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
+            sameSite: 'Strict',
             maxAge: 24 * 60 * 60 * 1000
         });
-        console.log('Cookie set successfully');
 
-        console.log('Sending success response');
         res.json({
             message: 'Login successful',
             user: {
@@ -111,7 +94,6 @@ router.post('/login', loginLimiter, async (req, res) => {
                 tracks: user.tracks ? user.tracks.map(t => ({ id: t.id, name: t.name })) : []
             }
         });
-        console.log('Response sent successfully');
     } catch (error) {
         console.error('Login error:', error.message);
         console.error('Stack trace:', error.stack);
