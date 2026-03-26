@@ -9,6 +9,9 @@ const { auditLog } = require('../utils/auditLog');
 
 const router = express.Router();
 
+// Helper to validate UUID format to mitigate injection risks in raw SQL
+const isUuid = id => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+
 // GET /api/employees - List all employees and their stats (Admin only)
 router.get('/', verifyToken, verifyAdmin, async (req, res) => {
     try {
@@ -195,17 +198,16 @@ router.post('/', verifyToken, verifyAdmin, async (req, res) => {
             }
         });
 
-        // Step 2: Update tracks relationship via Prisma connect (Safe & Atomic)
+        // Step 2: Update tracks relationship (Separate calls to avoid transactions in HTTP mode)
         if (trackIds && Array.isArray(trackIds) && trackIds.length > 0) {
             try {
-                await prisma.user.update({
-                    where: { id: newUser.id },
-                    data: {
-                        tracks: {
-                            connect: trackIds.map(id => ({ id }))
-                        }
+                for (const tId of trackIds) {
+                    if (isUuid(tId)) {
+                        await prisma.$executeRaw`INSERT INTO "_TrackToUser" ("A", "B") VALUES (${tId}, ${newUser.id})`;
+                    } else {
+                        console.warn(`[USERS] Skipping invalid trackId UUID: ${tId}`);
                     }
-                });
+                }
             } catch (err) {
                 console.error('Error connecting tracks on creation:', err);
             }
@@ -410,18 +412,21 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
                 }
             });
 
-            // Step 2: Update tracks relationship (Standard Prisma set handles delete+insert atomically)
-            if (trackIds && Array.isArray(trackIds)) {
-                log(`Updating tracks via Prisma set for user ${id}...`);
-                await prisma.user.update({
-                    where: { id },
-                    data: {
-                        tracks: {
-                            set: trackIds.map(tId => ({ id: tId }))
-                        }
+            // Step 2: Update tracks relationship (Manual SQL to avoid Prisma's implicit transaction in HTTP mode)
+            if (trackIds && Array.isArray(trackIds) && isUuid(id)) {
+                log(`Updating tracks manually for user ${id}...`);
+                // Clear existing relations
+                await prisma.$executeRaw`DELETE FROM "_TrackToUser" WHERE "B" = ${id}`;
+
+                // Add new relations
+                for (const tId of trackIds) {
+                    if (isUuid(tId)) {
+                        await prisma.$executeRaw`INSERT INTO "_TrackToUser" ("A", "B") VALUES (${tId}, ${id})`;
+                    } else {
+                        log(`Warning: Skipping invalid trackId UUID: ${tId}`);
                     }
-                });
-                log('Prisma track update successful');
+                }
+                log('Manual track update successful');
             }
         } catch (dbError) {
             log(`Database update failed: ${dbError.message} (Code: ${dbError.code})`);
@@ -688,15 +693,13 @@ router.post('/track', verifyToken, async (req, res) => {
             return res.status(404).json({ error: 'Track not found' });
         }
 
-        // Standard Prisma connect handles the relationship safely and ignores duplicates
-        await prisma.user.update({
-            where: { id: userId },
-            data: {
-                tracks: {
-                    connect: { id: trackId }
-                }
+        // Manual handle many-to-many to avoid transactions in HTTP mode
+        if (isUuid(trackId) && isUuid(userId)) {
+            const existingRel = await prisma.$queryRaw`SELECT 1 FROM "_TrackToUser" WHERE "A" = ${trackId} AND "B" = ${userId}`;
+            if (!existingRel || existingRel.length === 0) {
+                await prisma.$executeRaw`INSERT INTO "_TrackToUser" ("A", "B") VALUES (${trackId}, ${userId})`;
             }
-        });
+        }
 
         res.json({ message: 'Track selection saved', trackId, trackName: track.name });
     } catch (error) {
