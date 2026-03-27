@@ -14,6 +14,21 @@ router.post('/complete', verifyToken, async (req, res) => {
             return res.status(400).json({ error: 'moduleId is required' });
         }
 
+        // Verify the module exists and the user is enrolled in its track
+        const moduleRecord = await prisma.module.findUnique({
+            where: { id: moduleId },
+            select: { trackId: true }
+        });
+        if (!moduleRecord) {
+            return res.status(404).json({ error: 'Module not found' });
+        }
+        const isEnrolled = await prisma.user.findFirst({
+            where: { id: userId, tracks: { some: { id: moduleRecord.trackId } } }
+        });
+        if (!isEnrolled) {
+            return res.status(403).json({ error: 'Access denied: not enrolled in this track' });
+        }
+
         // Find current enrollment to get current attempts
         const current = await prisma.enrollment.findUnique({
             where: { userId_moduleId: { userId, moduleId } }
@@ -27,7 +42,7 @@ router.post('/complete', verifyToken, async (req, res) => {
                 }
             },
             update: {
-                progress: completed ? 100 : (score || 0),
+                progress: completed ? 100 : score || 0,
                 completed: completed,
                 attempts: { increment: 1 },
                 lastScore: score !== undefined ? score : undefined
@@ -35,7 +50,7 @@ router.post('/complete', verifyToken, async (req, res) => {
             create: {
                 userId: userId,
                 moduleId: moduleId,
-                progress: completed ? 100 : (score || 0),
+                progress: completed ? 100 : score || 0,
                 completed: completed,
                 attempts: 1,
                 lastScore: score !== undefined ? score : undefined
@@ -53,7 +68,7 @@ router.post('/complete', verifyToken, async (req, res) => {
                 if (moduleWithTrack && moduleWithTrack.track && moduleWithTrack.track.status === 'PUBLISHED') {
                     const track = moduleWithTrack.track;
                     const totalModules = track.modules.length;
-                    
+
                     if (totalModules > 0) {
                         const trackModuleIds = track.modules.map(m => m.id);
                         const completedInTrack = await prisma.enrollment.count({
@@ -65,7 +80,7 @@ router.post('/complete', verifyToken, async (req, res) => {
                         });
 
                         const progressPercent = Math.round((completedInTrack / totalModules) * 100);
-                        
+
                         // Possible milestones: 50, 75, 100
                         const thresholds = [50, 75, 100];
                         for (const threshold of thresholds) {
@@ -227,7 +242,9 @@ router.get('/dashboard', verifyToken, async (req, res) => {
         const completedModuleIds = user.enrollments.filter(e => e.completed).map(e => e.moduleId);
         // Enrolled track IDs come from user.tracks + any track where user has completed something
         const enrolledTrackIds = new Set(user.tracks.map(t => t.id));
-        allTracks.filter(t => t.modules.some(m => completedModuleIds.includes(m.id))).forEach(t => enrolledTrackIds.add(t.id));
+        allTracks
+            .filter(t => t.modules.some(m => completedModuleIds.includes(m.id)))
+            .forEach(t => enrolledTrackIds.add(t.id));
 
         let overallProgress = 0;
         if (enrolledTrackIds.size > 0) {
@@ -238,7 +255,9 @@ router.get('/dashboard', verifyToken, async (req, res) => {
                 if (enrolledTrackIds.has(track.id)) {
                     totalModulesInActive += track.modules.length;
                     const trackModuleIds = track.modules.map(m => m.id);
-                    const completedInTrack = user.enrollments.filter(e => e.completed && trackModuleIds.includes(e.moduleId)).length;
+                    const completedInTrack = user.enrollments.filter(
+                        e => e.completed && trackModuleIds.includes(e.moduleId)
+                    ).length;
                     totalCompletedInActive += completedInTrack;
                 }
             });
@@ -246,7 +265,9 @@ router.get('/dashboard', verifyToken, async (req, res) => {
             if (totalModulesInActive > 0) {
                 overallProgress = Math.round((totalCompletedInActive / totalModulesInActive) * 100);
             }
-            console.log(`[PROGRESS_DEBUG] User: ${user.firstName}, ActiveTracks: ${enrolledTrackIds.size}, Completed: ${totalCompletedInActive}, Total: ${totalModulesInActive}, Result: ${overallProgress}`);
+            console.log(
+                `[PROGRESS_DEBUG] User: ${user.firstName}, ActiveTracks: ${enrolledTrackIds.size}, Completed: ${totalCompletedInActive}, Total: ${totalModulesInActive}, Result: ${overallProgress}`
+            );
         } else {
             console.log(`[PROGRESS_DEBUG] User: ${user.firstName}, No Active Tracks`);
         }
@@ -257,7 +278,6 @@ router.get('/dashboard', verifyToken, async (req, res) => {
             milestones: milestones.slice(0, 3),
             pendingQuizzes
         });
-
     } catch (error) {
         console.error('Dashboard progress error:', error);
         res.status(500).json({ error: 'Failed to fetch dashboard progress' });

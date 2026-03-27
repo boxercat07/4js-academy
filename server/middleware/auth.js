@@ -2,6 +2,12 @@ const jwt = require('jsonwebtoken');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
+// Fail fast at startup if the secret is missing or too weak
+if (!JWT_SECRET || JWT_SECRET.length < 32) {
+    console.error('[Auth] FATAL: JWT_SECRET is missing or too short (minimum 32 characters). Server will not start.');
+    process.exit(1);
+}
+
 // Middleware to verify JWT token from HTTP-only cookie
 const verifyToken = (req, res, next) => {
     const token = req.cookies.token;

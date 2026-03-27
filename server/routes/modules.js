@@ -57,8 +57,18 @@ router.post('/', verifyToken, verifyAdmin, async (req, res) => {
             return res.status(400).json({ error: 'Missing required configuration fields' });
         }
 
-        if (mediaUrl && /^javascript:/i.test(mediaUrl.trim())) {
-            return res.status(400).json({ error: 'Invalid media URL' });
+        if (mediaUrl) {
+            try {
+                const parsed = new URL(mediaUrl.trim());
+                const SAFE_PROTOCOLS = ['http:', 'https:', 'blob:'];
+                if (!SAFE_PROTOCOLS.includes(parsed.protocol)) {
+                    return res
+                        .status(400)
+                        .json({ error: 'Invalid media URL: only http, https, or blob protocols are allowed' });
+                }
+            } catch {
+                return res.status(400).json({ error: 'Invalid media URL format' });
+            }
         }
 
         const newModule = await prisma.module.create({

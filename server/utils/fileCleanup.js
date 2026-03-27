@@ -10,8 +10,8 @@ if (process.env.R2_ACCOUNT_ID) {
         endpoint: `https://${process.env.R2_ACCOUNT_ID}.r2.cloudflarestorage.com`,
         credentials: {
             accessKeyId: process.env.R2_ACCESS_KEY_ID,
-            secretAccessKey: process.env.R2_SECRET_ACCESS_KEY,
-        },
+            secretAccessKey: process.env.R2_SECRET_ACCESS_KEY
+        }
     });
 }
 
@@ -51,15 +51,21 @@ async function deleteFileByUrl(mediaUrl) {
         }
 
         // New Logic: Delete from Cloudflare R2
-        if (process.env.R2_PUBLIC_URL && mediaUrl.startsWith(process.env.R2_PUBLIC_URL.replace(/\/$/, ""))) {
-            const publicUrlBase = process.env.R2_PUBLIC_URL.replace(/\/$/, "");
+        if (process.env.R2_PUBLIC_URL && mediaUrl.startsWith(process.env.R2_PUBLIC_URL.replace(/\/$/, ''))) {
+            const publicUrlBase = process.env.R2_PUBLIC_URL.replace(/\/$/, '');
             const fileKey = mediaUrl.substring(publicUrlBase.length + 1); // Extract key
-            
+
+            // Validate the key to prevent path traversal or empty key deletion
+            if (!fileKey || fileKey.includes('..') || fileKey.startsWith('/') || fileKey.includes('\0')) {
+                console.error(`[FileCleanup] Security: Invalid or unsafe R2 key extracted: "${fileKey}"`);
+                return;
+            }
+
             if (s3Client && fileKey) {
                 console.log(`[FileCleanup] Deleting R2 object key: ${fileKey}`);
                 const command = new DeleteObjectCommand({
                     Bucket: process.env.R2_BUCKET_NAME,
-                    Key: fileKey,
+                    Key: fileKey
                 });
                 await s3Client.send(command);
                 console.log(`[FileCleanup] Successfully deleted R2 object: ${fileKey}`);
