@@ -13,6 +13,19 @@ window.CONTENT_TYPE_CONFIG = {
 const CONTENT_TYPE_CONFIG = window.CONTENT_TYPE_CONFIG;
 
 // // Security: DOMPurify Sanitization Helpers
+// Restrict iframe src to YouTube domains only (applied once as a DOMPurify hook)
+if (window.DOMPurify && !window.DOMPurify._iframeSrcHookAdded) {
+    window.DOMPurify.addHook('afterSanitizeAttributes', node => {
+        if (node.tagName === 'IFRAME') {
+            const src = node.getAttribute('src') || '';
+            if (!/^https:\/\/(www\.)?(youtube\.com|youtube-nocookie\.com)\//.test(src)) {
+                node.removeAttribute('src');
+            }
+        }
+    });
+    window.DOMPurify._iframeSrcHookAdded = true;
+}
+
 const sanitizeHTML = (content, config = {}) => {
     if (!window.DOMPurify) {
         // DOMPurify not loaded — strip all tags as a safe fallback

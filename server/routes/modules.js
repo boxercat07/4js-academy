@@ -47,8 +47,18 @@ router.post('/', verifyToken, verifyAdmin, async (req, res) => {
         const descValid = validateLength(description, 'Description', 3, 2000); // Modules require description
         if (!descValid.isValid) return res.status(400).json({ error: descValid.error });
 
-        if (!trackId || !duration || !type || !status) {
+        const ALLOWED_TYPES = ['PAGE', 'VIDEO', 'PDF', 'QUIZ', 'AUDIO', 'IMAGE', 'SLIDES', 'LINK'];
+        if (!type || !ALLOWED_TYPES.includes(type.toUpperCase().replace(/-/g, '_'))) {
+            return res.status(400).json({ error: `Invalid module type. Allowed: ${ALLOWED_TYPES.join(', ')}` });
+        }
+        const normalizedType = type.toUpperCase().replace(/-/g, '_');
+
+        if (!trackId || !duration || !status) {
             return res.status(400).json({ error: 'Missing required configuration fields' });
+        }
+
+        if (mediaUrl && /^javascript:/i.test(mediaUrl.trim())) {
+            return res.status(400).json({ error: 'Invalid media URL' });
         }
 
         const newModule = await prisma.module.create({
@@ -57,7 +67,7 @@ router.post('/', verifyToken, verifyAdmin, async (req, res) => {
                 description,
                 trackId,
                 duration: parseInt(duration),
-                type,
+                type: normalizedType,
                 mediaUrl: mediaUrl || '',
                 status,
                 order: parseInt(order || 0)

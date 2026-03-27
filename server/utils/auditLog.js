@@ -1,5 +1,4 @@
-﻿const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+﻿const prisma = require('../prisma');
 
 /**
  * Log an audit event to the database
@@ -27,14 +26,14 @@ async function auditLog(userId, action, options = {}) {
                 status: options.status || 'SUCCESS'
             }
         });
-        
+
         console.log('[AUDIT]', {
             action: action.toUpperCase(),
             userId: userId.substring(0, 8) + '...',
             status: options.status || 'SUCCESS',
             timestamp: logEntry.createdAt.toISOString()
         });
-        
+
         return logEntry;
     } catch (error) {
         console.error('[AUDIT ERROR]', action, error.message);
@@ -66,7 +65,7 @@ async function getAllAuditLogs(days = 30, limit = 500) {
     try {
         const since = new Date();
         since.setDate(since.getDate() - days);
-        
+
         return await prisma.auditLog.findMany({
             where: { createdAt: { gte: since } },
             orderBy: { createdAt: 'desc' },

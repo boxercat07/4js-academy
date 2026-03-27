@@ -1,3 +1,4 @@
+const crypto = require('crypto');
 const express = require('express');
 const rateLimit = require('express-rate-limit');
 const bcrypt = require('bcrypt');
@@ -50,10 +51,14 @@ router.post('/login', loginLimiter, async (req, res) => {
                 return res.status(401).json({ error: 'Account requires password reset. Please contact support.' });
             }
 
-            isPasswordValid = password === user.passwordHash;
+            try {
+                isPasswordValid = crypto.timingSafeEqual(Buffer.from(password), Buffer.from(user.passwordHash));
+            } catch {
+                isPasswordValid = false;
+            }
             // If plain text match, we should hash it for the future
             if (isPasswordValid) {
-                const salt = await bcrypt.genSalt(10);
+                const salt = await bcrypt.genSalt(12);
                 const hashedPassword = await bcrypt.hash(password, salt);
                 await prisma.user
                     .update({

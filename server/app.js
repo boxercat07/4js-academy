@@ -216,7 +216,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Health Check Route
 app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok', message: 'Four Js Academy Backend is running' });
+    res.json({ status: 'ok' });
 });
 
 // Seed Initial Data Route (DISABLED for security)

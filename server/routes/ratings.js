@@ -1,6 +1,7 @@
 const express = require('express');
 const prisma = require('../prisma');
 const { verifyToken, verifyAdmin } = require('../middleware/auth');
+const { sanitizeInput } = require('../utils/validation');
 
 const router = express.Router();
 
@@ -11,11 +12,21 @@ const router = express.Router();
 router.post('/:trackId', verifyToken, async (req, res) => {
     try {
         const { trackId } = req.params;
-        const { stars, comment } = req.body;
+        const { stars } = req.body;
+        const comment = sanitizeInput(req.body.comment || '').slice(0, 1000);
         const userId = req.user.id;
 
         if (!stars || stars < 1 || stars > 5) {
             return res.status(400).json({ error: 'Rating must be between 1 and 5 stars' });
+        }
+
+        // Verify user is enrolled in this track
+        const enrolled = await prisma.track.findFirst({
+            where: { id: trackId, users: { some: { id: userId } } },
+            select: { id: true }
+        });
+        if (!enrolled) {
+            return res.status(403).json({ error: 'You must be enrolled in this track to rate it' });
         }
 
         const rating = await prisma.rating.upsert({

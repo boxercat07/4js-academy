@@ -24,7 +24,7 @@ router.get('/', verifyToken, verifyAdmin, async (req, res) => {
     try {
         const { search, trackId, page = 1, limit = 25 } = req.query;
         const pageNum = parseInt(page);
-        const limitNum = parseInt(limit);
+        const limitNum = Math.min(parseInt(limit) || 25, 100);
         console.log(`[API] FETCH /api/users: page=${pageNum}, limit=${limitNum}, search=${search}, trackId=${trackId}`);
 
         // Fetch all users for stats and filtering
@@ -197,7 +197,7 @@ router.post('/', verifyToken, verifyAdmin, async (req, res) => {
         if (!passwordValidation.isValid) {
             return res.status(400).json({ error: passwordValidation.error });
         }
-        const salt = await bcrypt.genSalt(10);
+        const salt = await bcrypt.genSalt(12);
         const passwordHash = await bcrypt.hash(passwordToHash, salt);
 
         // Create the user
@@ -272,7 +272,7 @@ router.post('/bulk', verifyToken, verifyAdmin, async (req, res) => {
             errors: []
         };
 
-        const salt = await bcrypt.genSalt(10);
+        const salt = await bcrypt.genSalt(12);
 
         for (const user of users) {
             try {
@@ -432,14 +432,7 @@ router.put('/profile', verifyToken, profileUpdateLimiter, async (req, res) => {
 
 // PUT /api/users/:id - Update an employee (Admin only)
 router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
-    const fs = require('fs');
-    const logFile = 'server_debug.log';
-    const log = msg => {
-        try {
-            fs.appendFileSync(logFile, `[${new Date().toISOString()}] UPDATE USER ${req.params.id}: ${msg}\n`);
-        } catch (e) {}
-        console.log(`[UPDATE USER ${req.params.id}]: ${msg}`);
-    };
+    const log = msg => console.log(`[UPDATE USER ${req.params.id}]: ${msg}`);
 
     try {
         const { id } = req.params;
@@ -473,7 +466,7 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
                 log(`Validation failed: ${passVal.error}`);
                 return res.status(400).json({ error: passVal.error });
             }
-            const salt = await bcrypt.genSalt(10);
+            const salt = await bcrypt.genSalt(12);
             passwordHash = await bcrypt.hash(password, salt);
         }
 
@@ -582,14 +575,7 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
 
 // DELETE /api/users/bulk - Bulk delete employees (Admin only)
 router.delete('/bulk', verifyToken, verifyAdmin, async (req, res) => {
-    const fs = require('fs');
-    const logFile = 'server_debug.log';
-    const log = msg => {
-        try {
-            fs.appendFileSync(logFile, `[${new Date().toISOString()}] BULK DELETE: ${msg}\n`);
-        } catch (e) {}
-        console.log(`[BULK DELETE]: ${msg}`);
-    };
+    const log = msg => console.log(`[BULK DELETE]: ${msg}`);
 
     try {
         const { ids } = req.body;
@@ -648,14 +634,7 @@ router.delete('/bulk', verifyToken, verifyAdmin, async (req, res) => {
 
 // DELETE /api/users/:id - Delete an employee (Admin only)
 router.delete('/:id', verifyToken, verifyAdmin, async (req, res) => {
-    const fs = require('fs');
-    const logFile = 'server_debug.log';
-    const log = msg => {
-        try {
-            fs.appendFileSync(logFile, `[${new Date().toISOString()}] DELETE: ${msg}\n`);
-        } catch (e) {}
-        console.log(`[DELETE]: ${msg}`);
-    };
+    const log = msg => console.log(`[DELETE]: ${msg}`);
 
     try {
         const { id } = req.params;
