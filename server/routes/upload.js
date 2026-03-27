@@ -153,7 +153,7 @@ router.post(
             });
         } catch (error) {
             console.error('[Upload Route] R2 Upload error:', error);
-            res.status(500).json({ error: `Failed to upload file to Cloudflare R2: ${error.message}` });
+            res.status(500).json({ error: 'File upload failed. Please try again.' });
         }
     }
 );

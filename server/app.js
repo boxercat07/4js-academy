@@ -63,15 +63,14 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
 
 const corsOptions = {
     origin: (origin, callback) => {
-        // Allow requests with no origin (same-origin, mobile apps, or curl)
-        // or explicitly allowed origins
-        if (!origin || allowedOrigins.includes(origin)) {
+        // Allow only explicitly whitelisted origins.
+        // Requests with no Origin header (server-to-server, curl) are blocked here;
+        // they should use the API directly without credentials.
+        if (origin && allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
-            console.error('❌ CORS Blocked Origin:', origin);
-            console.log('Allowed Origins List:', allowedOrigins);
-            // Include the blocked origin in the error message for easier debugging
-            callback(new Error(`CORS policy violation: ${origin} is not allowed`));
+            console.error('❌ CORS Blocked Origin:', origin || '(no origin)');
+            callback(new Error('CORS policy violation: origin not allowed'));
         }
     },
     credentials: true,
@@ -115,7 +114,7 @@ app.use((req, res, next) => {
             "default-src 'self'",
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.quilljs.com https://cdn.jsdelivr.net",
             "style-src-attr 'unsafe-inline'",
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://*.youtube.com https://*.youtube-nocookie.com https://*.google.com https://*.gstatic.com https://cdn.quilljs.com https://cdn.jsdelivr.net",
+            "script-src 'self' 'unsafe-inline' https://*.youtube.com https://*.youtube-nocookie.com https://*.google.com https://*.gstatic.com https://cdn.quilljs.com https://cdn.jsdelivr.net",
             "script-src-attr 'unsafe-inline'",
             "img-src 'self' data: https: blob: https://*.r2.dev https://*.cloudflarestorage.com https://fourjs-academy.onrender.com",
             "connect-src 'self' blob: https://*.r2.dev https://*.cloudflarestorage.com https://fonts.googleapis.com https://fonts.gstatic.com https://*.youtube.com https://*.google.com https://fourjs-academy.onrender.com",

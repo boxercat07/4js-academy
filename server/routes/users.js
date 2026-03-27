@@ -360,6 +360,76 @@ router.post('/bulk', verifyToken, verifyAdmin, async (req, res) => {
     }
 });
 
+// PUT /api/users/profile - Update personal profile (Any logged in user)
+// IMPORTANT: must be registered BEFORE PUT /:id to prevent Express from matching 'profile' as an :id param
+router.put('/profile', verifyToken, profileUpdateLimiter, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        const { firstName, lastName, email } = req.body;
+
+        // Validation
+        if (!firstName || !lastName || !email) {
+            return res.status(400).json({ error: 'Missing required fields' });
+        }
+
+        const emailVal = validateEmail(email);
+        if (!emailVal.isValid) {
+            return res.status(400).json({ error: emailVal.error });
+        }
+
+        // Check for email duplicates if email is being changed
+        if (email !== req.user.email) {
+            const existingUser = await prisma.user.findUnique({ where: { email } });
+            if (existingUser) {
+                return res.status(400).json({ error: 'Email already in use by another account' });
+            }
+        }
+
+        // Update user
+        const updatedUser = await prisma.user.update({
+            where: { id: userId },
+            data: { firstName: sanitizeInput(firstName), lastName: sanitizeInput(lastName), email }
+        });
+
+        // Re-issue JWT with updated info
+        const newToken = jwt.sign(
+            {
+                id: updatedUser.id,
+                email: updatedUser.email,
+                role: updatedUser.role,
+                firstName: updatedUser.firstName,
+                lastName: updatedUser.lastName,
+                department: updatedUser.department
+            },
+            JWT_SECRET,
+            { expiresIn: '24h' }
+        );
+
+        // Set HttpOnly cookie
+        res.cookie('token', newToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'Strict',
+            maxAge: 24 * 60 * 60 * 1000 // 24 hours
+        });
+
+        res.json({
+            message: 'Profile updated successfully',
+            user: {
+                id: updatedUser.id,
+                email: updatedUser.email,
+                firstName: updatedUser.firstName,
+                lastName: updatedUser.lastName,
+                role: updatedUser.role,
+                department: updatedUser.department
+            }
+        });
+    } catch (error) {
+        console.error('Update profile error:', error);
+        res.status(500).json({ error: 'Failed to update profile' });
+    }
+});
+
 // PUT /api/users/:id - Update an employee (Admin only)
 router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
     const fs = require('fs');
@@ -628,70 +698,6 @@ router.delete('/:id', verifyToken, verifyAdmin, async (req, res) => {
     } catch (error) {
         log(`ERROR for ${req.params.id}: ${error.message}`);
         res.status(500).json({ error: 'Server error' });
-    }
-});
-
-// PUT /api/users/profile - Update personal profile (Any logged in user)
-router.put('/profile', verifyToken, profileUpdateLimiter, async (req, res) => {
-    try {
-        const userId = req.user.id;
-        const { firstName, lastName, email } = req.body;
-
-        // Validation
-        if (!firstName || !lastName || !email) {
-            return res.status(400).json({ error: 'Missing required fields' });
-        }
-
-        // Check for email duplicates if email is being changed
-        if (email !== req.user.email) {
-            const existingUser = await prisma.user.findUnique({ where: { email } });
-            if (existingUser) {
-                return res.status(400).json({ error: 'Email already in use by another account' });
-            }
-        }
-
-        // Update user
-        const updatedUser = await prisma.user.update({
-            where: { id: userId },
-            data: { firstName, lastName, email }
-        });
-
-        // Re-issue JWT with updated info
-        const newToken = jwt.sign(
-            {
-                id: updatedUser.id,
-                email: updatedUser.email,
-                role: updatedUser.role,
-                firstName: updatedUser.firstName,
-                lastName: updatedUser.lastName,
-                department: updatedUser.department
-            },
-            JWT_SECRET,
-            { expiresIn: '24h' }
-        );
-
-        // Set HttpOnly cookie
-        res.cookie('token', newToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'Strict',
-            maxAge: 24 * 60 * 60 * 1000 // 24 hours
-        });
-
-        res.json({
-            message: 'Profile updated successfully',
-            user: {
-                id: updatedUser.id,
-                email: updatedUser.email,
-                firstName: updatedUser.firstName,
-                lastName: updatedUser.lastName,
-                role: updatedUser.role,
-                department: updatedUser.department
-            }
-        });
-    } catch (error) {
-        console.error('Update profile error:', error);
-        res.status(500).json({ error: 'Failed to update profile' });
     }
 });
 
