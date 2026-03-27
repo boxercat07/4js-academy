@@ -63,13 +63,12 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
 
 const corsOptions = {
     origin: (origin, callback) => {
-        // Allow only explicitly whitelisted origins.
-        // Requests with no Origin header (server-to-server, curl) are blocked here;
-        // they should use the API directly without credentials.
-        if (origin && allowedOrigins.includes(origin)) {
+        // Allow requests with no Origin header (direct browser navigation, static files)
+        // and requests from whitelisted origins.
+        if (!origin || allowedOrigins.includes(origin)) {
             callback(null, true);
         } else {
-            console.error('❌ CORS Blocked Origin:', origin || '(no origin)');
+            console.error('❌ CORS Blocked Origin:', origin);
             callback(new Error('CORS policy violation: origin not allowed'));
         }
     },
