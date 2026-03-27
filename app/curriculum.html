@@ -1,182 +1,202 @@
 <!doctype html>
 <html lang="en" class="dark">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Curriculum - Academy</title>
+        <!-- Tailwind CSS (Compiled) -->
+        <link href="dist/output.css" rel="stylesheet" />
+        <script src="video-utils.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+        <script src="components.js"></script>
+    </head>
 
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Curriculum - Academy</title>
-    <!-- Tailwind CSS (Compiled) -->
-    <link href="dist/output.css" rel="stylesheet">
-    <script src="video-utils.js"></script>
-    <script src="components.js"></script>
-</head>
+    <body class="page-transition">
+        <!-- Factored out Header Component -->
+        <learner-header></learner-header>
 
-<body class="page-transition">
-    <!-- Factored out Header Component -->
-    <learner-header></learner-header>
-
-    <main class="max-w-5xl mx-auto px-6 py-12">
-        <div class="mb-8">
-            <a href="tracks.html"
-                class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700 text-slate-400 hover:text-white hover:bg-slate-800 transition-all text-sm font-semibold group">
-                <span class="material-symbols-outlined text-lg group-hover:-translate-x-1 transition-transform">arrow_back</span>
-                Back to Track Selection
-            </a>
-        </div>
-        <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-3 font-display tracking-wider">
-            ACADEMY CURRICULUM
-        </h1>
-        <p class="text-slate-400 text-lg mb-10">
-            Advanced B2B training modules featuring interactive NotebookLM podcasts,
-            <br />
-            video masterclasses, and hands-on technical labs.
-        </p>
-
-        <!-- Track Tabs -->
-        <div class="flex gap-0 border-b border-slate-700 mb-10">
-            <button onclick="switchTrack('technical')" id="tab-tech"
-                class="px-6 py-3 text-sm font-bold tracking-wider border-b-2 border-primary text-white">
-                TECHNICAL TRACK
-            </button>
-            <button onclick="switchTrack('business')" id="tab-biz"
-                class="px-6 py-3 text-sm font-bold tracking-wider border-b-2 border-transparent text-slate-500 hover:text-white transition-colors">
-                BUSINESS TRACK
-            </button>
-        </div>
-
-        <!-- Module 1: Expanded -->
-        <div class="glass-card mb-6 overflow-hidden" id="mod1">
-            <div class="p-6 flex items-center justify-between cursor-pointer" onclick="toggleModule('mod1-content')">
-                <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
-                        <span class="material-symbols-outlined">slideshow</span>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-white text-lg font-display tracking-wider">
-                            MODULE 1: GENERATIVE FOUNDATIONS
-                        </h3>
-                        <p class="text-slate-400 text-sm">4 Lessons • 2h 30m Total</p>
-                    </div>
-                </div>
-                <span class="material-symbols-outlined text-slate-400 transition-transform" id="mod1-icon">
-                    expand_less
-                </span>
+        <main class="max-w-5xl mx-auto px-6 py-12">
+            <div class="mb-8">
+                <a
+                    href="tracks.html"
+                    class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-800/50 border border-slate-700 text-slate-400 hover:text-white hover:bg-slate-800 transition-all text-sm font-semibold group"
+                >
+                    <span class="material-symbols-outlined text-lg group-hover:-translate-x-1 transition-transform">
+                        arrow_back
+                    </span>
+                    Back to Track Selection
+                </a>
             </div>
-            <div id="mod1-content" class="px-6 pb-6 space-y-3">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-3 font-display tracking-wider">
+                ACADEMY CURRICULUM
+            </h1>
+            <p class="text-slate-400 text-lg mb-10">
+                Advanced B2B training modules featuring interactive NotebookLM podcasts,
+                <br />
+                video masterclasses, and hands-on technical labs.
+            </p>
+
+            <!-- Track Tabs -->
+            <div class="flex gap-0 border-b border-slate-700 mb-10">
+                <button
+                    onclick="switchTrack('technical')"
+                    id="tab-tech"
+                    class="px-6 py-3 text-sm font-bold tracking-wider border-b-2 border-primary text-white"
+                >
+                    TECHNICAL TRACK
+                </button>
+                <button
+                    onclick="switchTrack('business')"
+                    id="tab-biz"
+                    class="px-6 py-3 text-sm font-bold tracking-wider border-b-2 border-transparent text-slate-500 hover:text-white transition-colors"
+                >
+                    BUSINESS TRACK
+                </button>
+            </div>
+
+            <!-- Module 1: Expanded -->
+            <div class="glass-card mb-6 overflow-hidden" id="mod1">
                 <div
-                    class="flex items-center justify-between p-4 rounded-xl bg-slate-800/50 border border-slate-700/50">
+                    class="p-6 flex items-center justify-between cursor-pointer"
+                    onclick="toggleModule('mod1-content')"
+                >
                     <div class="flex items-center gap-4">
-                        <div
-                            class="w-8 h-8 rounded-full border-2 border-slate-600 flex items-center justify-center text-slate-400 text-xs font-bold">
-                            01
+                        <div class="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center text-primary">
+                            <span class="material-symbols-outlined">slideshow</span>
                         </div>
                         <div>
-                            <p class="text-white font-semibold">The Transformer Architecture Deep Dive</p>
-                            <span class="status-badge bg-green-500/10 text-green-400 text-[10px]">🎬 VIDEO</span>
-                            <span class="text-slate-500 text-xs ml-2">45 mins</span>
+                            <h3 class="font-bold text-white text-lg font-display tracking-wider">
+                                MODULE 1: GENERATIVE FOUNDATIONS
+                            </h3>
+                            <p class="text-slate-400 text-sm">4 Lessons • 2h 30m Total</p>
                         </div>
                     </div>
-                    <span class="material-symbols-outlined text-slate-500">play_arrow</span>
-                </div>
-                <div class="flex items-center justify-between p-4 rounded-xl bg-primary/5 border border-primary/20">
-                    <div class="flex items-center gap-4">
-                        <div
-                            class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-xs font-bold">
-                            02
-                        </div>
-                        <div>
-                            <p class="text-primary font-semibold">Evolution Podcast: NotebookLM Series</p>
-                            <span class="status-badge bg-primary/10 text-primary text-[10px]">
-                                🎙️ AUDIO/NOTEBOOKLM
-                            </span>
-                            <span class="text-slate-500 text-xs ml-2">22 mins</span>
-                        </div>
-                    </div>
-                    <span class="text-green-400 font-bold text-xs tracking-wider flex items-center gap-1">
-                        IN PROGRESS
-                        <span class="material-symbols-outlined text-sm">equalizer</span>
+                    <span class="material-symbols-outlined text-slate-400 transition-transform" id="mod1-icon">
+                        expand_less
                     </span>
                 </div>
-                <div
-                    class="flex items-center justify-between p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 opacity-60">
+                <div id="mod1-content" class="px-6 pb-6 space-y-3">
+                    <div
+                        class="flex items-center justify-between p-4 rounded-xl bg-slate-800/50 border border-slate-700/50"
+                    >
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-8 h-8 rounded-full border-2 border-slate-600 flex items-center justify-center text-slate-400 text-xs font-bold"
+                            >
+                                01
+                            </div>
+                            <div>
+                                <p class="text-white font-semibold">The Transformer Architecture Deep Dive</p>
+                                <span class="status-badge bg-green-500/10 text-green-400 text-[10px]">🎬 VIDEO</span>
+                                <span class="text-slate-500 text-xs ml-2">45 mins</span>
+                            </div>
+                        </div>
+                        <span class="material-symbols-outlined text-slate-500">play_arrow</span>
+                    </div>
+                    <div class="flex items-center justify-between p-4 rounded-xl bg-primary/5 border border-primary/20">
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-xs font-bold"
+                            >
+                                02
+                            </div>
+                            <div>
+                                <p class="text-primary font-semibold">Evolution Podcast: NotebookLM Series</p>
+                                <span class="status-badge bg-primary/10 text-primary text-[10px]">
+                                    🎙️ AUDIO/NOTEBOOKLM
+                                </span>
+                                <span class="text-slate-500 text-xs ml-2">22 mins</span>
+                            </div>
+                        </div>
+                        <span class="text-green-400 font-bold text-xs tracking-wider flex items-center gap-1">
+                            IN PROGRESS
+                            <span class="material-symbols-outlined text-sm">equalizer</span>
+                        </span>
+                    </div>
+                    <div
+                        class="flex items-center justify-between p-4 rounded-xl bg-slate-800/50 border border-slate-700/50 opacity-60"
+                    >
+                        <div class="flex items-center gap-4">
+                            <div
+                                class="w-8 h-8 rounded-full border-2 border-slate-700 flex items-center justify-center text-slate-500 text-xs font-bold"
+                            >
+                                03
+                            </div>
+                            <div>
+                                <p class="text-slate-300 font-semibold">Hands-on: Python API Connectivity</p>
+                                <span class="status-badge bg-slate-700 text-slate-400 text-[10px]">
+                                    &lt;/&gt; INTERACTIVE LAB
+                                </span>
+                                <span class="text-slate-600 text-xs ml-2">60 mins</span>
+                            </div>
+                        </div>
+                        <span class="material-symbols-outlined text-slate-600">lock</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Module 2 -->
+            <div class="glass-card mb-6 cursor-pointer" onclick="toggleModule('mod2-content')">
+                <div class="p-6 flex items-center justify-between">
                     <div class="flex items-center gap-4">
                         <div
-                            class="w-8 h-8 rounded-full border-2 border-slate-700 flex items-center justify-center text-slate-500 text-xs font-bold">
-                            03
+                            class="w-10 h-10 rounded-lg bg-slate-700/50 flex items-center justify-center text-slate-400"
+                        >
+                            <span class="material-symbols-outlined">settings</span>
                         </div>
                         <div>
-                            <p class="text-slate-300 font-semibold">Hands-on: Python API Connectivity</p>
-                            <span class="status-badge bg-slate-700 text-slate-400 text-[10px]">
-                                &lt;/&gt; INTERACTIVE LAB
-                            </span>
-                            <span class="text-slate-600 text-xs ml-2">60 mins</span>
+                            <h3 class="font-bold text-slate-300 text-lg font-display tracking-wider">
+                                MODULE 2: ADVANCED PROMPT ENGINEERING
+                            </h3>
+                            <p class="text-slate-500 text-sm">6 Lessons • 4h 15m Total</p>
                         </div>
                     </div>
-                    <span class="material-symbols-outlined text-slate-600">lock</span>
+                    <span class="material-symbols-outlined text-slate-500">expand_more</span>
+                </div>
+                <div id="mod2-content" class="hidden px-6 pb-6">
+                    <p class="text-slate-500 italic">Content coming soon...</p>
                 </div>
             </div>
-        </div>
 
-        <!-- Module 2 -->
-        <div class="glass-card mb-6 cursor-pointer" onclick="toggleModule('mod2-content')">
-            <div class="p-6 flex items-center justify-between">
-                <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-lg bg-slate-700/50 flex items-center justify-center text-slate-400">
-                        <span class="material-symbols-outlined">settings</span>
+            <!-- Module 3 -->
+            <div class="glass-card mb-6 cursor-pointer" onclick="toggleModule('mod3-content')">
+                <div class="p-6 flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div
+                            class="w-10 h-10 rounded-lg bg-slate-700/50 flex items-center justify-center text-slate-400"
+                        >
+                            <span class="material-symbols-outlined">hub</span>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-300 text-lg font-display tracking-wider">
+                                MODULE 3: RAG ARCHITECTURES & VECTOR DBS
+                            </h3>
+                            <p class="text-slate-500 text-sm">5 Lessons • 3h 45m Total</p>
+                        </div>
                     </div>
-                    <div>
-                        <h3 class="font-bold text-slate-300 text-lg font-display tracking-wider">
-                            MODULE 2: ADVANCED PROMPT ENGINEERING
-                        </h3>
-                        <p class="text-slate-500 text-sm">6 Lessons • 4h 15m Total</p>
-                    </div>
+                    <span class="material-symbols-outlined text-slate-500">expand_more</span>
                 </div>
-                <span class="material-symbols-outlined text-slate-500">expand_more</span>
-            </div>
-            <div id="mod2-content" class="hidden px-6 pb-6">
-                <p class="text-slate-500 italic">Content coming soon...</p>
-            </div>
-        </div>
-
-        <!-- Module 3 -->
-        <div class="glass-card mb-6 cursor-pointer" onclick="toggleModule('mod3-content')">
-            <div class="p-6 flex items-center justify-between">
-                <div class="flex items-center gap-4">
-                    <div class="w-10 h-10 rounded-lg bg-slate-700/50 flex items-center justify-center text-slate-400">
-                        <span class="material-symbols-outlined">hub</span>
-                    </div>
-                    <div>
-                        <h3 class="font-bold text-slate-300 text-lg font-display tracking-wider">
-                            MODULE 3: RAG ARCHITECTURES & VECTOR DBS
-                        </h3>
-                        <p class="text-slate-500 text-sm">5 Lessons • 3h 45m Total</p>
-                    </div>
+                <div id="mod3-content" class="hidden px-6 pb-6">
+                    <p class="text-slate-500 italic">Content coming soon...</p>
                 </div>
-                <span class="material-symbols-outlined text-slate-500">expand_more</span>
             </div>
-            <div id="mod3-content" class="hidden px-6 pb-6">
-                <p class="text-slate-500 italic">Content coming soon...</p>
-            </div>
-        </div>
+        </main>
 
-    </main>
-
-    <script>
-        function toggleModule(id) {
-            const el = document.getElementById(id);
-            el.classList.toggle('hidden');
-        }
-        function switchTrack(t) {
-            document.getElementById('tab-tech').classList.toggle('border-primary', t === 'technical');
-            document.getElementById('tab-tech').classList.toggle('text-white', t === 'technical');
-            document.getElementById('tab-tech').classList.toggle('border-transparent', t === 'business');
-            document.getElementById('tab-tech').classList.toggle('text-slate-500', t === 'business');
-            document.getElementById('tab-biz').classList.toggle('border-primary', t === 'business');
-            document.getElementById('tab-biz').classList.toggle('text-white', t === 'business');
-            document.getElementById('tab-biz').classList.toggle('border-transparent', t === 'technical');
-            document.getElementById('tab-biz').classList.toggle('text-slate-500', t === 'technical');
-        }
-    </script>
-</body>
-
+        <script>
+            function toggleModule(id) {
+                const el = document.getElementById(id);
+                el.classList.toggle('hidden');
+            }
+            function switchTrack(t) {
+                document.getElementById('tab-tech').classList.toggle('border-primary', t === 'technical');
+                document.getElementById('tab-tech').classList.toggle('text-white', t === 'technical');
+                document.getElementById('tab-tech').classList.toggle('border-transparent', t === 'business');
+                document.getElementById('tab-tech').classList.toggle('text-slate-500', t === 'business');
+                document.getElementById('tab-biz').classList.toggle('border-primary', t === 'business');
+                document.getElementById('tab-biz').classList.toggle('text-white', t === 'business');
+                document.getElementById('tab-biz').classList.toggle('border-transparent', t === 'technical');
+                document.getElementById('tab-biz').classList.toggle('text-slate-500', t === 'technical');
+            }
+        </script>
+    </body>
 </html>

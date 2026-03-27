@@ -5,7 +5,7 @@ const prisma = require('../prisma');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { verifyToken, verifyAdmin, JWT_SECRET } = require('../middleware/auth');
-const { validateEmail, validatePassword } = require('../utils/validation');
+const { validateEmail, validatePassword, sanitizeInput } = require('../utils/validation');
 const { auditLog } = require('../utils/auditLog');
 
 const router = express.Router();
@@ -167,7 +167,11 @@ router.get('/tracks', async (req, res) => {
 // POST /api/users - Create a new employee (Admin only)
 router.post('/', verifyToken, verifyAdmin, async (req, res) => {
     try {
-        const { firstName, lastName, email, password, trackIds, role, department } = req.body;
+        const firstName = sanitizeInput(req.body.firstName);
+        const lastName = sanitizeInput(req.body.lastName);
+        const email = (req.body.email || '').trim();
+        const { password, trackIds, role, department: rawDepartment } = req.body;
+        const department = sanitizeInput(rawDepartment);
 
         // Basic validation
         if (!firstName || !lastName || !email) {
@@ -369,7 +373,11 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
 
     try {
         const { id } = req.params;
-        const { firstName, lastName, email, trackIds, role, department, password } = req.body;
+        const firstName = sanitizeInput(req.body.firstName);
+        const lastName = sanitizeInput(req.body.lastName);
+        const email = (req.body.email || '').trim();
+        const department = sanitizeInput(req.body.department);
+        const { trackIds, role, password } = req.body;
 
         log(
             `Payload received: ${JSON.stringify({ firstName, lastName, email, role, department, trackIds, hasPassword: !!password })}`

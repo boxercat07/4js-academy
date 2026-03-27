@@ -1,246 +1,276 @@
 <!doctype html>
 <html lang="en" class="dark">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Security Audit Logs - Admin Dashboard</title>
-    <!-- Tailwind CSS (Compiled) -->
-    <link href="dist/output.css" rel="stylesheet">
-    <script src="video-utils.js"></script>
-    <script src="components.js"></script>
-</head>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Security Audit Logs - Admin Dashboard</title>
+        <!-- Tailwind CSS (Compiled) -->
+        <link href="dist/output.css" rel="stylesheet" />
+        <script src="video-utils.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+        <script src="components.js"></script>
+    </head>
 
-<body class="page-transition">
-    <admin-header></admin-header>
-    <div class="flex h-[calc(100vh-60px)] overflow-hidden">
-        <!-- Sidebar -->
-        <admin-sidebar active-page="audit"></admin-sidebar>
+    <body class="page-transition">
+        <admin-header></admin-header>
+        <div class="flex h-[calc(100vh-60px)] overflow-hidden">
+            <!-- Sidebar -->
+            <admin-sidebar active-page="audit"></admin-sidebar>
 
-        <main class="flex-1 px-6 py-8 overflow-y-auto bg-background-dark">
-            <!-- Page Header -->
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
-                <div>
-                    <h1 class="text-4xl font-extrabold text-white mb-2 font-display tracking-tight uppercase">Audit Logs</h1>
-                    <p class="text-slate-400 text-sm font-medium">🔐 Security Event Tracking</p>
-                </div>
-                <div class="flex items-center gap-4 mt-4 md:mt-0">
-                    <button class="btn-outline text-sm px-4 py-2" onclick="refreshLogs()">↻ Refresh</button>
-                    <button class="btn-outline text-sm px-4 py-2" onclick="exportLogs()">↓ Export</button>
-                </div>
-            </div>
-
-            <!-- Filter Section -->
-            <div class="glass-card p-6 mb-8">
-                <h3 class="font-bold text-white mb-4">Filters</h3>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                    <div class="filter-group">
-                        <label for="filter-days" class="block text-xs font-bold text-slate-300 mb-2 uppercase">Days</label>
-                        <select id="filter-days" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-primary">
-                            <option value="1">Last 1 Day</option>
-                            <option value="7">Last 7 Days</option>
-                            <option value="30" selected>Last 30 Days</option>
-                            <option value="90">Last 90 Days</option>
-                            <option value="365">Last Year</option>
-                        </select>
+            <main class="flex-1 px-6 py-8 overflow-y-auto bg-background-dark">
+                <!-- Page Header -->
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+                    <div>
+                        <h1 class="text-4xl font-extrabold text-white mb-2 font-display tracking-tight uppercase">
+                            Audit Logs
+                        </h1>
+                        <p class="text-slate-400 text-sm font-medium">🔐 Security Event Tracking</p>
                     </div>
-                    <div class="filter-group">
-                        <label for="filter-action" class="block text-xs font-bold text-slate-300 mb-2 uppercase">Action</label>
-                        <select id="filter-action" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-primary">
-                            <option value="">All Actions</option>
-                            <option value="LOGIN">LOGIN</option>
-                            <option value="LOGOUT">LOGOUT</option>
-                            <option value="UPDATE_PROFILE">UPDATE_PROFILE</option>
-                            <option value="CHANGE_PASSWORD">CHANGE_PASSWORD</option>
-                            <option value="ACCESS_DENIED">ACCESS_DENIED</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="filter-status" class="block text-xs font-bold text-slate-300 mb-2 uppercase">Status</label>
-                        <select id="filter-status" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-primary">
-                            <option value="">All Status</option>
-                            <option value="SUCCESS">SUCCESS</option>
-                            <option value="FAILED">FAILED</option>
-                            <option value="BLOCKED">BLOCKED</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <label for="filter-limit" class="block text-xs font-bold text-slate-300 mb-2 uppercase">Results</label>
-                        <select id="filter-limit" class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-primary">
-                            <option value="10">10 per page</option>
-                            <option value="25">25 per page</option>
-                            <option value="50" selected>50 per page</option>
-                            <option value="100">100 per page</option>
-                        </select>
-                    </div>
-                    <div class="flex items-end">
-                        <button onclick="applyFilters()" class="w-full bg-primary hover:bg-primaryHover text-white font-bold py-2 px-4 rounded-lg transition">
-                            Apply
-                        </button>
+                    <div class="flex items-center gap-4 mt-4 md:mt-0">
+                        <button class="btn-outline text-sm px-4 py-2" onclick="refreshLogs()">↻ Refresh</button>
+                        <button class="btn-outline text-sm px-4 py-2" onclick="exportLogs()">↓ Export</button>
                     </div>
                 </div>
-            </div>
 
-            <!-- Statistics Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="glass-card p-5">
-                    <p class="text-slate-400 text-xs font-bold uppercase mb-2">Total Events</p>
-                    <p class="text-4xl font-extrabold text-primary" id="stat-total">0</p>
-                    <p class="text-slate-500 text-xs mt-2">in selected period</p>
+                <!-- Filter Section -->
+                <div class="glass-card p-6 mb-8">
+                    <h3 class="font-bold text-white mb-4">Filters</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                        <div class="filter-group">
+                            <label for="filter-days" class="block text-xs font-bold text-slate-300 mb-2 uppercase">
+                                Days
+                            </label>
+                            <select
+                                id="filter-days"
+                                class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-primary"
+                            >
+                                <option value="1">Last 1 Day</option>
+                                <option value="7">Last 7 Days</option>
+                                <option value="30" selected>Last 30 Days</option>
+                                <option value="90">Last 90 Days</option>
+                                <option value="365">Last Year</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="filter-action" class="block text-xs font-bold text-slate-300 mb-2 uppercase">
+                                Action
+                            </label>
+                            <select
+                                id="filter-action"
+                                class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-primary"
+                            >
+                                <option value="">All Actions</option>
+                                <option value="LOGIN">LOGIN</option>
+                                <option value="LOGOUT">LOGOUT</option>
+                                <option value="UPDATE_PROFILE">UPDATE_PROFILE</option>
+                                <option value="CHANGE_PASSWORD">CHANGE_PASSWORD</option>
+                                <option value="ACCESS_DENIED">ACCESS_DENIED</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="filter-status" class="block text-xs font-bold text-slate-300 mb-2 uppercase">
+                                Status
+                            </label>
+                            <select
+                                id="filter-status"
+                                class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-primary"
+                            >
+                                <option value="">All Status</option>
+                                <option value="SUCCESS">SUCCESS</option>
+                                <option value="FAILED">FAILED</option>
+                                <option value="BLOCKED">BLOCKED</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="filter-limit" class="block text-xs font-bold text-slate-300 mb-2 uppercase">
+                                Results
+                            </label>
+                            <select
+                                id="filter-limit"
+                                class="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-primary"
+                            >
+                                <option value="10">10 per page</option>
+                                <option value="25">25 per page</option>
+                                <option value="50" selected>50 per page</option>
+                                <option value="100">100 per page</option>
+                            </select>
+                        </div>
+                        <div class="flex items-end">
+                            <button
+                                onclick="applyFilters()"
+                                class="w-full bg-primary hover:bg-primaryHover text-white font-bold py-2 px-4 rounded-lg transition"
+                            >
+                                Apply
+                            </button>
+                        </div>
+                    </div>
                 </div>
-                <div class="glass-card p-5">
-                    <p class="text-slate-400 text-xs font-bold uppercase mb-2">Failed Attempts</p>
-                    <p class="text-4xl font-extrabold text-red-400" id="stat-failed">0</p>
-                    <p class="text-slate-500 text-xs mt-2">login failures</p>
+
+                <!-- Statistics Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                    <div class="glass-card p-5">
+                        <p class="text-slate-400 text-xs font-bold uppercase mb-2">Total Events</p>
+                        <p class="text-4xl font-extrabold text-primary" id="stat-total">0</p>
+                        <p class="text-slate-500 text-xs mt-2">in selected period</p>
+                    </div>
+                    <div class="glass-card p-5">
+                        <p class="text-slate-400 text-xs font-bold uppercase mb-2">Failed Attempts</p>
+                        <p class="text-4xl font-extrabold text-red-400" id="stat-failed">0</p>
+                        <p class="text-slate-500 text-xs mt-2">login failures</p>
+                    </div>
+                    <div class="glass-card p-5">
+                        <p class="text-slate-400 text-xs font-bold uppercase mb-2">Last Activity</p>
+                        <p class="text-lg font-bold text-slate-100" id="stat-last">Never</p>
+                        <p class="text-slate-500 text-xs mt-2">recent event</p>
+                    </div>
                 </div>
-                <div class="glass-card p-5">
-                    <p class="text-slate-400 text-xs font-bold uppercase mb-2">Last Activity</p>
-                    <p class="text-lg font-bold text-slate-100" id="stat-last">Never</p>
-                    <p class="text-slate-500 text-xs mt-2">recent event</p>
+
+                <!-- Audit Logs Table -->
+                <div class="glass-card p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-white">Audit Events</h3>
+                        <span class="text-slate-400 text-sm">Auto-refreshes every 60s</span>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm">
+                            <thead>
+                                <tr class="border-b border-slate-700">
+                                    <th class="text-left py-3 px-4 font-bold text-slate-300">Timestamp</th>
+                                    <th class="text-left py-3 px-4 font-bold text-slate-300">User</th>
+                                    <th class="text-left py-3 px-4 font-bold text-slate-300">Action</th>
+                                    <th class="text-left py-3 px-4 font-bold text-slate-300">Status</th>
+                                    <th class="text-left py-3 px-4 font-bold text-slate-300">IP Address</th>
+                                    <th class="text-left py-3 px-4 font-bold text-slate-300">Details</th>
+                                </tr>
+                            </thead>
+                            <tbody id="logs-tbody">
+                                <tr>
+                                    <td colspan="6" class="text-center py-8 text-slate-400">Loading audit logs...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-            </div>
+            </main>
+        </div>
 
-            <!-- Audit Logs Table -->
-            <div class="glass-card p-6">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-white">Audit Events</h3>
-                    <span class="text-slate-400 text-sm">Auto-refreshes every 60s</span>
-                </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm">
-                        <thead>
-                            <tr class="border-b border-slate-700">
-                                <th class="text-left py-3 px-4 font-bold text-slate-300">Timestamp</th>
-                                <th class="text-left py-3 px-4 font-bold text-slate-300">User</th>
-                                <th class="text-left py-3 px-4 font-bold text-slate-300">Action</th>
-                                <th class="text-left py-3 px-4 font-bold text-slate-300">Status</th>
-                                <th class="text-left py-3 px-4 font-bold text-slate-300">IP Address</th>
-                                <th class="text-left py-3 px-4 font-bold text-slate-300">Details</th>
-                            </tr>
-                        </thead>
-                        <tbody id="logs-tbody">
-                            <tr>
-                                <td colspan="6" class="text-center py-8 text-slate-400">Loading audit logs...</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </main>
-    </div>
+        <style>
+            .badge-success {
+                background: rgba(34, 197, 94, 0.2);
+                color: #86efac;
+            }
 
-    <style>
-        .badge-success {
-            background: rgba(34, 197, 94, 0.2);
-            color: #86efac;
-        }
+            .badge-failed {
+                background: rgba(239, 68, 68, 0.2);
+                color: #fca5a5;
+            }
 
-        .badge-failed {
-            background: rgba(239, 68, 68, 0.2);
-            color: #fca5a5;
-        }
+            .badge-blocked {
+                background: rgba(250, 204, 21, 0.2);
+                color: #fde047;
+            }
 
-        .badge-blocked {
-            background: rgba(250, 204, 21, 0.2);
-            color: #fde047;
-        }
+            .expandable-details {
+                cursor: pointer;
+                opacity: 0.7;
+                transition: opacity 0.2s;
+            }
 
-        .expandable-details {
-            cursor: pointer;
-            opacity: 0.7;
-            transition: opacity 0.2s;
-        }
+            .expandable-details:hover {
+                opacity: 1;
+            }
 
-        .expandable-details:hover {
-            opacity: 1;
-        }
+            .detail-row {
+                display: none;
+            }
 
-        .detail-row {
-            display: none;
-        }
+            .detail-row.show {
+                display: table-row;
+                background: rgba(0, 0, 0, 0.3);
+            }
 
-        .detail-row.show {
-            display: table-row;
-            background: rgba(0, 0, 0, 0.3);
-        }
+            .detail-content {
+                padding: 15px;
+                border-top: 1px solid rgba(255, 255, 255, 0.1);
+            }
 
-        .detail-content {
-            padding: 15px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-        }
+            pre {
+                background: #1e293b;
+                padding: 10px;
+                border-radius: 6px;
+                overflow-x: auto;
+                font-size: 12px;
+                max-width: 100%;
+            }
+        </style>
 
-        pre {
-            background: #1e293b;
-            padding: 10px;
-            border-radius: 6px;
-            overflow-x: auto;
-            font-size: 12px;
-            max-width: 100%;
-        }
-    </style>
+        <script>
+            async function applyFilters() {
+                await loadAuditLogs();
+            }
 
-    <script>
-        async function applyFilters() {
-            await loadAuditLogs();
-        }
+            async function loadAuditLogs() {
+                const days = document.getElementById('filter-days').value;
+                const action = document.getElementById('filter-action').value;
+                const status = document.getElementById('filter-status').value;
+                const limit = document.getElementById('filter-limit').value;
 
-        async function loadAuditLogs() {
-            const days = document.getElementById('filter-days').value;
-            const action = document.getElementById('filter-action').value;
-            const status = document.getElementById('filter-status').value;
-            const limit = document.getElementById('filter-limit').value;
+                try {
+                    let url = `/api/admin/audit-logs?days=${days}&limit=${limit}`;
+                    if (action) url += `&action=${action}`;
+                    if (status) url += `&status=${status}`;
 
-            try {
-                let url = `/api/admin/audit-logs?days=${days}&limit=${limit}`;
-                if (action) url += `&action=${action}`;
-                if (status) url += `&status=${status}`;
+                    const response = await fetch(url);
+                    if (!response.ok) throw new Error('Failed to load audit logs');
 
-                const response = await fetch(url);
-                if (!response.ok) throw new Error('Failed to load audit logs');
-
-                const data = await response.json();
-                renderLogs(data.logs);
-                updateStats(data.logs);
-
-            } catch (err) {
-                console.error('Error loading logs:', err);
-                document.getElementById('logs-tbody').innerHTML = `
+                    const data = await response.json();
+                    renderLogs(data.logs);
+                    updateStats(data.logs);
+                } catch (err) {
+                    console.error('Error loading logs:', err);
+                    document.getElementById('logs-tbody').innerHTML = `
                     <tr>
                         <td colspan="6" class="text-center py-4 text-red-400">❌ Error loading logs: ${err.message}</td>
                     </tr>
                 `;
+                }
             }
-        }
 
-        function updateStats(logs) {
-            const total = logs.length;
-            const failed = logs.filter(l => l.status === 'FAILED').length;
-            const lastActivity = logs.length > 0 ? new Date(logs[0].createdAt).toLocaleString() : 'Never';
+            function updateStats(logs) {
+                const total = logs.length;
+                const failed = logs.filter(l => l.status === 'FAILED').length;
+                const lastActivity = logs.length > 0 ? new Date(logs[0].createdAt).toLocaleString() : 'Never';
 
-            document.getElementById('stat-total').textContent = total;
-            document.getElementById('stat-failed').textContent = failed;
-            document.getElementById('stat-last').textContent = lastActivity;
-        }
+                document.getElementById('stat-total').textContent = total;
+                document.getElementById('stat-failed').textContent = failed;
+                document.getElementById('stat-last').textContent = lastActivity;
+            }
 
-        function renderLogs(logs) {
-            const tbody = document.getElementById('logs-tbody');
-            
-            if (logs.length === 0) {
-                tbody.innerHTML = `
+            function renderLogs(logs) {
+                const tbody = document.getElementById('logs-tbody');
+
+                if (logs.length === 0) {
+                    tbody.innerHTML = `
                     <tr>
                         <td colspan="6" class="text-center py-8 text-slate-400">No audit logs found</td>
                     </tr>
                 `;
-                return;
-            }
+                    return;
+                }
 
-            tbody.innerHTML = logs.map(log => {
-                const timestamp = new Date(log.createdAt).toLocaleString();
-                const statusClass = log.status === 'SUCCESS' ? 'badge-success' : 
-                                   log.status === 'FAILED' ? 'badge-failed' : 'badge-blocked';
-                
-                const detailsRowId = `detail-row-${log.id}`;
+                tbody.innerHTML = logs
+                    .map(log => {
+                        const timestamp = new Date(log.createdAt).toLocaleString();
+                        const statusClass =
+                            log.status === 'SUCCESS'
+                                ? 'badge-success'
+                                : log.status === 'FAILED'
+                                  ? 'badge-failed'
+                                  : 'badge-blocked';
 
-                return `
+                        const detailsRowId = `detail-row-${log.id}`;
+
+                        return `
                     <tr class="border-b border-slate-700 hover:bg-slate-800/50 transition">
                         <td class="py-3 px-4">${timestamp}</td>
                         <td class="py-3 px-4 text-slate-200">${log.user?.email || 'Unknown'}</td>
@@ -265,47 +295,48 @@
                         </td>
                     </tr>
                 `;
-            }).join('');
-        }
+                    })
+                    .join('');
+            }
 
-        function toggleDetails(rowId) {
-            const row = document.getElementById(rowId);
-            row.classList.toggle('show');
-        }
+            function toggleDetails(rowId) {
+                const row = document.getElementById(rowId);
+                row.classList.toggle('show');
+            }
 
-        function refreshLogs() {
-            applyFilters();
-        }
+            function refreshLogs() {
+                applyFilters();
+            }
 
-        function exportLogs() {
-            const logs = Array.from(document.querySelectorAll('#logs-tbody tr'))
-                .filter(tr => !tr.id.startsWith('detail-row-'))
-                .map(tr => ({
-                    timestamp: tr.cells[0]?.textContent?.trim() || '',
-                    user: tr.cells[1]?.textContent?.trim() || '',
-                    action: tr.cells[2]?.textContent?.trim() || '',
-                    status: tr.cells[3]?.textContent?.trim() || '',
-                    ip: tr.cells[4]?.textContent?.trim() || ''
-                }));
+            function exportLogs() {
+                const logs = Array.from(document.querySelectorAll('#logs-tbody tr'))
+                    .filter(tr => !tr.id.startsWith('detail-row-'))
+                    .map(tr => ({
+                        timestamp: tr.cells[0]?.textContent?.trim() || '',
+                        user: tr.cells[1]?.textContent?.trim() || '',
+                        action: tr.cells[2]?.textContent?.trim() || '',
+                        status: tr.cells[3]?.textContent?.trim() || '',
+                        ip: tr.cells[4]?.textContent?.trim() || ''
+                    }));
 
-            const csv = ['Timestamp,User,Action,Status,IP'].concat(
-                logs.map(l => `"${l.timestamp}","${l.user}","${l.action}","${l.status}","${l.ip}"`)
-            ).join('\n');
+                const csv = ['Timestamp,User,Action,Status,IP']
+                    .concat(logs.map(l => `"${l.timestamp}","${l.user}","${l.action}","${l.status}","${l.ip}"`))
+                    .join('\n');
 
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `audit-logs-${new Date().toISOString()}.csv`;
-            a.click();
-            window.URL.revokeObjectURL(url);
-        }
+                const blob = new Blob([csv], { type: 'text/csv' });
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `audit-logs-${new Date().toISOString()}.csv`;
+                a.click();
+                window.URL.revokeObjectURL(url);
+            }
 
-        // Auto-refresh every 60 seconds
-        setInterval(loadAuditLogs, 60000);
+            // Auto-refresh every 60 seconds
+            setInterval(loadAuditLogs, 60000);
 
-        // Initial load
-        loadAuditLogs();
-    </script>
-</body>
+            // Initial load
+            loadAuditLogs();
+        </script>
+    </body>
 </html>

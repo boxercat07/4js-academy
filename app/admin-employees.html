@@ -7,6 +7,7 @@
         <title>Employee Management - Academy Admin</title>
         <!-- Tailwind CSS (Compiled) -->
         <link href="dist/output.css" rel="stylesheet" />
+        <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
         <script src="components.js"></script>
     </head>
 
@@ -744,12 +745,12 @@
                                 <div class="flex items-center gap-3">
                                     <div class="w-8 h-8 rounded-full bg-slate-700/50 flex items-center justify-center text-slate-300 text-xs font-bold">${initials}</div>
                                     <div>
-                                        <p class="text-white font-semibold emp-name flex items-center">${emp.name}${adminTag}</p>
-                                        <p class="text-slate-500 text-xs emp-email">${emp.email}</p>
+                                        <p class="text-white font-semibold emp-name flex items-center">${sanitizeText(emp.name)}${adminTag}</p>
+                                        <p class="text-slate-500 text-xs emp-email">${sanitizeText(emp.email)}</p>
                                     </div>
                                 </div>
                             </td>
-                            <td class="p-4 text-slate-400 font-medium">${emp.department || 'Other'}</td>
+                            <td class="p-4 text-slate-400 font-medium">${sanitizeText(emp.department || 'Other')}</td>
                             <td class="p-4">
                                 <select onchange="updateRowProgress('${emp.id}', this.value)" 
                                     class="bg-slate-800/50 border border-slate-700 rounded px-2 py-1 text-xs text-slate-300 focus:outline-none focus:border-primary w-full max-w-[140px]">
@@ -772,11 +773,11 @@
                                 
                                 <!-- Dropdown Menu -->
                                 <div id="action-menu-${emp.id}" class="hidden absolute right-4 top-10 w-48 bg-[#1e293b] border border-slate-700 rounded-lg shadow-xl z-50 overflow-hidden">
-                                    <button onclick="openEditModal('${emp.id}', '${emp.firstName || ''}', '${emp.lastName || ''}', '${emp.email}', ${JSON.stringify(emp.tracks.map(t => t.id)).replace(/"/g, '&quot;')}, '${emp.role || 'LEARNER'}', '${emp.department || 'Other'}')" class="w-full text-left px-4 py-2 text-sm text-slate-300 hover:bg-slate-700 hover:text-white flex items-center gap-2">
+                                    <button onclick="openEditModal(${JSON.stringify(emp.id).replace(/"/g, '&quot;')}, ${JSON.stringify(emp.firstName || '').replace(/"/g, '&quot;')}, ${JSON.stringify(emp.lastName || '').replace(/"/g, '&quot;')}, ${JSON.stringify(emp.email).replace(/"/g, '&quot;')}, ${JSON.stringify(emp.tracks.map(t => t.id)).replace(/"/g, '&quot;')}, ${JSON.stringify(emp.role || 'LEARNER').replace(/"/g, '&quot;')}, ${JSON.stringify(emp.department || 'Other').replace(/"/g, '&quot;')})" class="w-full text-left px-4 py-2 text-sm text-slate-300 hover:bg-slate-700 hover:text-white flex items-center gap-2">
                                         <span class="material-symbols-outlined text-[16px]">edit</span> Edit & Assign Role
                                     </button>
                                     <div class="h-px bg-slate-700/50 w-full"></div>
-                                    <button onclick="deleteUser('${emp.id}', '${emp.name}', '${emp.role}')" class="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 flex items-center gap-2">
+                                    <button onclick="deleteUser(${JSON.stringify(emp.id).replace(/"/g, '&quot;')}, ${JSON.stringify(emp.name).replace(/"/g, '&quot;')}, ${JSON.stringify(emp.role).replace(/"/g, '&quot;')})" class="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 flex items-center gap-2">
                                         <span class="material-symbols-outlined text-[16px]">delete</span> Delete Employee
                                     </button>
                                 </div>

@@ -147,3 +147,12 @@ vite.config.ts.timestamp-*
 
 # Backups
 .backup-*/
+
+# Sensitive files that must never be committed
+tmp/
+*.db
+*.sqlite
+*.sqlite3
+server_debug.log
+server_output.log
+*.log

@@ -30,9 +30,13 @@ const cookieParser = require('cookie-parser');
 const prisma = require('./prisma');
 const path = require('path');
 const rateLimit = require('express-rate-limit');
+const { verifyToken } = require('./middleware/auth');
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+// Trust the first proxy hop (required for correct IP-based rate limiting on Render/Heroku)
+app.set('trust proxy', 1);
 
 // Rate Limiting
 const generalLimiter = rateLimit({
@@ -162,7 +166,7 @@ app.use((req, res, next) => {
             // Verify token using the same secret (we'll require it from auth middleware)
             const { JWT_SECRET } = require('./middleware/auth');
             const jwt = require('jsonwebtoken');
-            const decoded = jwt.verify(token, JWT_SECRET);
+            const decoded = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] });
 
             // If trying to access admin pages, check role
             if ((req.path.startsWith('/admin-') || req.path === '/technical-track.html') && decoded.role !== 'ADMIN') {
@@ -231,7 +235,7 @@ app.use('/api', (err, req, res, next) => {
 });
 
 // Proxy route for Quiz JSON to bypass CORS for R2
-app.get('/api/proxy/quiz', async (req, res) => {
+app.get('/api/proxy/quiz', verifyToken, async (req, res) => {
     try {
         const { url } = req.query;
         if (!url) return res.status(400).json({ error: 'URL is required' });
@@ -256,7 +260,7 @@ app.get('/api/proxy/quiz', async (req, res) => {
         res.json(data);
     } catch (error) {
         console.error('[Proxy] Error:', error.message);
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: 'Failed to fetch quiz data.' });
     }
 });
 

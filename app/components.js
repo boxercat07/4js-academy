@@ -14,7 +14,12 @@ const CONTENT_TYPE_CONFIG = window.CONTENT_TYPE_CONFIG;
 
 // // Security: DOMPurify Sanitization Helpers
 const sanitizeHTML = (content, config = {}) => {
-    if (!window.DOMPurify) return content;
+    if (!window.DOMPurify) {
+        // DOMPurify not loaded — strip all tags as a safe fallback
+        const div = document.createElement('div');
+        div.textContent = content;
+        return div.innerHTML;
+    }
     const defaultConfig = {
         ADD_TAGS: ['iframe'],
         ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'scrolling', 'target', 'class', 'style', 'src']
