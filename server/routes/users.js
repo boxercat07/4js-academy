@@ -480,6 +480,14 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
             return res.status(404).json({ error: 'User not found' });
         }
 
+        // Prevent demoting the last admin account
+        if (oldUser.role === 'ADMIN' && role && role !== 'ADMIN') {
+            const adminCount = await prisma.user.count({ where: { role: 'ADMIN' } });
+            if (adminCount <= 1) {
+                return res.status(400).json({ error: 'Cannot change role: this is the last administrator account.' });
+            }
+        }
+
         log('Executing database update...');
         let updatedUser;
         try {

@@ -3,6 +3,8 @@ const prisma = require('../prisma');
 const { verifyToken, verifyAdmin } = require('../middleware/auth');
 const { deleteFileByUrl } = require('../utils/fileCleanup');
 const { sanitizeInput, validateLength } = require('../utils/validation');
+
+const isUuid = id => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
 const { auditLog } = require('../utils/auditLog');
 
 const router = express.Router();
@@ -398,7 +400,11 @@ router.post('/:id/publish', verifyToken, verifyAdmin, async (req, res) => {
                 if (blobUrl && !blobUrl.startsWith('blob:') && blobUrl !== '#') {
                     mediaUrl = blobUrl;
                 } else if (fileId) {
-                    mediaUrl = `local:${fileId}${item['success-threshold'] ? `|${item['success-threshold']}` : ''}`;
+                    if (!isUuid(fileId)) {
+                        console.warn(`[Publish] Skipping invalid fileId (not a UUID): ${fileId}`);
+                    } else {
+                        mediaUrl = `local:${fileId}${item['success-threshold'] ? `|${item['success-threshold']}` : ''}`;
+                    }
                 } else {
                     mediaUrl = item['video-id'] || blobUrl || '';
                 }
