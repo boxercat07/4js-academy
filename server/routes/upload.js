@@ -90,9 +90,17 @@ function validateMagicBytes(buffer, ext) {
         case '.wav':
             return check([0x52, 0x49, 0x46, 0x46]) && check([0x57, 0x41, 0x56, 0x45], 8);
         case '.svg': {
-            // SVG is text-based: reject if it contains embedded scripts
-            const text = buffer.toString('utf8', 0, Math.min(buffer.length, 8192));
-            return !/<script/i.test(text);
+            // SVG is text-based: scan the ENTIRE file for all known XSS vectors
+            const text = buffer.toString('utf8');
+            // Block <script> tags (with any attributes or whitespace before >)
+            if (/<script[\s>]/i.test(text)) return false;
+            // Block inline event handlers: onload=, onerror=, onclick=, onmouseover=, etc.
+            if (/\bon\w+\s*=/i.test(text)) return false;
+            // Block javascript: URIs in href / src / xlink:href
+            if (/\b(?:href|src|xlink:href)\s*=\s*["']?\s*javascript:/i.test(text)) return false;
+            // Block data: URIs in href / src / xlink:href (can embed scripts)
+            if (/\b(?:href|src|xlink:href)\s*=\s*["']?\s*data:/i.test(text)) return false;
+            return true;
         }
         case '.txt':
         case '.json':
