@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const prisma = require('../prisma');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -9,7 +10,7 @@ if (!JWT_SECRET || JWT_SECRET.length < 32) {
 }
 
 // Middleware to verify JWT token from HTTP-only cookie
-const verifyToken = (req, res, next) => {
+const verifyToken = async (req, res, next) => {
     const token = req.cookies.token;
 
     if (!token) {
@@ -18,7 +19,19 @@ const verifyToken = (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] });
-        req.user = decoded; // { id, email, role, firstName, lastName }
+
+        // Verify token version against DB to support session invalidation after password change
+        const user = await prisma.user.findUnique({
+            where: { id: decoded.id },
+            select: { tokenVersion: true }
+        });
+
+        if (!user || (decoded.tokenVersion ?? 0) !== user.tokenVersion) {
+            res.clearCookie('token');
+            return res.status(403).json({ error: 'Session invalidated. Please log in again.' });
+        }
+
+        req.user = decoded;
         next();
     } catch (err) {
         res.status(403).json({ error: 'Invalid or expired token.' });

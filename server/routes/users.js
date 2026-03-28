@@ -500,7 +500,8 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
                     email,
                     role,
                     passwordHash,
-                    department: department || null
+                    department: department || null,
+                    ...(passwordHash ? { tokenVersion: { increment: 1 } } : {})
                 }
             });
 
@@ -629,6 +630,14 @@ router.delete('/bulk', verifyToken, verifyAdmin, async (req, res) => {
         });
 
         log(`Successfully deleted ${deleteResult.count} users`);
+
+        auditLog(req.user.id, 'BULK_DELETE_USERS', {
+            resourceType: 'USER',
+            details: { deletedIds: filteredIds, count: deleteResult.count },
+            ipAddress: req.ip,
+            userAgent: req.headers['user-agent']
+        });
+
         res.json({
             message: 'Employees deleted successfully',
             count: deleteResult.count,
@@ -681,6 +690,14 @@ router.delete('/:id', verifyToken, verifyAdmin, async (req, res) => {
         });
 
         log(`Successfully deleted user ${id}`);
+
+        auditLog(req.user.id, 'DELETE_USER', {
+            resourceType: 'USER',
+            resourceId: id,
+            ipAddress: req.ip,
+            userAgent: req.headers['user-agent']
+        });
+
         res.json({ message: 'Employee deleted successfully (V2)' });
     } catch (error) {
         log(`ERROR for ${req.params.id}: ${error.message}`);
@@ -698,10 +715,13 @@ router.post('/track', verifyToken, async (req, res) => {
             return res.status(400).json({ error: 'trackId is required' });
         }
 
-        // Verify track exists
+        // Verify track exists and is published
         const track = await prisma.track.findUnique({ where: { id: trackId } });
         if (!track) {
             return res.status(404).json({ error: 'Track not found' });
+        }
+        if (track.status !== 'PUBLISHED') {
+            return res.status(403).json({ error: 'Access denied: track is not available.' });
         }
 
         // Manual handle many-to-many to avoid transactions in HTTP mode

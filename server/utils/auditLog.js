@@ -29,7 +29,7 @@ async function auditLog(userId, action, options = {}) {
 
         console.log('[AUDIT]', {
             action: action.toUpperCase(),
-            userId: userId.substring(0, 8) + '...',
+            userId: userId ? userId.substring(0, 8) + '...' : 'anonymous',
             status: options.status || 'SUCCESS',
             timestamp: logEntry.createdAt.toISOString()
         });

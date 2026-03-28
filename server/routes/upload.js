@@ -100,6 +100,8 @@ function validateMagicBytes(buffer, ext) {
             if (/\b(?:href|src|xlink:href)\s*=\s*["']?\s*javascript:/i.test(text)) return false;
             // Block data: URIs in href / src / xlink:href (can embed scripts)
             if (/\b(?:href|src|xlink:href)\s*=\s*["']?\s*data:/i.test(text)) return false;
+            // Block @import in style blocks (CSS-based script injection)
+            if (/@import\s/i.test(text)) return false;
             return true;
         }
         case '.txt':

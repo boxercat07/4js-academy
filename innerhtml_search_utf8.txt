@@ -1,0 +1,45 @@
+﻿
+LineNumber Line                                         
+---------- ----                                         
+       207         this.innerHTML = `                   
+       344                         adminLinkContainer...
+       383                     list.innerHTML = '<div...
+       385                     list.innerHTML = data....
+       426             list.innerHTML = '<div class="...
+       464         this.innerHTML = `                   
+       623                     list.innerHTML = '<div...
+       625                     list.innerHTML = data....
+       662             list.innerHTML = '<div class="...
+       763         this.innerHTML = `                   
+       934         this.innerHTML = `                   
+      1525         this.innerHTML = `                   
+      1883         this.innerHTML = `                   
+      1977         this.innerHTML = `                   
+      2083         this.innerHTML = `                   
+      2367         this.innerHTML = `                   
+      2746                     this.pageContent.inner...
+      2865         this.innerHTML = `                   
+      3036         this.innerHTML = `                   
+      3133                     this.innerHTML = `       
+      3146                 this.innerHTML = `           
+      3173                 this.innerHTML = `           
+      3211         this.innerHTML = `                   
+      3317         this.innerHTML = `                   
+      3531         this.innerHTML = `                   
+      3566         this.innerHTML = `                   
+      3751         this.innerHTML = `                   
+      3797             this.content.innerHTML = `<ai-...
+      3805         this.content.innerHTML = '';         
+      3816         this.innerHTML = `                   
+      3959         this.innerHTML = `                   
+      4112                 node.innerHTML = `           
+      4165                         newCell.innerHTML ...
+      4190                         newCell.innerHTML ...
+      4316         this.innerHTML = `                   
+      4705                     picker.innerHTML = `     
+      4789         this.quill.root.innerHTML = data.c...
+      4911         this.innerHTML = `                   
+      4955                 btn.innerHTML = solidStar;   
+      4957                 btn.innerHTML = `<span cla...
+
+

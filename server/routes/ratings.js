@@ -13,7 +13,11 @@ router.post('/:trackId', verifyToken, async (req, res) => {
     try {
         const { trackId } = req.params;
         const { stars } = req.body;
-        const comment = sanitizeInput(req.body.comment || '').slice(0, 1000);
+        const comment = sanitizeInput(req.body.comment || '')
+            .replace(/[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]/g, '') // strip control characters
+            .replace(/\s+/g, ' ') // normalize whitespace
+            .trim()
+            .slice(0, 1000);
         const userId = req.user.id;
 
         if (!stars || stars < 1 || stars > 5) {

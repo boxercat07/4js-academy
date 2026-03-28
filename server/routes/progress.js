@@ -265,11 +265,15 @@ router.get('/dashboard', verifyToken, async (req, res) => {
             if (totalModulesInActive > 0) {
                 overallProgress = Math.round((totalCompletedInActive / totalModulesInActive) * 100);
             }
-            console.log(
-                `[PROGRESS_DEBUG] User: ${user.firstName}, ActiveTracks: ${enrolledTrackIds.size}, Completed: ${totalCompletedInActive}, Total: ${totalModulesInActive}, Result: ${overallProgress}`
-            );
+            if (process.env.NODE_ENV !== 'production') {
+                console.log(
+                    `[PROGRESS_DEBUG] ActiveTracks: ${enrolledTrackIds.size}, Completed: ${totalCompletedInActive}, Total: ${totalModulesInActive}, Result: ${overallProgress}`
+                );
+            }
         } else {
-            console.log(`[PROGRESS_DEBUG] User: ${user.firstName}, No Active Tracks`);
+            if (process.env.NODE_ENV !== 'production') {
+                console.log('[PROGRESS_DEBUG] No Active Tracks');
+            }
         }
 
         res.json({

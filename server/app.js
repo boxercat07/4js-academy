@@ -64,6 +64,22 @@ const adminLimiter = rateLimit({
     legacyHeaders: false
 });
 
+const notificationLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 60,
+    message: { error: 'Too many requests to notifications, please try again later.' },
+    standardHeaders: true,
+    legacyHeaders: false
+});
+
+const ratingsLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hour
+    max: 20,
+    message: { error: 'Too many rating requests, please try again later.' },
+    standardHeaders: true,
+    legacyHeaders: false
+});
+
 // Middleware
 // CORS Configuration - Restrict to allowed origins
 const allowedOrigins = process.env.ALLOWED_ORIGINS
@@ -151,7 +167,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Protected Static Routes Middleware
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
     // Only intercept requests for HTML files or the root path
     if (req.path.endsWith('.html') || req.path === '/' || req.path === '') {
         const publicPages = ['/login.html', '/index.html', '/ui-kit.html', '/success.html', '/'];
@@ -165,25 +181,32 @@ app.use((req, res, next) => {
         const token = req.cookies.token;
 
         if (!token) {
-            // Not authenticated, redirect to login
             return res.redirect('/login.html');
         }
 
         try {
-            // Verify token using the same secret (we'll require it from auth middleware)
             const { JWT_SECRET } = require('./middleware/auth');
             const jwt = require('jsonwebtoken');
             const decoded = jwt.verify(token, JWT_SECRET, { algorithms: ['HS256'] });
+
+            // Verify token version to support session invalidation after password change
+            const user = await prisma.user.findUnique({
+                where: { id: decoded.id },
+                select: { tokenVersion: true }
+            });
+
+            if (!user || (decoded.tokenVersion ?? 0) !== user.tokenVersion) {
+                res.clearCookie('token');
+                return res.redirect('/login.html');
+            }
 
             // If trying to access admin pages, check role
             if ((req.path.startsWith('/admin-') || req.path === '/technical-track.html') && decoded.role !== 'ADMIN') {
                 return res.redirect('/tracks.html');
             }
 
-            // Valid token, proceed to serve static file
             next();
         } catch (err) {
-            // Token invalid or expired, clear cookie and redirect
             res.clearCookie('token');
             return res.redirect('/login.html');
         }
@@ -204,8 +227,8 @@ app.use('/api/tracks', require('./routes/tracks'));
 app.use('/api/upload', require('./routes/upload'));
 app.use('/api/progress', require('./routes/progress'));
 app.use('/api/admin', adminLimiter, require('./routes/admin'));
-app.use('/api/notifications', require('./routes/notifications'));
-app.use('/api/ratings', require('./routes/ratings'));
+app.use('/api/notifications', notificationLimiter, require('./routes/notifications'));
+app.use('/api/ratings', ratingsLimiter, require('./routes/ratings'));
 
 // Serve static frontend files from 'app' folder
 app.use(
@@ -218,9 +241,6 @@ app.use(
         }
     })
 );
-
-// Serve uploaded files statically
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 // Health Check Route
 app.get('/api/health', (req, res) => {
@@ -262,6 +282,11 @@ app.get('/api/proxy/quiz', verifyToken, async (req, res) => {
         console.log(`[Proxy] Fetching quiz data from: ${url}`);
         const response = await fetch(url);
         if (!response.ok) throw new Error(`External fetch failed (HTTP ${response.status})`);
+
+        const contentType = response.headers.get('content-type') || '';
+        if (!contentType.includes('application/json')) {
+            return res.status(400).json({ error: 'Invalid response type from upstream.' });
+        }
 
         const data = await response.json();
         res.json(data);

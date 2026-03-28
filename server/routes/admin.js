@@ -11,11 +11,12 @@ router.get('/analytics', verifyToken, verifyAdmin, async (req, res) => {
         let startDate = null;
 
         if (period && period !== 'all') {
-            const days = parseInt(period);
-            if (!isNaN(days)) {
-                startDate = new Date();
-                startDate.setDate(startDate.getDate() - days);
+            if (!/^\d+$/.test(period)) {
+                return res.status(400).json({ error: 'Invalid period: must be a positive integer.' });
             }
+            const days = Math.min(parseInt(period, 10), 365);
+            startDate = new Date();
+            startDate.setDate(startDate.getDate() - days);
         }
 
         const dateFilter = startDate ? { updatedAt: { gte: startDate } } : {};
@@ -288,8 +289,16 @@ router.get('/analytics', verifyToken, verifyAdmin, async (req, res) => {
  */
 router.get('/audit-logs', verifyToken, verifyAdmin, async (req, res) => {
     try {
-        const days = parseInt(req.query.days) || 30;
-        const limit = Math.min(parseInt(req.query.limit) || 100, 1000);
+        const rawDays = req.query.days;
+        const rawLimit = req.query.limit;
+        if (rawDays !== undefined && !/^\d+$/.test(rawDays)) {
+            return res.status(400).json({ error: 'Invalid days: must be a positive integer.' });
+        }
+        if (rawLimit !== undefined && !/^\d+$/.test(rawLimit)) {
+            return res.status(400).json({ error: 'Invalid limit: must be a positive integer.' });
+        }
+        const days = Math.min(parseInt(rawDays, 10) || 30, 365);
+        const limit = Math.min(parseInt(rawLimit, 10) || 100, 200);
         const { action, userId, status } = req.query;
 
         const since = new Date();
@@ -336,7 +345,11 @@ router.get('/audit-logs', verifyToken, verifyAdmin, async (req, res) => {
 router.get('/audit-logs/user/:userId', verifyToken, verifyAdmin, async (req, res) => {
     try {
         const { userId } = req.params;
-        const limit = Math.min(parseInt(req.query.limit) || 50, 500);
+        const rawLimit2 = req.query.limit;
+        if (rawLimit2 !== undefined && !/^\d+$/.test(rawLimit2)) {
+            return res.status(400).json({ error: 'Invalid limit: must be a positive integer.' });
+        }
+        const limit = Math.min(parseInt(rawLimit2, 10) || 50, 200);
 
         const logs = await prisma.auditLog.findMany({
             where: { userId },
@@ -356,7 +369,11 @@ router.get('/audit-logs/user/:userId', verifyToken, verifyAdmin, async (req, res
  */
 router.get('/audit-logs/statistics', verifyToken, verifyAdmin, async (req, res) => {
     try {
-        const days = parseInt(req.query.days) || 30;
+        const rawDays2 = req.query.days;
+        if (rawDays2 !== undefined && !/^\d+$/.test(rawDays2)) {
+            return res.status(400).json({ error: 'Invalid days: must be a positive integer.' });
+        }
+        const days = Math.min(parseInt(rawDays2, 10) || 30, 365);
         const since = new Date();
         since.setDate(since.getDate() - days);
 

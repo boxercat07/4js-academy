@@ -20,6 +20,7 @@ const validatePassword = password => {
 
 const validateEmail = email => {
     if (!email) return { isValid: false, error: 'Email is required.' };
+    // Intentional: only Four Js corporate domains are allowed — no public sign-up
     const emailRegex = /^[a-zA-Z0-9._%+-]+@(4js\.com|fourjs\.com)$/i;
     if (!emailRegex.test(email)) {
         return { isValid: false, error: 'Only @4js.com or @fourjs.com email addresses are allowed.' };

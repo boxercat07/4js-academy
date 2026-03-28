@@ -4,8 +4,9 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
 model User {
@@ -18,6 +19,7 @@ model User {
   department    String?
   createdAt     DateTime        @default(now())
   updatedAt     DateTime        @updatedAt
+  tokenVersion  Int             @default(0)
   enrollments   Enrollment[]
   notifications Notification[]
   milestones    UserMilestone[]
@@ -100,7 +102,7 @@ model UserMilestone {
 
 model AuditLog {
   id            String   @id @default(cuid())
-  userId        String
+  userId        String?
   action        String   // LOGIN, LOGOUT, UPDATE_PROFILE, CHANGE_PASSWORD, etc.
   resourceType  String?  // USER, TRACK, MODULE, ENROLLMENT, etc.
   resourceId    String?  // ID of the affected resource
@@ -111,7 +113,7 @@ model AuditLog {
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
 
   @@index([userId])
   @@index([action])

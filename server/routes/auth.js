@@ -31,6 +31,13 @@ router.post('/login', loginLimiter, async (req, res) => {
         const user = await prisma.user.findUnique({ where: { email }, include: { tracks: true } });
         if (!user) {
             await bcrypt.compare(password, DUMMY_HASH);
+            auditLog(null, 'LOGIN_FAILED', {
+                resourceType: 'USER',
+                details: { email, reason: 'user_not_found' },
+                ipAddress: req.ip,
+                userAgent: req.headers['user-agent'],
+                status: 'FAILED'
+            });
             return res.status(401).json({ error: 'Invalid credentials' });
         }
 
@@ -65,7 +72,7 @@ router.post('/login', loginLimiter, async (req, res) => {
                         where: { id: user.id },
                         data: { passwordHash: hashedPassword }
                     })
-                    .then(() => {
+                    .then(async () => {
                         auditLog(user.id, 'PASSWORD_UPGRADE', {
                             resourceType: 'USER',
                             resourceId: user.id,
@@ -73,18 +80,42 @@ router.post('/login', loginLimiter, async (req, res) => {
                             ipAddress: req.ip,
                             userAgent: req.headers['user-agent']
                         });
+                        await prisma.notification.create({
+                            data: {
+                                userId: user.id,
+                                type: 'SECURITY',
+                                title: 'Password Security Upgrade',
+                                message:
+                                    'Your password has been automatically upgraded to a secure format. No action needed.'
+                            }
+                        });
                     })
                     .catch(err => console.error('[AUTH] Failed to upgrade password hash:', err));
             }
         }
 
         if (!isPasswordValid) {
+            auditLog(user.id, 'LOGIN_FAILED', {
+                resourceType: 'USER',
+                resourceId: user.id,
+                details: { reason: 'invalid_password' },
+                ipAddress: req.ip,
+                userAgent: req.headers['user-agent'],
+                status: 'FAILED'
+            });
             return res.status(401).json({ error: 'Invalid credentials' });
         }
 
         // Create JWT token
         const token = jwt.sign(
-            { id: user.id, email: user.email, role: user.role, firstName: user.firstName, lastName: user.lastName },
+            {
+                id: user.id,
+                email: user.email,
+                role: user.role,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                tokenVersion: user.tokenVersion
+            },
             JWT_SECRET,
             { expiresIn: '4h' }
         );
