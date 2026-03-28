@@ -55,6 +55,15 @@ const uploadLimiter = rateLimit({
     legacyHeaders: false
 });
 
+// Stricter limiter for admin-only endpoints (user management, admin analytics)
+const adminLimiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    max: 30, // Admin ops are rare; 30/15min is generous but prevents abuse
+    message: { error: 'Too many requests to admin endpoints, please try again later.' },
+    standardHeaders: true,
+    legacyHeaders: false
+});
+
 // Middleware
 // CORS Configuration - Restrict to allowed origins
 const allowedOrigins = process.env.ALLOWED_ORIGINS
@@ -190,11 +199,11 @@ app.use('/api/upload', uploadLimiter); // Stricter limits for uploads
 
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/modules', require('./routes/modules'));
-app.use('/api/users', require('./routes/users'));
+app.use('/api/users', adminLimiter, require('./routes/users'));
 app.use('/api/tracks', require('./routes/tracks'));
 app.use('/api/upload', require('./routes/upload'));
 app.use('/api/progress', require('./routes/progress'));
-app.use('/api/admin', require('./routes/admin'));
+app.use('/api/admin', adminLimiter, require('./routes/admin'));
 app.use('/api/notifications', require('./routes/notifications'));
 app.use('/api/ratings', require('./routes/ratings'));
 

@@ -402,7 +402,7 @@ router.put('/profile', verifyToken, profileUpdateLimiter, async (req, res) => {
                 department: updatedUser.department
             },
             JWT_SECRET,
-            { expiresIn: '24h' }
+            { expiresIn: '4h' }
         );
 
         // Set HttpOnly cookie
@@ -410,7 +410,7 @@ router.put('/profile', verifyToken, profileUpdateLimiter, async (req, res) => {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'Strict',
-            maxAge: 24 * 60 * 60 * 1000 // 24 hours
+            maxAge: 4 * 60 * 60 * 1000 // 4 hours
         });
 
         res.json({

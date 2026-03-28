@@ -86,7 +86,7 @@ router.post('/login', loginLimiter, async (req, res) => {
         const token = jwt.sign(
             { id: user.id, email: user.email, role: user.role, firstName: user.firstName, lastName: user.lastName },
             JWT_SECRET,
-            { expiresIn: '24h' }
+            { expiresIn: '4h' }
         );
 
         // Set HttpOnly cookie
@@ -94,7 +94,7 @@ router.post('/login', loginLimiter, async (req, res) => {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
             sameSite: 'Strict',
-            maxAge: 24 * 60 * 60 * 1000
+            maxAge: 4 * 60 * 60 * 1000
         });
 
         res.json({
