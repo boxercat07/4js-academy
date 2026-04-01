@@ -53,7 +53,7 @@ router.post('/', verifyToken, verifyAdmin, async (req, res) => {
         const nameValid = validateLength(name, 'Track name', 3, 40);
         if (!nameValid.isValid) return res.status(400).json({ error: nameValid.error });
 
-        const descValid = validateLength(description, 'Description', 0, 2000);
+        const descValid = validateLength(description, 'Description', 0, 150);
         if (!descValid.isValid) return res.status(400).json({ error: descValid.error });
 
         const slug = slugify(name);
@@ -178,7 +178,7 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
 
         if (description !== undefined) {
             description = sanitizeInput(description);
-            const descValid = validateLength(description, 'Description', 0, 2000);
+            const descValid = validateLength(description, 'Description', 0, 150);
             if (!descValid.isValid) return res.status(400).json({ error: descValid.error });
         }
 

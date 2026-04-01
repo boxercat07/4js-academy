@@ -318,22 +318,8 @@
                     ? 'from-slate-700 to-slate-900'
                     : 'from-teal-900/30 to-slate-900';
 
-                const depts = (track.targetDepartments || '')
-                    .split(',')
-                    .map(d => d.trim())
-                    .filter(d => d && d !== 'Other');
-                const departmentBadges = depts
-                    .map(
-                        dept => `
-                <span class="status-badge bg-white/10 text-white text-[9px] px-2 py-0.5 uppercase tracking-widest font-bold border border-white/20 backdrop-blur-sm">
-                    ${dept}
-                </span>
-            `
-                    )
-                    .join('');
-
                 const languageBadge = `
-                <span class="status-badge bg-primary/25 text-primary border-primary/40 text-[10px] px-2 py-0.5 uppercase tracking-widest font-bold backdrop-blur-sm">
+                <span class="bg-primary text-white text-[11px] px-2.5 py-0.5 rounded font-bold uppercase tracking-widest shadow-md">
                     ${track.language || 'EN'}
                 </span>
                 `;
@@ -354,22 +340,19 @@
 
                 return `
                 <div class="glass-card overflow-hidden text-left flex flex-col group hover:border-primary/50 transition-all duration-300">
-                    <div class="h-36 bg-gradient-to-br ${gradient} relative overflow-hidden">
-                        <div class="absolute inset-0 flex items-center justify-center opacity-20 group-hover:scale-110 transition-transform duration-500">
-                            <span class="material-symbols-outlined text-[60px] text-${colorClass}">${icon}</span>
+                    <div class="h-28 bg-gradient-to-br ${gradient} relative overflow-hidden">
+                        <div class="absolute top-3 left-3">
+                            <div class="w-10 h-10 rounded-xl bg-black/20 backdrop-blur-sm flex items-center justify-center border border-white/10 group-hover:bg-black/30 transition-all">
+                                <span class="material-symbols-outlined text-xl text-${colorClass}">${icon}</span>
+                            </div>
                         </div>
                         <div class="absolute top-3 right-3">
                             ${languageBadge}
                         </div>
-                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent px-4 pt-6 pb-3">
-                            <h2 class="text-base font-extrabold text-white font-display uppercase tracking-wide leading-snug" title="${trackName}">${trackName}</h2>
-                            <div class="flex flex-wrap gap-1.5 mt-1.5">
-                                ${departmentBadges}
-                            </div>
-                        </div>
                     </div>
                     <div class="p-4 flex-1 flex flex-col">
-                        <p class="text-slate-400 leading-relaxed mb-4 text-[11px]">
+                        <h2 class="text-base font-extrabold text-white mb-1 font-display uppercase tracking-wide leading-snug" title="${trackName}">${trackName}</h2>
+                        <p class="text-slate-400 leading-relaxed mb-4 text-xs">
                             ${track.description || 'Access dedicated expert training for this specialized track.'}
                         </p>
                         <div class="mb-4">

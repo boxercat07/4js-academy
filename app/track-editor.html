@@ -288,8 +288,15 @@
                                     <textarea
                                         id="setting-description"
                                         rows="3"
+                                        maxlength="150"
+                                        oninput="updateDescCounter('setting-description', 'setting-desc-counter')"
                                         class="w-full px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-lg text-white focus:border-primary focus:outline-none"
                                     ></textarea>
+                                    <div class="flex justify-end mt-1">
+                                        <span id="setting-desc-counter" class="text-[10px] text-slate-500">
+                                            150 remaining
+                                        </span>
+                                    </div>
                                 </div>
                                 <div>
                                     <label
@@ -528,6 +535,15 @@
                     <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
                     <ai-page-editor-modal></ai-page-editor-modal>
                     <script>
+                        function updateDescCounter(textareaId, counterId) {
+                            const textarea = document.getElementById(textareaId);
+                            const counter = document.getElementById(counterId);
+                            if (!textarea || !counter) return;
+                            const remaining = 150 - textarea.value.length;
+                            counter.textContent = `${remaining} remaining`;
+                            counter.className = `text-[10px] ${remaining <= 20 ? 'text-amber-400' : 'text-slate-500'}`;
+                        }
+
                         document.addEventListener('DOMContentLoaded', () => {
                             const urlParams = new URLSearchParams(window.location.search);
                             const trackId = urlParams.get('id');
@@ -1036,6 +1052,7 @@
                                 const t = window.currentTrack;
                                 document.getElementById('setting-name').value = t.name;
                                 document.getElementById('setting-description').value = t.description || '';
+                                updateDescCounter('setting-description', 'setting-desc-counter');
                                 document.getElementById('setting-icon').value = t.icon || 'terminal';
                                 document.getElementById('setting-icon-preview').textContent = t.icon || 'terminal';
                                 document.getElementById('setting-status').value = t.status;
