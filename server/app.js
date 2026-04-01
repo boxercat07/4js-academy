@@ -269,7 +269,7 @@ app.get('/api/proxy/quiz', verifyToken, async (req, res) => {
 
         // Security: only allow r2.dev or cloudflarestorage.com or onrender.com
         const parsedUrl = new URL(url);
-        const allowedHosts = ['.r2.dev', '.cloudflarestorage.com', 'fourjs-academy.onrender.com'];
+        const allowedHosts = ['r2.dev', 'cloudflarestorage.com', 'fourjs-academy.onrender.com'];
         const isAllowed = allowedHosts.some(
             host => parsedUrl.hostname === host || parsedUrl.hostname.endsWith('.' + host)
         );

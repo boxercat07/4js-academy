@@ -50,7 +50,7 @@ router.post('/', verifyToken, verifyAdmin, async (req, res) => {
         description = sanitizeInput(description);
 
         // Validate
-        const nameValid = validateLength(name, 'Track name', 3, 100);
+        const nameValid = validateLength(name, 'Track name', 3, 40);
         if (!nameValid.isValid) return res.status(400).json({ error: nameValid.error });
 
         const descValid = validateLength(description, 'Description', 0, 2000);
@@ -172,7 +172,7 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
         // Sanitize and validate if provided
         if (name !== undefined) {
             name = sanitizeInput(name);
-            const nameValid = validateLength(name, 'Track name', 3, 100);
+            const nameValid = validateLength(name, 'Track name', 3, 40);
             if (!nameValid.isValid) return res.status(400).json({ error: nameValid.error });
         }
 
