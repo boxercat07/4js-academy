@@ -344,7 +344,7 @@
                     .join('');
 
                 const languageBadge = `
-                <span class="status-badge bg-primary/20 text-primary border-primary/30 text-[9px] px-2 py-0.5 uppercase tracking-widest font-bold backdrop-blur-sm hidden sm:inline-block">
+                <span class="status-badge bg-primary/25 text-primary border-primary/40 text-[10px] px-2 py-0.5 uppercase tracking-widest font-bold backdrop-blur-sm">
                     ${track.language || 'EN'}
                 </span>
                 `;
@@ -368,6 +368,9 @@
                     <div class="h-28 bg-gradient-to-br ${gradient} relative overflow-hidden">
                         <div class="absolute inset-0 flex items-center justify-center opacity-30 group-hover:scale-110 transition-transform duration-500">
                             <span class="material-symbols-outlined text-[50px] text-${colorClass}">${icon}</span>
+                        </div>
+                        <div class="absolute top-3 right-3">
+                            ${languageBadge}
                         </div>
                         <div class="absolute bottom-3 left-3 flex flex-wrap gap-2 items-center">
                             ${departmentBadges}

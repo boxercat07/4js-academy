@@ -722,7 +722,7 @@
                                     // Update Page Header
                                     if (data.track) {
                                         const titleEl = document.querySelector('h1.font-display');
-                                        if (titleEl) titleEl.textContent = data.track.name + ' TRACK';
+                                        if (titleEl) titleEl.textContent = data.track.name;
 
                                         const descEl = document.querySelector('p.text-slate-400.max-w-2xl');
                                         if (descEl) descEl.textContent = data.track.description || '';
