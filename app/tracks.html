@@ -182,7 +182,7 @@
                         <span class="material-symbols-outlined text-blue-400">play_circle</span>
                         Continue Learning
                     </h2>
-                    <div id="continue-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                    <div id="continue-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                         <!-- Started tracks here -->
                     </div>
                 </div>
@@ -193,10 +193,7 @@
                         <span class="material-symbols-outlined text-primary">verified</span>
                         Recommended For You
                     </h2>
-                    <div
-                        id="recommended-grid"
-                        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
-                    >
+                    <div id="recommended-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                         <!-- Recommended tracks here -->
                     </div>
                     <div id="recommended-pagination" class="mt-8 flex justify-center gap-2 hidden"></div>
@@ -208,10 +205,7 @@
                         <span class="material-symbols-outlined text-green-400">check_circle</span>
                         Completed Tracks
                     </h2>
-                    <div
-                        id="completed-grid"
-                        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
-                    >
+                    <div id="completed-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                         <!-- Completed tracks here -->
                     </div>
                 </div>
@@ -233,10 +227,7 @@
                         <span class="material-symbols-outlined text-teal-400">library_books</span>
                         Course Catalogue
                     </h2>
-                    <div
-                        id="catalogue-grid"
-                        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
-                    >
+                    <div id="catalogue-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                         <!-- Catalogue tracks here -->
                     </div>
                     <div id="catalogue-pagination" class="mt-8 flex justify-center gap-2 hidden"></div>
@@ -363,19 +354,21 @@
 
                 return `
                 <div class="glass-card overflow-hidden text-left flex flex-col group hover:border-primary/50 transition-all duration-300">
-                    <div class="h-28 bg-gradient-to-br ${gradient} relative overflow-hidden">
-                        <div class="absolute inset-0 flex items-center justify-center opacity-30 group-hover:scale-110 transition-transform duration-500">
-                            <span class="material-symbols-outlined text-[50px] text-${colorClass}">${icon}</span>
+                    <div class="h-36 bg-gradient-to-br ${gradient} relative overflow-hidden">
+                        <div class="absolute inset-0 flex items-center justify-center opacity-20 group-hover:scale-110 transition-transform duration-500">
+                            <span class="material-symbols-outlined text-[60px] text-${colorClass}">${icon}</span>
                         </div>
                         <div class="absolute top-3 right-3">
                             ${languageBadge}
                         </div>
-                        <div class="absolute bottom-3 left-3 flex flex-wrap gap-2 items-center">
-                            ${departmentBadges}
+                        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent px-4 pt-6 pb-3">
+                            <h2 class="text-base font-extrabold text-white font-display uppercase tracking-wide leading-snug" title="${trackName}">${trackName}</h2>
+                            <div class="flex flex-wrap gap-1.5 mt-1.5">
+                                ${departmentBadges}
+                            </div>
                         </div>
                     </div>
                     <div class="p-4 flex-1 flex flex-col">
-                        <h2 class="text-base font-extrabold text-white mb-2 font-display uppercase tracking-wide" title="${trackName}">${trackName}</h2>
                         <p class="text-slate-400 leading-relaxed mb-4 text-[11px]">
                             ${track.description || 'Access dedicated expert training for this specialized track.'}
                         </p>
