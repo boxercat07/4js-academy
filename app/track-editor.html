@@ -1026,12 +1026,15 @@
                                         if (!confirmed) return;
                                     }
 
-                                    // 2. Publish
+                                    // 2. Publish (include curriculumDraft so step/subtitle is preserved)
                                     const publishRes = await fetch(`/api/tracks/${trackId}/publish`, {
                                         method: 'POST',
                                         headers: { 'Content-Type': 'application/json' },
                                         credentials: 'include',
-                                        body: JSON.stringify({ modules: curriculum })
+                                        body: JSON.stringify({
+                                            modules: curriculum,
+                                            curriculumDraft: JSON.stringify(curriculum)
+                                        })
                                     });
 
                                     if (!publishRes.ok) {

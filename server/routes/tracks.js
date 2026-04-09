@@ -371,7 +371,7 @@ router.get('/:id/modules', verifyToken, async (req, res) => {
 router.post('/:id/publish', verifyToken, verifyAdmin, async (req, res) => {
     try {
         const { id } = req.params;
-        const { modules } = req.body;
+        const { modules, curriculumDraft } = req.body;
 
         if (!modules || !Array.isArray(modules)) {
             return res.status(400).json({ error: 'modules array is required' });
@@ -473,12 +473,12 @@ router.post('/:id/publish', verifyToken, verifyAdmin, async (req, res) => {
             }
         }
 
-        // Update track status to PUBLISHED
+        // Update track status to PUBLISHED — persist curriculumDraft as source of truth for the editor
         const updatedTrack = await prisma.track.update({
             where: { id },
             data: {
                 status: 'PUBLISHED',
-                curriculumDraft: null // Clear draft on successful publish
+                ...(curriculumDraft ? { curriculumDraft } : {})
             }
         });
 
