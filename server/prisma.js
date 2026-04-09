@@ -1,4 +1,4 @@
-const { PrismaNeonHTTP } = require('@prisma/adapter-neon');
+const { PrismaNeonHttp } = require('@prisma/adapter-neon');
 const { PrismaClient } = require('@prisma/client');
 const path = require('path');
 
@@ -8,29 +8,32 @@ if (!process.env.DATABASE_URL) {
     require('dotenv').config({ path: envPath });
 }
 
-let prisma;
-
-if (process.env.NODE_ENV === 'test') {
-    prisma = new PrismaClient();
-} else {
-    let url = process.env.DATABASE_URL;
+function buildPrismaClient(urlOverride) {
+    // Prefer DIRECT_URL for the HTTP adapter (bypasses connection pooler)
+    const rawUrl = urlOverride || process.env.DIRECT_URL || process.env.DATABASE_URL;
+    let url = rawUrl;
     if (url) {
         url = url.replace(/^["']|["']$/g, '').trim();
         if (url.startsWith('postgresql://')) url = url.replace('postgresql://', 'postgres://');
     }
 
     if (!url) {
-        console.error('[PRISMA_FATAL] DATABASE_URL is missing.');
-        prisma = new PrismaClient();
-    } else {
-        try {
-            const adapter = new PrismaNeonHTTP(url);
-            prisma = new PrismaClient({ adapter });
-        } catch (err) {
-            console.error('[PRISMA_FATAL] Driver initialization error:', err.message);
-            prisma = new PrismaClient();
-        }
+        throw new Error('DATABASE_URL is required');
     }
+
+    const adapter = new PrismaNeonHttp(url);
+    return new PrismaClient({ adapter });
+}
+
+let prisma;
+
+try {
+    console.log('[PRISMA] Initializing Neon HTTP adapter (Prisma 7)...');
+    prisma = buildPrismaClient();
+    console.log('[PRISMA] Client initialized successfully.');
+} catch (err) {
+    console.error('[PRISMA_FATAL] Client initialization error:', err.message);
+    process.exit(1);
 }
 
 module.exports = prisma;

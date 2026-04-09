@@ -271,7 +271,7 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
         res.json(track);
     } catch (error) {
         console.error('Track update error:', error);
-        res.status(500).json({ error: 'Failed to update track.' });
+        res.status(500).json({ error: 'Failed to update track.', detail: error?.message, code: error?.code });
     }
 });
 

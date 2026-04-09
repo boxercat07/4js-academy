@@ -667,7 +667,9 @@
                                         // Update status badge (since we just saved a draft)
                                         updateStatusBadge(result.status, true);
                                     } else {
-                                        throw new Error('Save failed');
+                                        const errBody = await response.json().catch(() => ({}));
+                                        console.error('[performSave] Server error detail:', errBody);
+                                        throw new Error(errBody.detail || errBody.error || 'Save failed');
                                     }
                                 } catch (error) {
                                     console.error('Save failed:', error);

@@ -141,7 +141,7 @@ app.use((req, res, next) => {
             "script-src 'self' 'unsafe-inline' https://*.youtube.com https://*.youtube-nocookie.com https://*.google.com https://*.gstatic.com https://cdn.quilljs.com https://cdn.jsdelivr.net",
             "script-src-attr 'unsafe-inline'",
             "img-src 'self' data: https: blob: https://*.r2.dev https://*.cloudflarestorage.com https://fourjs-academy.onrender.com",
-            "connect-src 'self' blob: https://*.r2.dev https://*.cloudflarestorage.com https://fonts.googleapis.com https://fonts.gstatic.com https://*.youtube.com https://*.google.com https://fourjs-academy.onrender.com",
+            "connect-src 'self' blob: https://*.r2.dev https://*.cloudflarestorage.com https://fonts.googleapis.com https://fonts.gstatic.com https://*.youtube.com https://*.google.com https://fourjs-academy.onrender.com https://cdn.jsdelivr.net",
             "font-src 'self' https://fonts.gstatic.com",
             "frame-src 'self' https://*.youtube.com https://*.youtube-nocookie.com https://*.google.com",
             "media-src 'self' blob: https://*.r2.dev https://*.cloudflarestorage.com https://*.googlevideo.com https://*.youtube.com",
@@ -163,7 +163,7 @@ app.use((req, res, next) => {
 });
 
 app.use(cors(corsOptions));
-app.use(express.json());
+app.use(express.json({ limit: '10mb' }));
 app.use(cookieParser());
 
 // Protected Static Routes Middleware
@@ -254,10 +254,10 @@ app.post('/api/seed', (req, res) => {
 
 // Global error handler for API routes - ensures JSON responses
 app.use('/api', (err, req, res, next) => {
-    console.error('API Error:', err.message);
-    console.error('Stack:', err.stack);
+    const statusCode = err.status || err.statusCode || 500;
+    console.error(`API Error [${statusCode}]:`, err.message);
     if (!res.headersSent) {
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(statusCode).json({ error: err.message || 'Internal server error' });
     }
 });
 
