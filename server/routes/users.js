@@ -492,17 +492,21 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
         let updatedUser;
         try {
             // Step 1: Update basic user info (Atomic/No transaction needed for single record)
-            updatedUser = await prisma.user.update({
-                where: { id },
-                data: {
+            const userData = Object.fromEntries(
+                Object.entries({
                     firstName,
                     lastName,
                     email,
                     role,
                     passwordHash,
-                    department: department || null,
-                    ...(passwordHash ? { tokenVersion: { increment: 1 } } : {})
-                }
+                    department: department || null
+                }).filter(([, v]) => v !== undefined)
+            );
+            if (passwordHash) userData.tokenVersion = { increment: 1 };
+
+            updatedUser = await prisma.user.update({
+                where: { id },
+                data: userData
             });
 
             // Step 2: Update tracks relationship (Manual SQL to avoid Prisma's implicit transaction in HTTP mode)

@@ -2405,8 +2405,9 @@ class AiMediaViewerModal extends HTMLElement {
         this.innerHTML = `
             <div id="ai-viewer-container" class="fixed inset-0 z-[1001] flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300">
                 <div class="absolute inset-0 bg-slate-950/90 backdrop-blur-xl"></div>
-                <button id="ai-viewer-close" class="absolute top-6 right-8 text-white/50 hover:text-white transition-all z-10">
-                    <span class="material-symbols-outlined text-4xl">close</span>
+                <button id="ai-viewer-close" class="absolute top-4 right-4 z-10 flex items-center gap-2 px-4 py-2 rounded-xl bg-slate-800/90 border border-slate-700 text-slate-300 hover:bg-slate-700 hover:text-white hover:border-slate-500 transition-all shadow-lg backdrop-blur-sm">
+                    <span class="material-symbols-outlined text-[18px]">close</span>
+                    <span class="text-xs font-bold uppercase tracking-widest">Close</span>
                 </button>
                 <div class="relative w-full h-full flex flex-col items-center justify-center p-4 md:p-8 transform scale-95 transition-all duration-300 ai-viewer-card">
                     <div class="w-full max-w-[95%] flex items-center gap-4 mb-4">

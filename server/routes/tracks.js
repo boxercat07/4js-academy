@@ -210,9 +210,8 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
             }
         }
 
-        const track = await prisma.track.update({
-            where: { id },
-            data: {
+        const updateData = Object.fromEntries(
+            Object.entries({
                 name,
                 slug,
                 description,
@@ -221,7 +220,12 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
                 targetDepartments,
                 status,
                 curriculumDraft
-            }
+            }).filter(([, v]) => v !== undefined)
+        );
+
+        const track = await prisma.track.update({
+            where: { id },
+            data: updateData
         });
         console.log(`[TRACKS] Track ${id} updated successfully in DB.`);
 
@@ -271,7 +275,7 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
         res.json(track);
     } catch (error) {
         console.error('Track update error:', error);
-        res.status(500).json({ error: 'Failed to update track.', detail: error?.message, code: error?.code });
+        res.status(500).json({ error: 'Failed to update track.' });
     }
 });
 

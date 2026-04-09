@@ -147,7 +147,7 @@ router.post('/login', loginLimiter, async (req, res) => {
 });
 
 // POST /api/logout
-router.post('/logout', async (req, res) => {
+router.post('/logout', (req, res) => {
     res.clearCookie('token');
     res.json({ message: 'Logged out successfully' });
 });
