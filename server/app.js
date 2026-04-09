@@ -29,11 +29,28 @@ const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const prisma = require('./prisma');
 const path = require('path');
+const fs = require('fs');
+const crypto = require('crypto');
 const rateLimit = require('express-rate-limit');
 const { verifyToken } = require('./middleware/auth');
 
 const app = express();
 const port = process.env.PORT || 3000;
+
+// Compute a content hash for components.js once at startup for cache-busting
+function computeFileHash(filePath) {
+    try {
+        const content = fs.readFileSync(filePath);
+        return crypto.createHash('md5').update(content).digest('hex').slice(0, 8);
+    } catch {
+        return Date.now().toString(36);
+    }
+}
+
+const appDir = path.join(__dirname, '../app');
+const componentsHash = computeFileHash(path.join(appDir, 'components.js'));
+const videoUtilsHash = computeFileHash(path.join(appDir, 'video-utils.js'));
+console.log(`[ASSETS] components.js hash: ${componentsHash}, video-utils.js hash: ${videoUtilsHash}`);
 
 // Trust the first proxy hop (required for correct IP-based rate limiting on Render/Heroku)
 app.set('trust proxy', 1);
@@ -166,14 +183,27 @@ app.use(cors(corsOptions));
 app.use(express.json({ limit: '10mb' }));
 app.use(cookieParser());
 
-// Protected Static Routes Middleware
+// Protected Static Routes Middleware — also injects cache-busting hash into HTML
+function serveHtml(res, filePath) {
+    let html = fs.readFileSync(filePath, 'utf8');
+    html = html.replace(/src="components\.js(?:\?[^"]*)?"/g, `src="components.js?v=${componentsHash}"`);
+    html = html.replace(/src="video-utils\.js(?:\?[^"]*)?"/g, `src="video-utils.js?v=${videoUtilsHash}"`);
+    res.setHeader('Content-Type', 'text/html');
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.send(html);
+}
+
 app.use(async (req, res, next) => {
     // Only intercept requests for HTML files or the root path
     if (req.path.endsWith('.html') || req.path === '/' || req.path === '') {
         const publicPages = ['/login.html', '/index.html', '/ui-kit.html', '/success.html', '/'];
+        const filePath = path.join(appDir, req.path === '/' || req.path === '' ? 'index.html' : req.path);
 
-        // Skip protection for public pages
+        // Skip protection for public pages — still inject hashes
         if (publicPages.includes(req.path)) {
+            if (fs.existsSync(filePath)) return serveHtml(res, filePath);
             return next();
         }
 
@@ -205,7 +235,8 @@ app.use(async (req, res, next) => {
                 return res.redirect('/tracks.html');
             }
 
-            next();
+            if (fs.existsSync(filePath)) return serveHtml(res, filePath);
+            return next();
         } catch (err) {
             res.clearCookie('token');
             return res.redirect('/login.html');
@@ -232,12 +263,16 @@ app.use('/api/ratings', ratingsLimiter, require('./routes/ratings'));
 
 // Serve static frontend files from 'app' folder
 app.use(
-    express.static(path.join(__dirname, '../app'), {
-        setHeaders: (res, path) => {
-            res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-            res.setHeader('Pragma', 'no-cache');
-            res.setHeader('Expires', '0');
-            res.setHeader('Surrogate-Control', 'no-store');
+    express.static(appDir, {
+        setHeaders: (res, filePath) => {
+            // Cache JS/CSS assets by their content hash (long cache) — HTML is handled above
+            if (filePath.endsWith('.js') || filePath.endsWith('.css')) {
+                res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+            } else {
+                res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+                res.setHeader('Pragma', 'no-cache');
+                res.setHeader('Expires', '0');
+            }
         }
     })
 );
