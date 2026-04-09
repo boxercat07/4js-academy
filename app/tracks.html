@@ -173,6 +173,7 @@
                         <div id="pending-quizzes-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <!-- Pending quizzes here -->
                         </div>
+                        <div id="quiz-pagination" class="hidden flex gap-2 mt-6"></div>
                     </div>
                 </div>
 
@@ -253,7 +254,9 @@
             // Pagination
             let currentRecommendedPage = 1;
             let currentCataloguePage = 1;
+            let currentQuizPage = 1;
             const itemsPerPage = 6;
+            const quizzesPerPage = 4;
 
             // --- Helper Functions ---
             const getStatus = tid => {
@@ -286,9 +289,9 @@
                 window[`switchPage_${containerId}`](page);
             };
 
-            function renderPagination(containerId, totalItems, currentPage, onPageChange) {
+            function renderPagination(containerId, totalItems, currentPage, onPageChange, perPage = itemsPerPage) {
                 const container = document.getElementById(containerId);
-                const totalPages = Math.ceil(totalItems / itemsPerPage);
+                const totalPages = Math.ceil(totalItems / perPage);
                 if (totalPages <= 1) {
                     container.classList.add('hidden');
                     return;
@@ -559,7 +562,10 @@
 
                 // 3. Quizzes
                 if (progressGlobal.pendingQuizzes && progressGlobal.pendingQuizzes.length > 0) {
-                    pendingQuizzesList.innerHTML = progressGlobal.pendingQuizzes
+                    const allQuizzes = progressGlobal.pendingQuizzes;
+                    const quizStart = (currentQuizPage - 1) * quizzesPerPage;
+                    const paginatedQuizzes = allQuizzes.slice(quizStart, quizStart + quizzesPerPage);
+                    pendingQuizzesList.innerHTML = paginatedQuizzes
                         .map(pq => {
                             const tName = pq.trackName || 'Track';
                             return `
@@ -571,9 +577,20 @@
                     `;
                         })
                         .join('');
+                    renderPagination(
+                        'quiz-pagination',
+                        allQuizzes.length,
+                        currentQuizPage,
+                        p => {
+                            currentQuizPage = p;
+                            renderSections();
+                        },
+                        quizzesPerPage
+                    );
                 } else {
                     pendingQuizzesList.innerHTML =
                         '<p class="text-slate-500 text-xs col-span-full py-6 italic text-left">No quizzes pending at this stage.</p>';
+                    document.getElementById('quiz-pagination').classList.add('hidden');
                 }
 
                 // 4. Recommended (Persistent)
