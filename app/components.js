@@ -1232,7 +1232,8 @@ class AiModule extends HTMLElement {
                 handle: '.drag-handle',
                 ghostClass: 'bg-slate-800/50',
                 chosenClass: 'border-primary/50',
-                dragClass: 'opacity-50'
+                dragClass: 'opacity-50',
+                onEnd: () => typeof window.saveCurriculum === 'function' && window.saveCurriculum()
             });
         }
 
@@ -1757,6 +1758,7 @@ class AiContentItem extends HTMLElement {
                 });
                 if (confirmed) {
                     this.remove();
+                    if (typeof window.saveCurriculum === 'function') window.saveCurriculum();
                 }
             }
             dropdown?.classList.remove('show');

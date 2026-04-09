@@ -634,10 +634,7 @@
                                         method: 'PUT',
                                         headers: { 'Content-Type': 'application/json' },
                                         credentials: 'include',
-                                        body: JSON.stringify({
-                                            ...window.currentTrack,
-                                            curriculumDraft: JSON.stringify(data)
-                                        })
+                                        body: JSON.stringify({ curriculumDraft: JSON.stringify(data) })
                                     });
 
                                     console.log(
