@@ -4981,17 +4981,59 @@ class AiQuizEditorModal extends HTMLElement {
         this.container.querySelector('.absolute').addEventListener('click', () => this.close(null));
     }
 
+    // Extract plain text from an option that may be a string or an object
+    _optText(opt) {
+        if (typeof opt === 'string') return opt;
+        if (typeof opt === 'object' && opt !== null) {
+            for (const k of ['text', 'label', 'value', 'option', 'choice', 'content', 'text_content', 'answer']) {
+                if (opt[k] !== undefined && opt[k] !== null && typeof opt[k] !== 'boolean') return String(opt[k]);
+            }
+            const first = Object.values(opt).find(v => typeof v === 'string');
+            if (first) return first;
+        }
+        return String(opt ?? '');
+    }
+
+    // Resolve correct answer index from any supported format
+    _correctIndex(q) {
+        const options = q.options || q.choices || [];
+        for (const k of ['answer', 'correctAnswerIndex', 'correctIndex']) {
+            const val = q[k];
+            if (val === undefined || val === null) continue;
+            if (typeof val === 'number') return val;
+            if (typeof val === 'string') {
+                const byText = options.findIndex(o => this._optText(o).trim() === val.trim());
+                if (byText !== -1) return byText;
+                const asInt = parseInt(val, 10);
+                if (!isNaN(asInt)) return asInt;
+            }
+        }
+        // Boolean flags inside option objects
+        for (let i = 0; i < options.length; i++) {
+            const o = options[i];
+            if (typeof o === 'object' && o !== null) {
+                for (const k of ['correct', 'isCorrect', 'is_correct', 'is_true']) {
+                    if (o[k] === true || o[k] === 'true' || o[k] === 1) return i;
+                }
+            }
+        }
+        return 0;
+    }
+
     show({ title = '', threshold = '80', quizData = null } = {}) {
         this.titleInput.value = title;
         this.thresholdInput.value = threshold;
         this.titleInput.classList.remove('border-red-500');
 
-        this.questions = (quizData?.questions || []).map(q => ({
-            question: q.question || '',
-            options: Array.isArray(q.options) && q.options.length >= 2 ? [...q.options] : ['', '', '', ''],
-            answer: q.answer ?? q.correctAnswerIndex ?? 0,
-            rationale: q.rationale || ''
-        }));
+        this.questions = (quizData?.questions || []).map(q => {
+            const rawOpts = q.options || q.choices || [];
+            return {
+                question: q.question || q.text || '',
+                options: rawOpts.length >= 2 ? rawOpts.map(o => this._optText(o)) : ['', '', '', ''],
+                answer: this._correctIndex(q),
+                rationale: q.rationale || q.explanation || q.feedback || q.rationale_text || q.explanation_text || ''
+            };
+        });
 
         if (this.questions.length === 0) {
             this.questions.push({ question: '', options: ['', '', '', ''], answer: 0, rationale: '' });
