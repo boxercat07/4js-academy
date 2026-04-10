@@ -1658,30 +1658,53 @@ class AiContentItem extends HTMLElement {
         });
 
         this.querySelector('.edit-quiz-content')?.addEventListener('click', async () => {
+            dropdown?.classList.remove('show');
             const editor = document.querySelector('ai-quiz-editor-modal');
-            if (editor) {
-                let currentData = null;
-                const quizDataAttr = this.getAttribute('quiz-data');
-                if (quizDataAttr) {
-                    try {
-                        currentData = JSON.parse(quizDataAttr);
-                    } catch (e) {}
-                }
-                const result = await editor.show({
-                    title: this.getAttribute('title'),
-                    threshold: this.getAttribute('success-threshold') || '80',
-                    quizData: currentData
-                });
-                if (result) {
-                    this.setAttribute('title', result.title);
-                    this.setAttribute('success-threshold', result.threshold);
-                    this.setAttribute('quiz-data', JSON.stringify(result.quizData));
-                    this.removeAttribute('blob-url');
-                    this.removeAttribute('file-id');
-                    if (typeof window.saveCurriculum === 'function') window.saveCurriculum();
+            if (!editor) return;
+
+            // Load existing quiz data: inline > IndexedDB > remote URL
+            let currentData = null;
+            const quizDataAttr = this.getAttribute('quiz-data');
+            if (quizDataAttr) {
+                try {
+                    currentData = JSON.parse(quizDataAttr);
+                } catch (e) {}
+            }
+
+            if (!currentData) {
+                const fileId = this.getAttribute('file-id');
+                const blobUrl = this.getAttribute('blob-url');
+                try {
+                    if (fileId) {
+                        const file = await aiFileStore.get(fileId);
+                        if (file) {
+                            const text = await file.text();
+                            currentData = JSON.parse(text);
+                        }
+                    } else if (blobUrl && blobUrl !== '#') {
+                        const isR2 = blobUrl.includes('.r2.dev') || blobUrl.includes('.cloudflarestorage.com');
+                        const fetchUrl = isR2 ? `/api/proxy/quiz?url=${encodeURIComponent(blobUrl)}` : blobUrl;
+                        const res = await fetch(fetchUrl, { credentials: 'include' });
+                        if (res.ok) currentData = await res.json();
+                    }
+                } catch (e) {
+                    console.error('Failed to load quiz data for editing:', e);
                 }
             }
-            dropdown?.classList.remove('show');
+
+            const result = await editor.show({
+                title: this.getAttribute('title'),
+                threshold: this.getAttribute('success-threshold') || '80',
+                quizData: currentData
+            });
+            if (result) {
+                this.setAttribute('title', result.title);
+                this.setAttribute('success-threshold', result.threshold);
+                this.setAttribute('quiz-data', JSON.stringify(result.quizData));
+                this.removeAttribute('blob-url');
+                this.removeAttribute('file-id');
+                if (typeof window.saveCurriculum === 'function') window.saveCurriculum();
+            }
         });
 
         this.querySelector('.edit-page-content')?.addEventListener('click', async () => {
