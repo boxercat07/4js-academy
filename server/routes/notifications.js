@@ -64,6 +64,18 @@ router.patch('/read-all', verifyToken, async (req, res) => {
     }
 });
 
+// DELETE /api/notifications - Delete all notifications for the logged-in user
+router.delete('/', verifyToken, async (req, res) => {
+    try {
+        const userId = req.user.id;
+        await prisma.notification.deleteMany({ where: { userId } });
+        res.json({ message: 'All notifications deleted' });
+    } catch (error) {
+        console.error('Delete all notifications error:', error);
+        res.status(500).json({ error: 'Failed to delete notifications' });
+    }
+});
+
 // DELETE /api/notifications/:id - Delete a specific notification
 router.delete('/:id', verifyToken, async (req, res) => {
     try {

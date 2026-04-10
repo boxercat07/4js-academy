@@ -259,7 +259,7 @@ class LearnerHeader extends HTMLElement {
                         <div class="ai-dropdown-menu notifications-menu p-0">
                             <div class="px-4 py-3 border-b border-[var(--ai-border)] flex justify-between items-center bg-slate-900/80">
                                 <span class="text-[10px] font-bold text-white uppercase tracking-wider">Notifications</span>
-                                <button class="text-[9px] font-bold text-primary hover:text-white transition-colors read-all-btn uppercase">Mark all as read</button>
+                                <button class="text-[9px] font-bold text-primary hover:text-white transition-colors read-all-btn uppercase">Delete all notifications</button>
                             </div>
                             <div id="notifications-list" class="max-h-[320px] overflow-y-auto">
                                 <div class="notifications-empty">Loading...</div>
@@ -488,11 +488,11 @@ class LearnerHeader extends HTMLElement {
 
     async markAllAsRead() {
         try {
-            await fetch('/api/notifications/read-all', { method: 'PATCH', credentials: 'include' });
+            await fetch('/api/notifications', { method: 'DELETE', credentials: 'include' });
             this.fetchNotificationsCount();
             this.fetchNotificationsList();
         } catch (err) {
-            console.error('Mark all read error:', err);
+            console.error('Delete all notifications error:', err);
         }
     }
 }
@@ -520,7 +520,7 @@ class AdminHeader extends HTMLElement {
                     <div class="ai-dropdown-menu notifications-menu p-0">
                         <div class="px-4 py-3 border-b border-[var(--ai-border)] flex justify-between items-center bg-slate-900/80">
                             <span class="text-[10px] font-bold text-white uppercase tracking-wider">Notifications</span>
-                            <button class="text-[9px] font-bold text-primary hover:text-white transition-colors read-all-btn uppercase">Mark all as read</button>
+                            <button class="text-[9px] font-bold text-primary hover:text-white transition-colors read-all-btn uppercase">Delete all notifications</button>
                         </div>
                         <div id="notifications-list" class="max-h-[320px] overflow-y-auto">
                             <div class="notifications-empty">Loading...</div>
@@ -724,13 +724,13 @@ class AdminHeader extends HTMLElement {
 
     async markAllAsRead() {
         try {
-            const res = await fetch('/api/notifications/read-all', { method: 'PATCH', credentials: 'include' });
+            const res = await fetch('/api/notifications', { method: 'DELETE', credentials: 'include' });
             if (res.ok) {
                 this.fetchNotificationsCount();
                 this.fetchNotificationsList();
             }
         } catch (err) {
-            console.error('Admin Mark all read error:', err);
+            console.error('Admin Delete all notifications error:', err);
         }
     }
 }
