@@ -3938,7 +3938,7 @@ class AiQuizModal extends HTMLElement {
     connectedCallback() {
         this.innerHTML = `
             <div id="ai-quiz-modal-container" class="fixed inset-0 z-[1001] flex items-start justify-center opacity-0 pointer-events-none transition-all duration-300 overflow-y-auto py-6">
-                <div class="absolute inset-0 bg-slate-950/90 apple-blur"></div>
+                <div class="fixed inset-0 bg-slate-950/90 apple-blur"></div>
                 <div class="relative w-full max-w-4xl px-6 transform scale-95 transition-all duration-300 ai-quiz-modal-card my-auto">
                     <button id="ai-quiz-close" class="absolute top-2 right-8 size-10 rounded-full bg-slate-900 border border-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition-all z-10">
                         <span class="material-symbols-outlined">close</span>
