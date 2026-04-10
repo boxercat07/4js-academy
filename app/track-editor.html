@@ -812,6 +812,11 @@
                             };
 
                             const renderCurriculum = data => {
+                                // Pause observer to avoid spurious autosaves during initial render
+                                if (typeof observer !== 'undefined') observer.disconnect();
+
+                                modulesContainer.style.visibility = 'hidden';
+
                                 const addModuleBtnArea = document.getElementById('add-module-btn').parentElement;
                                 modulesContainer.querySelectorAll('ai-module').forEach(m => m.remove());
 
@@ -829,6 +834,30 @@
                                     });
 
                                     modulesContainer.insertBefore(mod, addModuleBtnArea);
+                                });
+
+                                // Reveal after paint to avoid flash of intermediate state
+                                requestAnimationFrame(() => {
+                                    modulesContainer.style.visibility = '';
+                                    if (typeof observer !== 'undefined') {
+                                        observer.observe(modulesContainer, {
+                                            childList: true,
+                                            subtree: true,
+                                            attributes: true,
+                                            attributeFilter: [
+                                                'title',
+                                                'type',
+                                                'icon',
+                                                'color',
+                                                'blob-url',
+                                                'success-threshold',
+                                                'subtype',
+                                                'video-id',
+                                                'step',
+                                                'file-id'
+                                            ]
+                                        });
+                                    }
                                 });
                             };
 
@@ -921,7 +950,8 @@
                             }
 
                             // Mutation Observer for internal changes
-                            const observer = new MutationObserver(mutations => {
+                            // Declared with let so renderCurriculum can temporarily disconnect it
+                            let observer = new MutationObserver(mutations => {
                                 let shouldSave = false;
                                 mutations.forEach(m => {
                                     if (m.type === 'childList') shouldSave = true;
