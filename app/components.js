@@ -1293,23 +1293,50 @@ class AiModule extends HTMLElement {
 
                         // Special handling for Quiz
                         if (result.type === 'QUIZ') {
-                            const quizUploadModal = document.querySelector('ai-quiz-upload-modal');
-                            if (quizUploadModal) {
-                                const quizResult = await quizUploadModal.show();
-                                if (quizResult) {
-                                    const newItem = document.createElement('ai-content-item');
-                                    newItem.setAttribute('title', quizResult.title);
-                                    newItem.setAttribute('type', 'QUIZ');
-                                    newItem.setAttribute('icon', 'quiz');
-                                    newItem.setAttribute('color', 'teal');
-                                    newItem.setAttribute('success-threshold', quizResult.threshold);
-                                    if (quizResult.blobUrl) {
-                                        newItem.setAttribute('blob-url', quizResult.blobUrl);
+                            const choiceModal = document.querySelector('ai-quiz-choice-modal');
+                            const choice = choiceModal ? await choiceModal.show() : 'import';
+                            if (!choice) return;
+
+                            let newItem = null;
+
+                            if (choice === 'create') {
+                                const editor = document.querySelector('ai-quiz-editor-modal');
+                                if (editor) {
+                                    const editorResult = await editor.show({
+                                        title: '',
+                                        threshold: '80',
+                                        quizData: null
+                                    });
+                                    if (editorResult) {
+                                        newItem = document.createElement('ai-content-item');
+                                        newItem.setAttribute('title', editorResult.title);
+                                        newItem.setAttribute('type', 'QUIZ');
+                                        newItem.setAttribute('icon', 'quiz');
+                                        newItem.setAttribute('color', 'teal');
+                                        newItem.setAttribute('success-threshold', editorResult.threshold);
+                                        newItem.setAttribute('quiz-data', JSON.stringify(editorResult.quizData));
                                     }
-                                    if (quizResult.fileId) newItem.setAttribute('file-id', quizResult.fileId);
-                                    contentContainer.appendChild(newItem);
-                                    this.processLocking();
                                 }
+                            } else {
+                                const quizUploadModal = document.querySelector('ai-quiz-upload-modal');
+                                if (quizUploadModal) {
+                                    const quizResult = await quizUploadModal.show();
+                                    if (quizResult) {
+                                        newItem = document.createElement('ai-content-item');
+                                        newItem.setAttribute('title', quizResult.title);
+                                        newItem.setAttribute('type', 'QUIZ');
+                                        newItem.setAttribute('icon', 'quiz');
+                                        newItem.setAttribute('color', 'teal');
+                                        newItem.setAttribute('success-threshold', quizResult.threshold);
+                                        if (quizResult.blobUrl) newItem.setAttribute('blob-url', quizResult.blobUrl);
+                                        if (quizResult.fileId) newItem.setAttribute('file-id', quizResult.fileId);
+                                    }
+                                }
+                            }
+
+                            if (newItem) {
+                                contentContainer.appendChild(newItem);
+                                this.processLocking();
                             }
                             return;
                         }
@@ -3649,6 +3676,74 @@ class AiQuiz extends HTMLElement {
     }
 }
 
+class AiQuizChoiceModal extends HTMLElement {
+    constructor() {
+        super();
+        this.resolve = null;
+    }
+
+    connectedCallback() {
+        this.innerHTML = `
+            <div id="ai-quiz-choice-container" class="fixed inset-0 z-[1003] flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300">
+                <div class="absolute inset-0 bg-slate-950/80 apple-blur"></div>
+                <div class="relative bg-[var(--ai-bg-dark)] border border-[var(--ai-border)] w-full max-w-md p-8 rounded-[var(--ai-radius-2xl)] shadow-2xl mx-4 transform scale-95 transition-all duration-300 ai-quiz-choice-card">
+                    <div class="flex items-center gap-4 mb-8">
+                        <div class="size-12 rounded-full bg-teal-500/10 text-teal-400 flex items-center justify-center flex-shrink-0">
+                            <span class="material-symbols-outlined text-2xl">quiz</span>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white uppercase tracking-widest">Add Quiz</h3>
+                            <p class="text-slate-400 text-sm">How would you like to add this quiz?</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 mb-8">
+                        <button class="choice-create group flex flex-col items-center gap-3 p-6 bg-slate-900/60 border-2 border-slate-700 hover:border-teal-500/60 hover:bg-teal-500/5 rounded-xl transition-all text-center">
+                            <span class="material-symbols-outlined text-4xl text-slate-400 group-hover:text-teal-400 transition-colors">edit_note</span>
+                            <div>
+                                <p class="text-white font-bold text-sm">Create</p>
+                                <p class="text-slate-500 text-xs mt-0.5">Build questions directly</p>
+                            </div>
+                        </button>
+                        <button class="choice-import group flex flex-col items-center gap-3 p-6 bg-slate-900/60 border-2 border-slate-700 hover:border-teal-500/60 hover:bg-teal-500/5 rounded-xl transition-all text-center">
+                            <span class="material-symbols-outlined text-4xl text-slate-400 group-hover:text-teal-400 transition-colors">upload_file</span>
+                            <div>
+                                <p class="text-white font-bold text-sm">Import</p>
+                                <p class="text-slate-500 text-xs mt-0.5">Upload a JSON file</p>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="flex justify-center">
+                        <button class="choice-cancel px-5 py-2 text-sm font-bold text-[var(--ai-text-dim)] hover:text-white transition-colors">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        this.container = this.querySelector('#ai-quiz-choice-container');
+        this.card = this.querySelector('.ai-quiz-choice-card');
+        this.querySelector('.choice-create').addEventListener('click', () => this.close('create'));
+        this.querySelector('.choice-import').addEventListener('click', () => this.close('import'));
+        this.querySelector('.choice-cancel').addEventListener('click', () => this.close(null));
+        this.container.querySelector('.absolute').addEventListener('click', () => this.close(null));
+    }
+
+    show() {
+        this.container.classList.remove('opacity-0', 'pointer-events-none');
+        this.card.classList.remove('scale-95');
+        this.card.classList.add('scale-100');
+        return new Promise(r => (this.resolve = r));
+    }
+
+    close(val) {
+        this.container.classList.add('opacity-0', 'pointer-events-none');
+        this.card.classList.remove('scale-100');
+        this.card.classList.add('scale-95');
+        if (this.resolve) {
+            this.resolve(val);
+            this.resolve = null;
+        }
+    }
+}
+
 class AiQuizUploadModal extends HTMLElement {
     constructor() {
         super();
@@ -5201,6 +5296,7 @@ customElements.define('ai-link-insert-modal', AiLinkInsertModal);
 customElements.define('ai-page-editor-modal', AiPageEditorModal);
 customElements.define('ai-quiz', AiQuiz);
 customElements.define('ai-quiz-modal', AiQuizModal);
+customElements.define('ai-quiz-choice-modal', AiQuizChoiceModal);
 customElements.define('ai-quiz-upload-modal', AiQuizUploadModal);
 customElements.define('ai-quiz-editor-modal', AiQuizEditorModal);
 customElements.define('ai-profile-modal', AiProfileModal);
