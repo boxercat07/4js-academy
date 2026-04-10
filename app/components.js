@@ -1606,7 +1606,14 @@ class AiContentItem extends HTMLElement {
                                 Edit Page
                             </button>
                             `
-                                    : `
+                                    : type === 'QUIZ'
+                                      ? `
+                            <button class="ai-dropdown-item edit-quiz-content">
+                                <span class="material-symbols-outlined text-lg">edit</span>
+                                Edit Quiz
+                            </button>
+                            `
+                                      : `
                             <button class="ai-dropdown-item edit-content">
                                 <span class="material-symbols-outlined text-lg">edit</span>
                                 Replace File
@@ -1645,6 +1652,33 @@ class AiContentItem extends HTMLElement {
                 const newTitle = await renameModal.show(this.getAttribute('title'));
                 if (newTitle) {
                     this.setAttribute('title', newTitle);
+                }
+            }
+            dropdown?.classList.remove('show');
+        });
+
+        this.querySelector('.edit-quiz-content')?.addEventListener('click', async () => {
+            const editor = document.querySelector('ai-quiz-editor-modal');
+            if (editor) {
+                let currentData = null;
+                const quizDataAttr = this.getAttribute('quiz-data');
+                if (quizDataAttr) {
+                    try {
+                        currentData = JSON.parse(quizDataAttr);
+                    } catch (e) {}
+                }
+                const result = await editor.show({
+                    title: this.getAttribute('title'),
+                    threshold: this.getAttribute('success-threshold') || '80',
+                    quizData: currentData
+                });
+                if (result) {
+                    this.setAttribute('title', result.title);
+                    this.setAttribute('success-threshold', result.threshold);
+                    this.setAttribute('quiz-data', JSON.stringify(result.quizData));
+                    this.removeAttribute('blob-url');
+                    this.removeAttribute('file-id');
+                    if (typeof window.saveCurriculum === 'function') window.saveCurriculum();
                 }
             }
             dropdown?.classList.remove('show');
@@ -1906,7 +1940,8 @@ class AiContentItem extends HTMLElement {
                     this.getAttribute('success-threshold') || 80,
                     quizSrc,
                     this.getAttribute('module-id'),
-                    this.getAttribute('file-id')
+                    this.getAttribute('file-id'),
+                    this.getAttribute('quiz-data')
                 );
             }
         }
@@ -3141,6 +3176,18 @@ class AiQuiz extends HTMLElement {
     async connectedCallback() {
         const src = this.getAttribute('src');
         let fileId = this.getAttribute('file-id');
+        const inlineData = this.getAttribute('quiz-data');
+
+        // Priority 1: inline quiz-data (edited via quiz editor)
+        if (inlineData) {
+            try {
+                this.quizData = JSON.parse(inlineData);
+                this.renderStart();
+                return;
+            } catch (e) {
+                console.error('Quiz data parse error:', e);
+            }
+        }
 
         if (!fileId && src && src.startsWith('local:')) {
             fileId = src.replace('local:', '').split('|')[0];
@@ -3808,7 +3855,7 @@ class AiQuizModal extends HTMLElement {
         this.close();
     }
 
-    show(title, threshold, src, moduleId, fileId) {
+    show(title, threshold, src, moduleId, fileId, quizData) {
         if (this.container) {
             this.container.classList.remove('opacity-0', 'pointer-events-none');
         }
@@ -3817,7 +3864,15 @@ class AiQuizModal extends HTMLElement {
             this.card.classList.add('scale-100');
         }
         if (this.content) {
-            this.content.innerHTML = `<ai-quiz title="${title}" success-threshold="${threshold}" ${src ? `src="${src}"` : ''} module-id="${moduleId || ''}" ${fileId ? `file-id="${fileId}"` : ''}></ai-quiz>`;
+            this.content.innerHTML = '';
+            const quizEl = document.createElement('ai-quiz');
+            quizEl.setAttribute('title', title || '');
+            quizEl.setAttribute('success-threshold', String(threshold || 80));
+            if (src) quizEl.setAttribute('src', src);
+            quizEl.setAttribute('module-id', moduleId || '');
+            if (fileId) quizEl.setAttribute('file-id', fileId);
+            if (quizData) quizEl.setAttribute('quiz-data', quizData);
+            this.content.appendChild(quizEl);
         }
     }
 
@@ -4842,6 +4897,230 @@ class AiPageEditorModal extends HTMLElement {
     }
 }
 
+class AiQuizEditorModal extends HTMLElement {
+    constructor() {
+        super();
+        this.resolve = null;
+        this.questions = [];
+    }
+
+    connectedCallback() {
+        this.innerHTML = `
+            <div id="ai-quiz-editor-container" class="fixed inset-0 z-[1004] flex items-center justify-center opacity-0 pointer-events-none transition-all duration-300">
+                <div class="absolute inset-0 bg-slate-950/80 apple-blur"></div>
+                <div class="relative bg-[var(--ai-bg-dark)] border border-[var(--ai-border)] w-full max-w-3xl rounded-[var(--ai-radius-2xl)] shadow-2xl mx-4 flex flex-col ai-quiz-editor-card" style="max-height:90vh">
+                    <div class="flex items-center gap-4 p-6 border-b border-[var(--ai-border)] flex-shrink-0">
+                        <div class="size-12 rounded-full bg-teal-500/10 text-teal-400 flex items-center justify-center flex-shrink-0">
+                            <span class="material-symbols-outlined text-2xl">quiz</span>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white uppercase tracking-widest">Edit Quiz</h3>
+                            <p class="text-slate-400 text-sm">Questions, options &amp; settings</p>
+                        </div>
+                        <button class="quiz-editor-close ml-auto size-8 rounded-full hover:bg-slate-800 text-slate-500 hover:text-white flex items-center justify-center transition-colors flex-shrink-0">
+                            <span class="material-symbols-outlined text-lg">close</span>
+                        </button>
+                    </div>
+                    <div class="overflow-y-auto flex-1 p-6 space-y-5">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Quiz Title</label>
+                                <input type="text" class="quiz-editor-title w-full bg-[var(--ai-bg-card)] border border-[var(--ai-border)] rounded-[var(--ai-radius-lg)] px-3 py-2 text-white text-sm focus:outline-none focus:border-teal-500/50 transition-all" placeholder="Enter quiz title...">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Passing Score (%)</label>
+                                <input type="number" min="0" max="100" class="quiz-editor-threshold w-full bg-[var(--ai-bg-card)] border border-[var(--ai-border)] rounded-[var(--ai-radius-lg)] px-3 py-2 text-white text-sm focus:outline-none focus:border-teal-500/50 transition-all" placeholder="80">
+                            </div>
+                        </div>
+                        <div class="quiz-editor-questions space-y-4"></div>
+                        <button class="quiz-editor-add-question w-full py-3 border-2 border-dashed border-slate-700 hover:border-teal-500/50 rounded-xl text-slate-400 hover:text-teal-400 text-sm font-bold flex items-center justify-center gap-2 transition-colors">
+                            <span class="material-symbols-outlined text-lg">add_circle</span>
+                            Add Question
+                        </button>
+                    </div>
+                    <div class="flex items-center justify-end gap-3 p-6 border-t border-[var(--ai-border)] flex-shrink-0">
+                        <button class="quiz-editor-cancel px-5 py-2.5 rounded-[var(--ai-radius-lg)] text-sm font-bold text-[var(--ai-text-dim)] hover:text-white transition-colors">Cancel</button>
+                        <button class="quiz-editor-save px-6 py-2.5 bg-teal-600 hover:bg-teal-500 text-white rounded-[var(--ai-radius-lg)] text-sm font-bold transition-all shadow-lg shadow-teal-900/20">Save Quiz</button>
+                    </div>
+                </div>
+            </div>
+        `;
+        this.container = this.querySelector('#ai-quiz-editor-container');
+        this.card = this.querySelector('.ai-quiz-editor-card');
+        this.titleInput = this.querySelector('.quiz-editor-title');
+        this.thresholdInput = this.querySelector('.quiz-editor-threshold');
+        this.questionsContainer = this.querySelector('.quiz-editor-questions');
+
+        this.querySelector('.quiz-editor-close').addEventListener('click', () => this.close(null));
+        this.querySelector('.quiz-editor-cancel').addEventListener('click', () => this.close(null));
+        this.querySelector('.quiz-editor-save').addEventListener('click', () => this._save());
+        this.querySelector('.quiz-editor-add-question').addEventListener('click', () => this._addQuestion());
+        this.container.querySelector('.absolute').addEventListener('click', () => this.close(null));
+    }
+
+    show({ title = '', threshold = '80', quizData = null } = {}) {
+        this.titleInput.value = title;
+        this.thresholdInput.value = threshold;
+        this.titleInput.classList.remove('border-red-500');
+
+        this.questions = (quizData?.questions || []).map(q => ({
+            question: q.question || '',
+            options: Array.isArray(q.options) && q.options.length >= 2 ? [...q.options] : ['', '', '', ''],
+            answer: q.answer ?? q.correctAnswerIndex ?? 0,
+            rationale: q.rationale || ''
+        }));
+
+        if (this.questions.length === 0) {
+            this.questions.push({ question: '', options: ['', '', '', ''], answer: 0, rationale: '' });
+        }
+
+        this._renderQuestions();
+        this.container.classList.remove('opacity-0', 'pointer-events-none');
+        this.card.classList.remove('scale-95');
+        this.card.classList.add('scale-100');
+        setTimeout(() => this.titleInput.focus(), 100);
+        return new Promise(r => (this.resolve = r));
+    }
+
+    _addQuestion() {
+        this.questions.push({ question: '', options: ['', '', '', ''], answer: 0, rationale: '' });
+        this._renderQuestions();
+        // Scroll to bottom
+        const last = this.questionsContainer.lastElementChild;
+        if (last) last.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    _renderQuestions() {
+        this.questionsContainer.innerHTML = '';
+        this.questions.forEach((q, qi) => {
+            const card = document.createElement('div');
+            card.className = 'bg-slate-900/60 border border-slate-700 rounded-xl p-4 space-y-3';
+            card.dataset.qi = qi;
+
+            const optionsHtml = q.options
+                .map(
+                    (opt, oi) => `
+                <div class="option-row flex items-center gap-2" data-oi="${oi}">
+                    <input type="radio" name="correct-q${qi}" class="correct-radio accent-teal-500 cursor-pointer flex-shrink-0" value="${oi}" ${q.answer === oi ? 'checked' : ''}>
+                    <input type="text" class="option-text flex-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-1.5 text-white text-sm focus:outline-none focus:border-teal-500/50 transition-all" placeholder="Option ${String.fromCharCode(65 + oi)}..." value="${sanitizeText(opt)}">
+                    <button class="delete-option size-7 rounded-lg hover:bg-red-500/10 text-slate-600 hover:text-red-400 flex items-center justify-center transition-colors flex-shrink-0" title="Remove option">
+                        <span class="material-symbols-outlined text-sm">close</span>
+                    </button>
+                </div>`
+                )
+                .join('');
+
+            card.innerHTML = `
+                <div class="flex items-start gap-3">
+                    <span class="text-xs font-bold text-slate-500 pt-2.5 w-7 flex-shrink-0 text-right">Q${qi + 1}</span>
+                    <textarea class="question-text flex-1 bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-white text-sm resize-none focus:outline-none focus:border-teal-500/50 transition-all" rows="2" placeholder="Enter your question...">${sanitizeText(q.question)}</textarea>
+                    <button class="delete-question mt-1 size-8 rounded-lg hover:bg-red-500/10 text-slate-500 hover:text-red-400 flex items-center justify-center transition-colors flex-shrink-0" title="Delete question">
+                        <span class="material-symbols-outlined text-lg">delete</span>
+                    </button>
+                </div>
+                <div class="pl-10 space-y-2 options-list">${optionsHtml}</div>
+                <div class="pl-10 flex items-center gap-4">
+                    <button class="add-option text-xs text-slate-400 hover:text-teal-400 flex items-center gap-1 transition-colors font-semibold">
+                        <span class="material-symbols-outlined text-sm">add</span>Add option
+                    </button>
+                </div>
+                <div class="pl-10">
+                    <textarea class="rationale-text w-full bg-slate-800/40 border border-slate-700/50 rounded-lg px-3 py-2 text-slate-400 text-xs resize-none focus:outline-none focus:border-slate-600 transition-colors" rows="2" placeholder="Explanation shown after answering (optional)...">${sanitizeText(q.rationale)}</textarea>
+                </div>
+            `;
+
+            card.querySelector('.question-text').addEventListener('input', e => {
+                this.questions[qi].question = e.target.value;
+            });
+            card.querySelector('.rationale-text').addEventListener('input', e => {
+                this.questions[qi].rationale = e.target.value;
+            });
+            card.querySelector('.delete-question').addEventListener('click', () => {
+                if (this.questions.length === 1) return;
+                this.questions.splice(qi, 1);
+                this._renderQuestions();
+            });
+            card.querySelector('.add-option').addEventListener('click', () => {
+                this.questions[qi].options.push('');
+                this._renderQuestions();
+            });
+            card.querySelectorAll('.option-row').forEach(row => {
+                const oi = parseInt(row.dataset.oi);
+                row.querySelector('.correct-radio').addEventListener('change', () => {
+                    this.questions[qi].answer = oi;
+                });
+                row.querySelector('.option-text').addEventListener('input', e => {
+                    this.questions[qi].options[oi] = e.target.value;
+                });
+                row.querySelector('.delete-option').addEventListener('click', () => {
+                    if (this.questions[qi].options.length <= 2) return;
+                    this.questions[qi].options.splice(oi, 1);
+                    if (this.questions[qi].answer >= this.questions[qi].options.length) {
+                        this.questions[qi].answer = 0;
+                    }
+                    this._renderQuestions();
+                });
+            });
+
+            this.questionsContainer.appendChild(card);
+        });
+    }
+
+    _syncFromDOM() {
+        this.questionsContainer.querySelectorAll('[data-qi]').forEach(card => {
+            const qi = parseInt(card.dataset.qi);
+            if (!this.questions[qi]) return;
+            this.questions[qi].question = card.querySelector('.question-text').value;
+            this.questions[qi].rationale = card.querySelector('.rationale-text').value;
+            card.querySelectorAll('.option-row').forEach(row => {
+                const oi = parseInt(row.dataset.oi);
+                if (this.questions[qi].options[oi] !== undefined) {
+                    this.questions[qi].options[oi] = row.querySelector('.option-text').value;
+                }
+                if (row.querySelector('.correct-radio').checked) {
+                    this.questions[qi].answer = oi;
+                }
+            });
+        });
+    }
+
+    _save() {
+        const title = this.titleInput.value.trim();
+        if (!title) {
+            this.titleInput.classList.add('border-red-500');
+            this.titleInput.focus();
+            return;
+        }
+        this.titleInput.classList.remove('border-red-500');
+        this._syncFromDOM();
+
+        const threshold = String(Math.max(0, Math.min(100, parseInt(this.thresholdInput.value) || 80)));
+        const quizData = {
+            title,
+            questions: this.questions
+                .map(q => ({
+                    question: q.question.trim(),
+                    options: q.options.map(o => o.trim()),
+                    answer: q.answer,
+                    ...(q.rationale.trim() ? { rationale: q.rationale.trim() } : {})
+                }))
+                .filter(q => q.question && q.options.filter(o => o).length >= 2)
+        };
+
+        this.close({ title, threshold, quizData });
+    }
+
+    close(val) {
+        this.container.classList.add('opacity-0', 'pointer-events-none');
+        this.card.classList.remove('scale-100');
+        this.card.classList.add('scale-95');
+        if (this.resolve) {
+            this.resolve(val);
+            this.resolve = null;
+        }
+    }
+}
+
 customElements.define('learner-header', LearnerHeader);
 customElements.define('admin-header', AdminHeader);
 customElements.define('admin-sidebar', AdminSidebar);
@@ -4858,6 +5137,7 @@ customElements.define('ai-page-editor-modal', AiPageEditorModal);
 customElements.define('ai-quiz', AiQuiz);
 customElements.define('ai-quiz-modal', AiQuizModal);
 customElements.define('ai-quiz-upload-modal', AiQuizUploadModal);
+customElements.define('ai-quiz-editor-modal', AiQuizEditorModal);
 customElements.define('ai-profile-modal', AiProfileModal);
 
 /**
