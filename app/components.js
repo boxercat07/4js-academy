@@ -1009,13 +1009,13 @@ class AiModule extends HTMLElement {
                                 <span class="material-symbols-outlined text-xl">more_vert</span>
                             </button>
                             <div class="ai-dropdown-menu">
-                                <button class="ai-dropdown-item edit-module">
-                                    <span class="material-symbols-outlined text-lg">edit</span>
-                                    Edit Title
-                                </button>
                                 <button class="ai-dropdown-item edit-subtitle">
                                     <span class="material-symbols-outlined text-lg">format_list_numbered</span>
                                     Edit Subtitle
+                                </button>
+                                <button class="ai-dropdown-item edit-module">
+                                    <span class="material-symbols-outlined text-lg">edit</span>
+                                    Edit Title
                                 </button>
                                 <button class="ai-dropdown-item delete delete-module">
                                     <span class="material-symbols-outlined text-lg">delete</span>
