@@ -1011,7 +1011,7 @@ class AiModule extends HTMLElement {
                             <div class="ai-dropdown-menu">
                                 <button class="ai-dropdown-item edit-subtitle">
                                     <span class="material-symbols-outlined text-lg">format_list_numbered</span>
-                                    Edit Subtitle
+                                    Edit Number
                                 </button>
                                 <button class="ai-dropdown-item edit-module">
                                     <span class="material-symbols-outlined text-lg">edit</span>
