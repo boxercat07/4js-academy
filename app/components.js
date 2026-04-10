@@ -1583,8 +1583,8 @@ class AiContentItem extends HTMLElement {
                             <p class="text-[10px] text-slate-500 uppercase tracking-wider font-bold">
                                 ${sanitizeText(type)}
                             </p>
-                            ${this.renderQuizStatus()}
                             ${this.getAttribute('completed') === 'true' ? '<span class="text-[9px] font-bold text-emerald-500 bg-emerald-500/10 px-1.5 py-0.5 rounded uppercase tracking-tight flex items-center gap-1"><span class="material-symbols-outlined text-[10px]">check_circle</span>Done</span>' : ''}
+                            ${this.renderQuizStatus()}
                         </div>
                     </div>
                 </div>
