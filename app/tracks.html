@@ -354,15 +354,15 @@
                 const completedHeader = `
                     <div class="h-28 bg-gradient-to-br from-amber-950/60 to-slate-900 relative overflow-hidden shrink-0">
                         <div class="absolute top-3 left-3 flex items-center gap-2">
-                            <div class="relative">
-                                <div class="w-10 h-10 rounded-xl bg-amber-500/15 backdrop-blur-sm flex items-center justify-center border border-amber-400/30 shadow-[0_0_14px_1px_rgba(251,191,36,0.12)] group-hover:bg-amber-500/20 transition-all">
-                                    <span class="material-symbols-outlined text-xl text-amber-400">${icon}</span>
-                                </div>
-                                <div class="absolute -bottom-1 -right-1 w-[14px] h-[14px] rounded-full bg-emerald-500 border border-slate-900 flex items-center justify-center">
+                            <div class="w-10 h-10 rounded-xl bg-amber-500/15 backdrop-blur-sm flex items-center justify-center border border-amber-400/30 shadow-[0_0_14px_1px_rgba(251,191,36,0.12)] group-hover:bg-amber-500/20 transition-all shrink-0">
+                                <span class="material-symbols-outlined text-xl text-amber-400">${icon}</span>
+                            </div>
+                            <div class="flex items-center gap-1">
+                                <span class="text-[8px] font-black uppercase tracking-[0.18em] text-amber-400/80 leading-tight">100%<br>Completed</span>
+                                <div class="w-[14px] h-[14px] rounded-full bg-emerald-500 flex items-center justify-center shrink-0 self-end mb-0.5">
                                     <span class="material-symbols-outlined text-[8px] text-white leading-none">check</span>
                                 </div>
                             </div>
-                            <span class="text-[8px] font-black uppercase tracking-[0.18em] text-amber-400/80 leading-tight">100%<br>Completed</span>
                         </div>
                         <div class="absolute top-3 right-3">${languageBadge}</div>
                     </div>
