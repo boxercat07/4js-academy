@@ -5254,17 +5254,39 @@ class AiQuizEditorModal extends HTMLElement {
         this.titleInput.classList.remove('border-red-500');
         this._syncFromDOM();
 
+        // Validate: every question must have text and at least 2 non-empty options
+        const invalid = this.questions.some(q => {
+            if (!q.question.trim()) return true;
+            const filled = q.options.filter(o => o.trim());
+            return filled.length < 2;
+        });
+        if (invalid) {
+            const firstBad = this.questionsContainer.querySelector('[data-qi]');
+            this.questionsContainer.querySelectorAll('[data-qi]').forEach((card, qi) => {
+                const q = this.questions[qi];
+                const missingQuestion = !q?.question?.trim();
+                const missingOptions = (q?.options || []).filter(o => o.trim()).length < 2;
+                card.classList.toggle('border-red-500/60', missingQuestion || missingOptions);
+            });
+            firstBad?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            return;
+        }
+        this.questionsContainer.querySelectorAll('[data-qi]').forEach(c => c.classList.remove('border-red-500/60'));
+
         const threshold = String(Math.max(0, Math.min(100, parseInt(this.thresholdInput.value) || 80)));
         const quizData = {
             title,
-            questions: this.questions
-                .map(q => ({
+            questions: this.questions.map(q => {
+                const filledOptions = q.options.map(o => o.trim());
+                // Recalculate answer index in case options were reordered/removed
+                const answer = Math.min(q.answer, filledOptions.length - 1);
+                return {
                     question: q.question.trim(),
-                    options: q.options.map(o => o.trim()),
-                    answer: q.answer,
+                    options: filledOptions,
+                    answer,
                     ...(q.rationale.trim() ? { rationale: q.rationale.trim() } : {})
-                }))
-                .filter(q => q.question && q.options.filter(o => o).length >= 2)
+                };
+            })
         };
 
         this.close({ title, threshold, quizData });
