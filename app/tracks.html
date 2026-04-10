@@ -157,23 +157,29 @@
                                     No milestones yet. Keep learning to earn badges!
                                 </p>
                             </div>
+                            <div id="milestone-pagination" class="hidden flex gap-2 mt-6"></div>
                         </div>
                     </div>
 
                     <!-- Pending Quizzes Section -->
                     <div id="pending-quizzes-section">
-                        <div class="flex items-center gap-3 mb-6">
-                            <span class="material-symbols-outlined text-amber-400">priority_high</span>
-                            <h2
-                                class="text-2xl font-extrabold text-white font-display uppercase tracking-tight leading-none"
-                            >
-                                Quizzes to take
-                            </h2>
+                        <div class="glass-card h-full p-6 border-amber-500/20 bg-amber-500/5">
+                            <div class="flex items-center gap-3 mb-6">
+                                <div
+                                    class="w-10 h-10 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-400"
+                                >
+                                    <span class="material-symbols-outlined">priority_high</span>
+                                </div>
+                                <div class="text-left">
+                                    <h2 class="text-xl font-bold text-white font-display">Quizzes to Take</h2>
+                                    <p class="text-slate-400 text-sm">Keep going! These quizzes are waiting for you.</p>
+                                </div>
+                            </div>
+                            <div id="pending-quizzes-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <!-- Pending quizzes here -->
+                            </div>
+                            <div id="quiz-pagination" class="hidden flex gap-2 mt-6"></div>
                         </div>
-                        <div id="pending-quizzes-list" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <!-- Pending quizzes here -->
-                        </div>
-                        <div id="quiz-pagination" class="hidden flex gap-2 mt-6"></div>
                     </div>
                 </div>
 
@@ -255,8 +261,10 @@
             let currentRecommendedPage = 1;
             let currentCataloguePage = 1;
             let currentQuizPage = 1;
+            let currentMilestonePage = 1;
             const itemsPerPage = 6;
             const quizzesPerPage = 4;
+            const milestonesPerPage = 4;
 
             // --- Helper Functions ---
             const getStatus = tid => {
@@ -424,7 +432,6 @@
             async function fetchTracks() {
                 const loadingSpinner = document.getElementById('loading-spinner');
                 const noTracksMessage = document.getElementById('no-tracks-message');
-                const milestonesList = document.getElementById('milestones-list');
 
                 userDept = (sessionStorage.getItem('userDepartment') || 'Other').trim();
                 if (!userDept || userDept === 'null') userDept = 'Other';
@@ -499,26 +506,7 @@
                         : '-';
                     document.getElementById('stat-pending-quizzes').textContent = totalPendingQuizzes;
 
-                    if (progressGlobal.milestones && progressGlobal.milestones.length > 0) {
-                        milestonesList.innerHTML = progressGlobal.milestones
-                            .map(
-                                m => `
-                        <div class="flex items-center gap-3 p-3 bg-slate-800/50 border border-slate-700 rounded-lg">
-                            <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                                <span class="material-symbols-outlined text-sm">stars</span>
-                            </div>
-                            <div class="text-left">
-                                <p class="text-white text-xs font-bold uppercase tracking-wider">${m.value}% Completed</p>
-                                <p class="text-slate-400 text-[10px]">${m.trackName} Track</p>
-                            </div>
-                        </div>
-                    `
-                            )
-                            .join('');
-                    } else {
-                        milestonesList.innerHTML =
-                            '<p class="text-slate-500 text-sm italic col-span-full">No milestones yet. Keep learning to earn badges!</p>';
-                    }
+                    renderMilestones();
 
                     renderSections();
                 } catch (err) {
@@ -527,6 +515,49 @@
                     noTracksMessage.classList.remove('hidden');
                     noTracksMessage.innerHTML = `<p class="text-red-400">Failed to load tracks. Please refresh.</p>`;
                 }
+            }
+
+            function renderMilestones() {
+                const milestonesList = document.getElementById('milestones-list');
+                const allMilestones = progressGlobal.milestones || [];
+                if (allMilestones.length === 0) {
+                    milestonesList.innerHTML =
+                        '<p class="text-slate-500 text-sm italic col-span-full">No milestones yet. Keep learning to earn badges!</p>';
+                    document.getElementById('milestone-pagination').classList.add('hidden');
+                    return;
+                }
+                const start = (currentMilestonePage - 1) * milestonesPerPage;
+                const paginated = allMilestones.slice(start, start + milestonesPerPage);
+                const cards = paginated.map(
+                    m => `
+                    <div class="flex items-center gap-3 p-3 bg-slate-800/50 border border-slate-700 rounded-lg">
+                        <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
+                            <span class="material-symbols-outlined text-sm">stars</span>
+                        </div>
+                        <div class="text-left min-w-0">
+                            <p class="text-white text-xs font-bold uppercase tracking-wider">${m.value}% Completed</p>
+                            <p class="text-slate-400 text-[10px] truncate">${m.trackName} Track</p>
+                        </div>
+                    </div>`
+                );
+                // Pad with invisible placeholders to keep grid height constant
+                for (let i = paginated.length; i < milestonesPerPage; i++) {
+                    cards.push(`<div class="flex items-center gap-3 p-3 invisible pointer-events-none" aria-hidden="true">
+                        <div class="w-8 h-8 shrink-0"></div>
+                        <div><p class="text-xs">&nbsp;</p><p class="text-[10px]">&nbsp;</p></div>
+                    </div>`);
+                }
+                milestonesList.innerHTML = cards.join('');
+                renderPagination(
+                    'milestone-pagination',
+                    allMilestones.length,
+                    currentMilestonePage,
+                    p => {
+                        currentMilestonePage = p;
+                        renderMilestones();
+                    },
+                    milestonesPerPage
+                );
             }
 
             function renderSections() {
@@ -569,18 +600,24 @@
                     const allQuizzes = progressGlobal.pendingQuizzes;
                     const quizStart = (currentQuizPage - 1) * quizzesPerPage;
                     const paginatedQuizzes = allQuizzes.slice(quizStart, quizStart + quizzesPerPage);
-                    pendingQuizzesList.innerHTML = paginatedQuizzes
-                        .map(pq => {
-                            const tName = pq.trackName || 'Track';
-                            return `
+                    const quizCards = paginatedQuizzes.map(pq => {
+                        const tName = pq.trackName || 'Track';
+                        return `
                         <div class="glass-card p-5 border-amber-500/30 bg-amber-500/5 hover:border-amber-500 transition-all group">
                             <h3 class="text-white font-bold text-sm tracking-wide line-clamp-1">${pq.moduleTitle || 'Untitled Quiz'}</h3>
                             <p class="text-[10px] text-amber-500 uppercase tracking-widest font-extrabold mt-1">${tName}</p>
                             <button onclick="jumpToQuiz('${pq.trackSlug || ''}', '${pq.trackId || ''}', '${pq.quizId || ''}', '${tName.replace(/'/g, "\\'")}')" class="w-full mt-4 py-2 bg-amber-500 text-slate-900 text-xs font-bold rounded-lg transition-all">Take Quiz Now</button>
-                        </div>
-                    `;
-                        })
-                        .join('');
+                        </div>`;
+                    });
+                    // Pad with invisible placeholders to keep grid height constant across pages
+                    for (let i = paginatedQuizzes.length; i < quizzesPerPage; i++) {
+                        quizCards.push(`<div class="glass-card p-5 invisible pointer-events-none" aria-hidden="true">
+                            <h3 class="text-sm">&nbsp;</h3>
+                            <p class="text-[10px] mt-1">&nbsp;</p>
+                            <button class="w-full mt-4 py-2 text-xs">&nbsp;</button>
+                        </div>`);
+                    }
+                    pendingQuizzesList.innerHTML = quizCards.join('');
                     renderPagination(
                         'quiz-pagination',
                         allQuizzes.length,

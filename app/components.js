@@ -246,7 +246,7 @@ class LearnerHeader extends HTMLElement {
         <header class="sticky top-0 z-50 w-full border-b border-[var(--ai-border)] bg-[var(--ai-bg-dark)]/80 apple-blur">
             <div class="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
                 <div class="flex items-center gap-3">
-                    <img alt="Four Js Logo" class="h-6 w-auto object-contain" src="logo.png">
+                    <img alt="Four Js Logo" class="h-9 w-auto object-contain" src="logo.png">
                     <span class="text-[18px] md:text-[20px] font-normal tracking-wide text-white font-display">Academy</span>
                 </div>
                 <div class="flex items-center gap-3">
@@ -506,7 +506,7 @@ class AdminHeader extends HTMLElement {
                     <span class="material-symbols-outlined">menu</span>
                 </button>
                 <span class="text-[18px] lg:text-[20px] font-normal tracking-wide text-white font-display flex items-center">
-                    <img alt="Four Js Logo" class="h-6 w-auto object-contain mr-3" src="logo.png">
+                    <img alt="Four Js Logo" class="h-9 w-auto object-contain mr-3" src="logo.png">
                     <span class="hidden sm:inline">Academy</span>
                     <span class="ml-2 lg:ml-4 pl-2 lg:pl-4 border-l border-[var(--ai-border)] text-[var(--ai-text-muted)] text-[10px] lg:text-xs font-semibold tracking-wider uppercase flex items-center pt-1">Admin Portal</span>
                 </span>
@@ -3523,6 +3523,16 @@ class AiQuiz extends HTMLElement {
 
         // Call progress API for every attempt if a moduleId is present
         if (this.getAttribute('module-id') && sessionStorage.getItem('userRole') !== 'ADMIN') {
+            // Optimistic UI update: Done badge shows for any quiz attempt regardless of pass/fail
+            window.dispatchEvent(
+                new CustomEvent('ai-progress-update', {
+                    detail: {
+                        moduleId: this.getAttribute('module-id'),
+                        score: this.score,
+                        passed: this.passed
+                    }
+                })
+            );
             fetch('/api/progress/complete', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -3532,21 +3542,7 @@ class AiQuiz extends HTMLElement {
                     score: this.score,
                     completed: this.passed
                 })
-            })
-                .then(res => {
-                    if (res.ok) {
-                        window.dispatchEvent(
-                            new CustomEvent('ai-progress-update', {
-                                detail: {
-                                    moduleId: this.getAttribute('module-id'),
-                                    score: this.score,
-                                    passed: this.passed
-                                }
-                            })
-                        );
-                    }
-                })
-                .catch(err => console.error('Failed to update quiz progress:', err));
+            }).catch(err => console.error('Failed to update quiz progress:', err));
         }
 
         this.renderResults();
