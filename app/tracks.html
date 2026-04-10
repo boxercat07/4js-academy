@@ -249,6 +249,7 @@
             let completedTracks = [];
             let catalogueTracks = [];
             let progressGlobal = { trackProgress: [], pendingQuizzes: [], milestones: [] };
+            let tracksGlobal = [];
             let activeLanguageFilter = 'ALL';
 
             // Session Data
@@ -479,6 +480,7 @@
                         : { trackProgress: [], pendingQuizzes: [], milestones: [] };
 
                     const publishedTracks = allTracksData.filter(t => t.status === 'PUBLISHED');
+                    tracksGlobal = publishedTracks;
                     loadingSpinner.classList.add('hidden');
 
                     if (publishedTracks.length === 0) {
@@ -550,22 +552,44 @@
                 }
                 const start = (currentMilestonePage - 1) * milestonesPerPage;
                 const paginated = allMilestones.slice(start, start + milestonesPerPage);
-                const cards = paginated.map(
-                    m => `
-                    <div class="flex items-center gap-3 p-3 bg-slate-800/50 border border-slate-700 rounded-lg">
-                        <div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary shrink-0">
-                            <span class="material-symbols-outlined text-sm">stars</span>
+                const cards = paginated.map(m => {
+                    const trackObj = tracksGlobal.find(t => t.name === m.trackName);
+                    const icon =
+                        trackObj?.icon || (m.trackName.toUpperCase().includes('TECH') ? 'terminal' : 'trending_up');
+                    const isComplete = m.type === 'COMPLETE';
+                    const iconBg = isComplete
+                        ? 'bg-amber-500/15 border border-amber-400/40 shadow-[0_0_14px_1px_rgba(251,191,36,0.12)]'
+                        : 'bg-primary/10 border border-primary/20';
+                    const iconColor = isComplete ? 'text-amber-400' : 'text-primary';
+                    const cardBg = isComplete
+                        ? 'bg-amber-500/5 border-amber-400/25'
+                        : 'bg-slate-800/50 border-slate-700';
+                    const label = isComplete ? '100% Completed' : `${m.value}% Milestone`;
+                    const labelColor = isComplete ? 'text-amber-400' : 'text-white';
+                    return `
+                    <div class="flex items-center gap-3 p-3 border ${cardBg} rounded-lg">
+                        <div class="relative shrink-0">
+                            <div class="w-9 h-9 rounded-full ${iconBg} flex items-center justify-center ${iconColor}">
+                                <span class="material-symbols-outlined text-base">${icon}</span>
+                            </div>
+                            ${
+                                isComplete
+                                    ? `<div class="absolute -bottom-0.5 -right-0.5 w-[14px] h-[14px] rounded-full bg-emerald-500 border border-slate-900 flex items-center justify-center">
+                                <span class="material-symbols-outlined text-[8px] text-white leading-none">check</span>
+                            </div>`
+                                    : ''
+                            }
                         </div>
                         <div class="text-left min-w-0">
-                            <p class="text-white text-xs font-bold uppercase tracking-wider">${m.value}% Completed</p>
-                            <p class="text-slate-400 text-[10px] truncate">${m.trackName} Track</p>
+                            <p class="text-xs font-bold uppercase tracking-wider ${labelColor}">${label}</p>
+                            <p class="text-slate-400 text-[10px] truncate">${m.trackName}</p>
                         </div>
-                    </div>`
-                );
+                    </div>`;
+                });
                 // Pad with invisible placeholders to keep grid height constant
                 for (let i = paginated.length; i < milestonesPerPage; i++) {
                     cards.push(`<div class="flex items-center gap-3 p-3 invisible pointer-events-none" aria-hidden="true">
-                        <div class="w-8 h-8 shrink-0"></div>
+                        <div class="w-9 h-9 shrink-0"></div>
                         <div><p class="text-xs">&nbsp;</p><p class="text-[10px]">&nbsp;</p></div>
                     </div>`);
                 }
