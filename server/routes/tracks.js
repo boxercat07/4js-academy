@@ -19,6 +19,17 @@ function slugify(text) {
         .replace(/\-\-+/g, '-'); // Replace multiple - with single -
 }
 
+// GET /api/tracks/public-stats - Public landing page stats (no auth)
+router.get('/public-stats', async (req, res) => {
+    try {
+        const learnerCount = await prisma.user.count({ where: { role: 'LEARNER' } });
+        res.json({ learnerCount });
+    } catch (error) {
+        console.error('Public stats error:', error);
+        res.status(500).json({ error: 'Failed to fetch stats' });
+    }
+});
+
 // GET /api/tracks - Get available tracks (with optional status filter)
 router.get('/', verifyToken, async (req, res) => {
     try {

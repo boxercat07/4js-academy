@@ -120,27 +120,9 @@
 
                     <div class="mx-auto max-w-7xl px-6 text-center">
                         <div
-                            class="inline-flex items-center gap-3 px-5 py-2 rounded-full text-sm font-semibold tracking-widest mb-8"
-                            style="
-                                background: rgba(255, 255, 255, 0.04);
-                                border: 1px solid rgba(27, 95, 254, 0.3);
-                                color: rgb(27, 95, 254);
-                                backdrop-filter: blur(12px);
-                                box-shadow:
-                                    0 0 24px rgba(27, 95, 254, 0.12),
-                                    inset 0 1px 0 rgba(255, 255, 255, 0.06);
-                            "
+                            class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-[10px] font-bold uppercase tracking-wider mb-8"
                         >
-                            <span class="relative flex h-1.5 w-1.5">
-                                <span
-                                    class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75"
-                                    style="background: rgb(27, 95, 254)"
-                                ></span>
-                                <span
-                                    class="relative inline-flex rounded-full h-1.5 w-1.5"
-                                    style="background: #a5b4fc"
-                                ></span>
-                            </span>
+                            <span class="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse"></span>
                             Internal Learning Portal
                         </div>
                         <h1
@@ -323,9 +305,11 @@
                                 </div>
                             </div>
                             <div class="text-center border-l border-slate-800">
-                                <div class="text-3xl md:text-5xl font-bold text-white mb-2">3</div>
+                                <div class="text-3xl md:text-5xl font-bold text-white mb-2" id="stat-learner-count">
+                                    —
+                                </div>
                                 <div class="text-slate-500 uppercase tracking-widest text-xs font-bold font-display">
-                                    Specialized Modules
+                                    Active Learners
                                 </div>
                             </div>
                             <div class="text-center border-l lg:border-l border-slate-800">
@@ -675,5 +659,14 @@
                 © 2026 Four Js Academy. All rights reserved.
             </footer>
         </div>
+        <script>
+            fetch('/api/tracks/public-stats')
+                .then(r => r.json())
+                .then(data => {
+                    const el = document.getElementById('stat-learner-count');
+                    if (el) el.textContent = data.learnerCount > 0 ? data.learnerCount : '—';
+                })
+                .catch(() => {});
+        </script>
     </body>
 </html>
