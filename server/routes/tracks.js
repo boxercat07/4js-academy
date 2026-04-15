@@ -607,6 +607,8 @@ router.post('/:id/publish', verifyToken, verifyAdmin, async (req, res) => {
         const existingModules = await prisma.module.findMany({ where: { trackId: id } });
         const existingTitles = existingModules.map(m => m.title);
         const publishedTitles = [];
+        // Track consumed IDs to handle duplicate titles correctly (each DB record matched at most once)
+        const consumedIds = new Set();
 
         let orderIndex = 0;
         for (const mod of modules) {
@@ -634,8 +636,9 @@ router.post('/:id/publish', verifyToken, verifyAdmin, async (req, res) => {
                     mediaUrl = item['video-id'] || blobUrl || '';
                 }
 
-                // Let's use finding and manual update/create
-                const existing = existingModules.find(m => m.title === title);
+                // Match each DB record at most once so duplicate titles don't clobber each other
+                const existing = existingModules.find(m => m.title === title && !consumedIds.has(m.id));
+                if (existing) consumedIds.add(existing.id);
                 if (existing) {
                     // Cleanup old file if it changed
                     if (existing.mediaUrl && existing.mediaUrl !== mediaUrl) {
@@ -647,7 +650,8 @@ router.post('/:id/publish', verifyToken, verifyAdmin, async (req, res) => {
                             description: mod.title || 'Module',
                             order: orderIndex,
                             type,
-                            mediaUrl
+                            mediaUrl,
+                            status: 'PUBLISHED'
                         }
                     });
                 } else {
