@@ -633,8 +633,14 @@ router.post('/:id/publish', verifyToken, verifyAdmin, async (req, res) => {
                     mediaUrl = item['video-id'] || blobUrl || '';
                 }
 
-                // Match each DB record at most once so duplicate titles don't clobber each other
-                const existing = existingModules.find(m => m.title === title && !consumedIds.has(m.id));
+                // Match by DB module ID first (set in editor after Priority-2 reconstruction),
+                // then fall back to title matching. ID-based match prevents cross-module title
+                // collisions (e.g. "Aller plus loin" appearing in both Module 9 and Module 10).
+                const moduleId = item['module-id'];
+                let existing = moduleId ? existingModules.find(m => m.id === moduleId && !consumedIds.has(m.id)) : null;
+                if (!existing) {
+                    existing = existingModules.find(m => m.title === title && !consumedIds.has(m.id));
+                }
                 if (existing) consumedIds.add(existing.id);
                 if (existing) {
                     // Cleanup old file if it changed
@@ -644,6 +650,7 @@ router.post('/:id/publish', verifyToken, verifyAdmin, async (req, res) => {
                     await prisma.module.update({
                         where: { id: existing.id },
                         data: {
+                            title,
                             description: mod.title || 'Module',
                             order: orderIndex,
                             type,

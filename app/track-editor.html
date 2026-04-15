@@ -852,17 +852,25 @@
 
                                     // Priority 2: Published Modules (Transition/Fallback)
                                     const groupedModules = [];
+                                    let groupIndex = 0;
                                     data.modules.forEach(m => {
                                         const modTitle = m.description || 'Module';
-                                        const modStep = m.order ? m.order.toString().padStart(2, '0') : '01';
 
                                         let group = groupedModules.find(g => g.title === modTitle);
                                         if (!group) {
-                                            group = { title: modTitle, step: modStep, items: [] };
+                                            groupIndex++;
+                                            // Use group index (not item order) so step numbers are
+                                            // stable and don't grow each time items are added.
+                                            group = {
+                                                title: modTitle,
+                                                step: groupIndex.toString().padStart(2, '0'),
+                                                items: []
+                                            };
                                             groupedModules.push(group);
                                         }
 
                                         group.items.push({
+                                            'module-id': m.id,
                                             title: m.title,
                                             type: m.type,
                                             'file-id': m.fileId || '',
