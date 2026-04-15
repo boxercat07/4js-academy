@@ -2869,7 +2869,7 @@ class AiMediaViewerModal extends HTMLElement {
             } else if (type === 'PAGE') {
                 if (this.pageContent) {
                     const rawContent = url || '<p class="text-slate-400 italic">No content on this page.</p>';
-                    this.pageContent.innerHTML = `<div class="max-w-[1400px] mx-auto">${sanitizeHTML(rawContent)}</div>`;
+                    this.pageContent.innerHTML = `<div style="max-width:1400px;margin-left:auto;margin-right:auto">${sanitizeHTML(rawContent)}</div>`;
                     this.pageContent.classList.remove('hidden');
                     // Ensure YouTube embeds are responsive
                     this.pageContent.querySelectorAll('iframe').forEach(ifr => {
