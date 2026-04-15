@@ -16,18 +16,22 @@
             id="trackModal"
             class="fixed inset-0 z-[100] hidden flex items-center justify-center bg-[#0a0f1a]/80 backdrop-blur-sm"
         >
-            <div class="bg-[#131b2c] border border-slate-700/50 rounded-xl p-6 w-full max-w-md shadow-2xl relative">
-                <button
-                    onclick="closeTrackModal()"
-                    class="absolute top-4 right-4 text-slate-400 hover:text-white material-symbols-outlined"
-                >
-                    close
-                </button>
-                <h2 id="modalTitle" class="text-xl font-bold text-white mb-6 font-display">Create New Track</h2>
+            <div
+                class="bg-[#131b2c] border border-slate-700/50 rounded-xl w-full max-w-md shadow-2xl flex flex-col max-h-[90vh]"
+            >
+                <div class="flex items-center justify-between px-6 pt-6 pb-5 shrink-0">
+                    <h2 id="modalTitle" class="text-xl font-bold text-white font-display">Create New Track</h2>
+                    <button
+                        onclick="closeTrackModal()"
+                        class="text-slate-400 hover:text-white material-symbols-outlined"
+                    >
+                        close
+                    </button>
+                </div>
 
-                <form id="trackForm" onsubmit="submitTrackForm(event)">
+                <form id="trackForm" onsubmit="submitTrackForm(event)" class="flex flex-col flex-1 min-h-0">
                     <input type="hidden" id="track-id" />
-                    <div class="space-y-4">
+                    <div class="overflow-y-auto flex-1 px-6 space-y-4 scroll-smooth">
                         <div>
                             <label class="block text-xs font-bold text-slate-400 mb-1 uppercase tracking-widest">
                                 Track Name
@@ -113,6 +117,75 @@
                                 <option value="PUBLISHED">Published</option>
                             </select>
                         </div>
+                        <!-- Certification -->
+                        <div class="p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20">
+                            <div class="flex items-center justify-between">
+                                <label class="flex items-center gap-3 cursor-pointer select-none group">
+                                    <div class="relative shrink-0 w-10 h-6">
+                                        <input
+                                            type="checkbox"
+                                            id="track-isCertifiable"
+                                            class="hidden"
+                                            onchange="toggleCertFieldsAdmin()"
+                                        />
+                                        <div
+                                            id="toggle-cert-track-admin"
+                                            class="absolute inset-0 rounded-full bg-slate-600 border border-slate-500/50 transition-all duration-200"
+                                        ></div>
+                                        <div
+                                            id="toggle-cert-thumb-admin"
+                                            class="absolute top-1 left-1 w-4 h-4 rounded-full bg-white shadow-md transition-all duration-200"
+                                        ></div>
+                                    </div>
+                                    <span
+                                        class="text-[10px] font-bold text-slate-300 uppercase tracking-widest group-hover:text-slate-100 transition-colors"
+                                    >
+                                        Award a certification
+                                    </span>
+                                </label>
+                                <span class="material-symbols-outlined text-emerald-400 text-base">
+                                    workspace_premium
+                                </span>
+                            </div>
+                            <div id="cert-fields-admin" class="hidden space-y-3 mt-3">
+                                <div>
+                                    <label
+                                        class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1"
+                                    >
+                                        Minimum score (%)
+                                    </label>
+                                    <input
+                                        type="number"
+                                        id="track-certScoreMin"
+                                        min="0"
+                                        max="100"
+                                        placeholder="Ex: 70"
+                                        class="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded text-white text-sm focus:border-emerald-500 focus:outline-none"
+                                    />
+                                    <p class="text-[10px] text-slate-500 mt-1">
+                                        Leave blank for no required threshold.
+                                    </p>
+                                </div>
+                                <div>
+                                    <label
+                                        class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1"
+                                    >
+                                        Expiration (months)
+                                    </label>
+                                    <input
+                                        type="number"
+                                        id="track-certExpiryMonths"
+                                        min="1"
+                                        placeholder="Ex: 12"
+                                        class="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded text-white text-sm focus:border-emerald-500 focus:outline-none"
+                                    />
+                                    <p class="text-[10px] text-slate-500 mt-1">
+                                        Leave blank for a permanent certification.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
                         <div>
                             <div class="flex items-center justify-between mb-2">
                                 <label class="block text-xs font-bold text-slate-400 uppercase tracking-widest">
@@ -224,8 +297,8 @@
                             </div>
                         </div>
                     </div>
-
-                    <div class="mt-8 flex justify-end gap-3">
+                    <!-- end scrollable area -->
+                    <div class="px-6 py-5 shrink-0 border-t border-slate-700/50 flex justify-end gap-3">
                         <button
                             type="button"
                             onclick="closeTrackModal()"
@@ -259,7 +332,16 @@
                                 Orchestrate learning pathways and coordinate curriculum distribution.
                             </p>
                         </div>
-                        <div class="mt-6 md:mt-0">
+                        <div class="mt-6 md:mt-0 flex items-center gap-3">
+                            <button
+                                onclick="reconcileCerts()"
+                                id="reconcile-btn"
+                                class="px-4 py-3 flex items-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/5 text-emerald-400 hover:bg-emerald-500/10 hover:border-emerald-500/50 text-sm font-bold transition-all"
+                                title="Re-evaluate certifications for all learners across all certifiable tracks"
+                            >
+                                <span class="material-symbols-outlined text-base">workspace_premium</span>
+                                Sync Certifications
+                            </button>
                             <button
                                 onclick="openCreateModal()"
                                 class="btn-primary px-6 py-3 flex items-center gap-2 group"
@@ -361,7 +443,7 @@
                         <button onclick="previewTrack('${track.id}', '${safeName}', '${track.slug || ''}')" class="p-2 bg-primary/10 hover:bg-primary/20 text-primary rounded-lg transition-all" title="Preview as Learner">
                             <span class="material-symbols-outlined text-base">visibility</span>
                         </button>
-                        <button onclick="openEditMetadataModal('${track.id}', '${safeName}', '${safeDesc}', '${track.status}', '${track.icon || ''}', '${track.targetDepartments || ''}', '${track.language || 'EN'}')" class="p-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-all" title="Edit Metadata">
+                        <button onclick="openEditMetadataModal('${track.id}', '${safeName}', '${safeDesc}', '${track.status}', '${track.icon || ''}', '${track.targetDepartments || ''}', '${track.language || 'EN'}', ${!!track.isCertifiable}, ${track.certScoreMin ?? 'null'}, ${track.certExpiryMonths ?? 'null'})" class="p-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg transition-all" title="Edit Metadata">
                             <span class="material-symbols-outlined text-base">settings</span>
                         </button>
                         <button onclick="deleteTrack('${track.id}', '${safeName}', '${track.status}')" 
@@ -385,6 +467,11 @@
                 document.getElementById('icon-preview').textContent = 'terminal';
                 // Clear checkboxes
                 document.querySelectorAll('#dept-checkboxes input').forEach(cb => (cb.checked = false));
+                document.getElementById('track-isCertifiable').checked = false;
+                document.getElementById('cert-fields-admin').classList.add('hidden');
+                applyCertToggleVisualAdmin(false);
+                document.getElementById('track-certScoreMin').value = '';
+                document.getElementById('track-certExpiryMonths').value = '';
                 document.getElementById('modalTitle').innerText = 'Create New Track';
                 document.getElementById('status-container').classList.add('hidden');
                 document.getElementById('trackModal').classList.remove('hidden');
@@ -399,7 +486,35 @@
                 counter.className = `text-[10px] ${remaining <= 20 ? 'text-amber-400' : remaining <= 0 ? 'text-red-400' : 'text-slate-500'}`;
             }
 
-            function openEditMetadataModal(id, name, description, status, icon, targetDepartments, language) {
+            function applyCertToggleVisualAdmin(checked) {
+                const track = document.getElementById('toggle-cert-track-admin');
+                const thumb = document.getElementById('toggle-cert-thumb-admin');
+                if (!track || !thumb) return;
+                track.classList.toggle('bg-slate-600', !checked);
+                track.classList.toggle('bg-emerald-500', checked);
+                track.classList.toggle('border-slate-500/50', !checked);
+                track.classList.toggle('border-emerald-400/40', checked);
+                thumb.style.transform = checked ? 'translateX(16px)' : 'translateX(0)';
+            }
+
+            function toggleCertFieldsAdmin() {
+                const checked = document.getElementById('track-isCertifiable').checked;
+                document.getElementById('cert-fields-admin').classList.toggle('hidden', !checked);
+                applyCertToggleVisualAdmin(checked);
+            }
+
+            function openEditMetadataModal(
+                id,
+                name,
+                description,
+                status,
+                icon,
+                targetDepartments,
+                language,
+                isCertifiable,
+                certScoreMin,
+                certExpiryMonths
+            ) {
                 document.getElementById('track-id').value = id;
                 document.getElementById('track-name').value = name;
                 document.getElementById('track-description').value = description;
@@ -416,6 +531,13 @@
                     cb.checked = depts.includes(cb.value);
                 });
 
+                const certChk = document.getElementById('track-isCertifiable');
+                certChk.checked = !!isCertifiable;
+                document.getElementById('cert-fields-admin').classList.toggle('hidden', !isCertifiable);
+                applyCertToggleVisualAdmin(!!isCertifiable);
+                document.getElementById('track-certScoreMin').value = certScoreMin != null ? certScoreMin : '';
+                document.getElementById('track-certExpiryMonths').value =
+                    certExpiryMonths != null ? certExpiryMonths : '';
                 document.getElementById('modalTitle').innerText = 'Edit Track Metadata';
                 document.getElementById('status-container').classList.remove('hidden');
                 document.getElementById('trackModal').classList.remove('hidden');
@@ -423,6 +545,34 @@
 
             function closeTrackModal() {
                 document.getElementById('trackModal').classList.add('hidden');
+            }
+
+            async function reconcileCerts() {
+                const btn = document.getElementById('reconcile-btn');
+                const originalHTML = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML =
+                    '<span class="material-symbols-outlined text-base animate-spin">progress_activity</span> Syncing...';
+
+                try {
+                    const res = await fetch('/api/admin/certs/reconcile', { method: 'POST' });
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.error || 'Reconciliation failed');
+
+                    const { issued, renewed, revoked, updated, tracksProcessed } = data.summary;
+                    const parts = [];
+                    if (issued > 0) parts.push(`${issued} issued`);
+                    if (renewed > 0) parts.push(`${renewed} renewed`);
+                    if (revoked > 0) parts.push(`${revoked} revoked`);
+                    if (updated > 0) parts.push(`${updated} updated`);
+                    const detail = parts.length > 0 ? parts.join(', ') : 'no changes needed';
+                    alert(`Sync complete across ${tracksProcessed} track(s): ${detail}.`);
+                } catch (err) {
+                    alert('Sync failed: ' + err.message);
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = originalHTML;
+                }
             }
 
             window.toggleAllDepartments = checked => {
@@ -433,6 +583,8 @@
                 e.preventDefault();
                 const id = document.getElementById('track-id').value;
                 const langEl = document.getElementById('track-language');
+                const scoreMinRaw = document.getElementById('track-certScoreMin').value;
+                const expiryRaw = document.getElementById('track-certExpiryMonths').value;
                 const payload = {
                     name: document.getElementById('track-name').value,
                     description: document.getElementById('track-description').value,
@@ -441,7 +593,10 @@
                     language: langEl ? langEl.value : 'EN',
                     targetDepartments: Array.from(document.querySelectorAll('#dept-checkboxes input:checked'))
                         .map(cb => cb.value)
-                        .join(',')
+                        .join(','),
+                    isCertifiable: document.getElementById('track-isCertifiable').checked,
+                    certScoreMin: scoreMinRaw !== '' ? parseInt(scoreMinRaw) : null,
+                    certExpiryMonths: expiryRaw !== '' ? parseInt(expiryRaw) : null
                 };
                 console.log('Submitting track form payload:', payload);
 

@@ -250,9 +250,9 @@
                         ></div>
                         <!-- Modal Card -->
                         <div
-                            class="relative bg-background-dark border border-slate-800 w-full max-w-md p-8 rounded-xl shadow-2xl mx-4"
+                            class="relative bg-background-dark border border-slate-800 w-full max-w-md rounded-xl shadow-2xl mx-4 flex flex-col max-h-[90vh]"
                         >
-                            <div class="flex items-center justify-between mb-6">
+                            <div class="flex items-center justify-between px-8 pt-8 pb-6 shrink-0">
                                 <h3 class="branding-font text-lg font-bold tracking-tight text-white uppercase">
                                     Track Settings
                                 </h3>
@@ -264,211 +264,288 @@
                                 </button>
                             </div>
 
-                            <form id="settings-form" onsubmit="saveTrackMetadata(event)" class="space-y-5">
-                                <div>
-                                    <label
-                                        class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-widest"
-                                    >
-                                        Track Name
-                                    </label>
-                                    <input
-                                        type="text"
-                                        id="setting-name"
-                                        required
-                                        maxlength="40"
-                                        class="w-full px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-lg text-white focus:border-primary focus:outline-none"
-                                    />
-                                </div>
-                                <div>
-                                    <label
-                                        class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-widest"
-                                    >
-                                        Description
-                                    </label>
-                                    <textarea
-                                        id="setting-description"
-                                        rows="3"
-                                        maxlength="150"
-                                        oninput="updateDescCounter('setting-description', 'setting-desc-counter')"
-                                        class="w-full px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-lg text-white focus:border-primary focus:outline-none"
-                                    ></textarea>
-                                    <div class="flex justify-end mt-1">
-                                        <span id="setting-desc-counter" class="text-[10px] text-slate-500">
-                                            150 remaining
-                                        </span>
-                                    </div>
-                                </div>
-                                <div>
-                                    <label
-                                        class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-widest"
-                                    >
-                                        Material Icon Name
-                                    </label>
-                                    <div class="flex gap-2">
+                            <form
+                                id="settings-form"
+                                onsubmit="saveTrackMetadata(event)"
+                                class="flex flex-col flex-1 min-h-0"
+                            >
+                                <div class="overflow-y-auto flex-1 px-8 space-y-5 scroll-smooth">
+                                    <div>
+                                        <label
+                                            class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-widest"
+                                        >
+                                            Track Name
+                                        </label>
                                         <input
                                             type="text"
-                                            id="setting-icon"
-                                            placeholder="e.g. terminal, school, business..."
-                                            class="w-full px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-lg text-white focus:border-primary focus:outline-none flex-1"
+                                            id="setting-name"
+                                            required
+                                            maxlength="40"
+                                            class="w-full px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-lg text-white focus:border-primary focus:outline-none"
                                         />
-                                        <div
-                                            class="size-11 rounded-lg bg-slate-900 flex items-center justify-center border border-slate-800"
+                                    </div>
+                                    <div>
+                                        <label
+                                            class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-widest"
                                         >
-                                            <span
-                                                id="setting-icon-preview"
-                                                class="material-symbols-outlined text-primary text-2xl"
-                                            >
-                                                terminal
+                                            Description
+                                        </label>
+                                        <textarea
+                                            id="setting-description"
+                                            rows="3"
+                                            maxlength="150"
+                                            oninput="updateDescCounter('setting-description', 'setting-desc-counter')"
+                                            class="w-full px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-lg text-white focus:border-primary focus:outline-none"
+                                        ></textarea>
+                                        <div class="flex justify-end mt-1">
+                                            <span id="setting-desc-counter" class="text-[10px] text-slate-500">
+                                                150 remaining
                                             </span>
                                         </div>
                                     </div>
-                                </div>
-                                <div>
-                                    <label
-                                        class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-widest"
-                                    >
-                                        Status
-                                    </label>
-                                    <select
-                                        id="setting-status"
-                                        class="w-full px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-lg text-white focus:border-primary focus:outline-none appearance-none"
-                                    >
-                                        <option value="DRAFT">DRAFT</option>
-                                        <option value="PUBLISHED">PUBLISHED</option>
-                                    </select>
-                                </div>
-
-                                <div>
-                                    <div class="flex items-center justify-between mb-2">
+                                    <div>
                                         <label
-                                            class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest"
+                                            class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-widest"
                                         >
-                                            Target Departments
+                                            Material Icon Name
                                         </label>
-                                        <button
-                                            type="button"
-                                            onclick="toggleAllDepartments(true)"
-                                            class="text-[9px] font-bold text-primary hover:text-white uppercase tracking-tighter"
-                                        >
-                                            Select All
-                                        </button>
+                                        <div class="flex gap-2">
+                                            <input
+                                                type="text"
+                                                id="setting-icon"
+                                                placeholder="e.g. terminal, school, business..."
+                                                class="w-full px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-lg text-white focus:border-primary focus:outline-none flex-1"
+                                            />
+                                            <div
+                                                class="size-11 rounded-lg bg-slate-900 flex items-center justify-center border border-slate-800"
+                                            >
+                                                <span
+                                                    id="setting-icon-preview"
+                                                    class="material-symbols-outlined text-primary text-2xl"
+                                                >
+                                                    terminal
+                                                </span>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div
-                                        class="grid grid-cols-2 gap-2 p-3 bg-slate-900/50 border border-slate-800 rounded-lg max-h-40 overflow-y-auto"
-                                        id="target-depts-container"
-                                    >
-                                        <label class="flex items-center gap-2 cursor-pointer group">
-                                            <input
-                                                type="checkbox"
-                                                value="Sales"
-                                                class="dept-checkbox w-4 h-4 rounded border-slate-700 bg-slate-800 text-primary focus:ring-primary focus:ring-offset-slate-950"
-                                            />
-                                            <span
-                                                class="text-xs text-slate-400 group-hover:text-slate-200 transition-colors"
-                                            >
-                                                Sales
-                                            </span>
+                                    <div>
+                                        <label
+                                            class="block text-[10px] font-bold text-slate-500 mb-1 uppercase tracking-widest"
+                                        >
+                                            Status
                                         </label>
-                                        <label class="flex items-center gap-2 cursor-pointer group">
-                                            <input
-                                                type="checkbox"
-                                                value="PS"
-                                                class="dept-checkbox w-4 h-4 rounded border-slate-700 bg-slate-800 text-primary focus:ring-primary focus:ring-offset-slate-950"
-                                            />
-                                            <span
-                                                class="text-xs text-slate-400 group-hover:text-slate-200 transition-colors"
-                                            >
-                                                PS
+                                        <select
+                                            id="setting-status"
+                                            class="w-full px-3 py-2.5 bg-slate-900 border border-slate-800 rounded-lg text-white focus:border-primary focus:outline-none appearance-none"
+                                        >
+                                            <option value="DRAFT">DRAFT</option>
+                                            <option value="PUBLISHED">PUBLISHED</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Certification -->
+                                    <div class="p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20">
+                                        <div class="flex items-center justify-between">
+                                            <label class="flex items-center gap-3 cursor-pointer select-none group">
+                                                <div class="relative shrink-0 w-10 h-6">
+                                                    <input
+                                                        type="checkbox"
+                                                        id="setting-isCertifiable"
+                                                        class="hidden"
+                                                        onchange="toggleCertFields()"
+                                                    />
+                                                    <div
+                                                        id="toggle-cert-track"
+                                                        class="absolute inset-0 rounded-full bg-slate-600 border border-slate-500/50 transition-all duration-200"
+                                                    ></div>
+                                                    <div
+                                                        id="toggle-cert-thumb"
+                                                        class="absolute top-1 left-1 w-4 h-4 rounded-full bg-white shadow-md transition-all duration-200"
+                                                    ></div>
+                                                </div>
+                                                <span
+                                                    class="text-[10px] font-bold text-slate-300 uppercase tracking-widest group-hover:text-slate-100 transition-colors"
+                                                >
+                                                    Award a certification
+                                                </span>
+                                            </label>
+                                            <span class="material-symbols-outlined text-emerald-400 text-base">
+                                                workspace_premium
                                             </span>
-                                        </label>
-                                        <label class="flex items-center gap-2 cursor-pointer group">
-                                            <input
-                                                type="checkbox"
-                                                value="Marketing"
-                                                class="dept-checkbox w-4 h-4 rounded border-slate-700 bg-slate-800 text-primary focus:ring-primary focus:ring-offset-slate-950"
-                                            />
-                                            <span
-                                                class="text-xs text-slate-400 group-hover:text-slate-200 transition-colors"
+                                        </div>
+                                        <div id="cert-fields" class="hidden space-y-3 mt-3">
+                                            <div>
+                                                <label
+                                                    class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1"
+                                                >
+                                                    Minimum score (%)
+                                                </label>
+                                                <input
+                                                    type="number"
+                                                    id="setting-certScoreMin"
+                                                    min="0"
+                                                    max="100"
+                                                    placeholder="Ex: 70"
+                                                    class="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-lg text-white text-sm focus:border-emerald-500 focus:outline-none"
+                                                />
+                                                <p class="text-[10px] text-slate-500 mt-1">
+                                                    Leave blank for no required threshold.
+                                                </p>
+                                            </div>
+                                            <div>
+                                                <label
+                                                    class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1"
+                                                >
+                                                    Expiration (months)
+                                                </label>
+                                                <input
+                                                    type="number"
+                                                    id="setting-certExpiryMonths"
+                                                    min="1"
+                                                    placeholder="Ex: 12"
+                                                    class="w-full px-3 py-2 bg-slate-900 border border-slate-800 rounded-lg text-white text-sm focus:border-emerald-500 focus:outline-none"
+                                                />
+                                                <p class="text-[10px] text-slate-500 mt-1">
+                                                    Leave blank for a permanent certification.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <div class="flex items-center justify-between mb-2">
+                                            <label
+                                                class="block text-[10px] font-bold text-slate-500 uppercase tracking-widest"
                                             >
-                                                Marketing
-                                            </span>
-                                        </label>
-                                        <label class="flex items-center gap-2 cursor-pointer group">
-                                            <input
-                                                type="checkbox"
-                                                value="R&D"
-                                                class="dept-checkbox w-4 h-4 rounded border-slate-700 bg-slate-800 text-primary focus:ring-primary focus:ring-offset-slate-950"
-                                            />
-                                            <span
-                                                class="text-xs text-slate-400 group-hover:text-slate-200 transition-colors"
+                                                Target Departments
+                                            </label>
+                                            <button
+                                                type="button"
+                                                onclick="toggleAllDepartments(true)"
+                                                class="text-[9px] font-bold text-primary hover:text-white uppercase tracking-tighter"
                                             >
-                                                R&D
-                                            </span>
-                                        </label>
-                                        <label class="flex items-center gap-2 cursor-pointer group">
-                                            <input
-                                                type="checkbox"
-                                                value="Finance"
-                                                class="dept-checkbox w-4 h-4 rounded border-slate-700 bg-slate-800 text-primary focus:ring-primary focus:ring-offset-slate-950"
-                                            />
-                                            <span
-                                                class="text-xs text-slate-400 group-hover:text-slate-200 transition-colors"
-                                            >
-                                                Finance
-                                            </span>
-                                        </label>
-                                        <label class="flex items-center gap-2 cursor-pointer group">
-                                            <input
-                                                type="checkbox"
-                                                value="Customer Care"
-                                                class="dept-checkbox w-4 h-4 rounded border-slate-700 bg-slate-800 text-primary focus:ring-primary focus:ring-offset-slate-950"
-                                            />
-                                            <span
-                                                class="text-xs text-slate-400 group-hover:text-slate-200 transition-colors"
-                                            >
-                                                Customer Care
-                                            </span>
-                                        </label>
-                                        <label class="flex items-center gap-2 cursor-pointer group">
-                                            <input
-                                                type="checkbox"
-                                                value="IT & Security"
-                                                class="dept-checkbox w-4 h-4 rounded border-slate-700 bg-slate-800 text-primary focus:ring-primary focus:ring-offset-slate-950"
-                                            />
-                                            <span
-                                                class="text-xs text-slate-400 group-hover:text-slate-200 transition-colors"
-                                            >
-                                                IT & Security
-                                            </span>
-                                        </label>
-                                        <label class="flex items-center gap-2 cursor-pointer group">
-                                            <input
-                                                type="checkbox"
-                                                value="HR"
-                                                class="dept-checkbox w-4 h-4 rounded border-slate-700 bg-slate-800 text-primary focus:ring-primary focus:ring-offset-slate-950"
-                                            />
-                                            <span
-                                                class="text-xs text-slate-400 group-hover:text-slate-200 transition-colors"
-                                            >
-                                                HR
-                                            </span>
-                                        </label>
-                                        <label class="flex items-center gap-2 cursor-pointer group">
-                                            <input
-                                                type="checkbox"
-                                                value="Other"
-                                                class="dept-checkbox w-4 h-4 rounded border-slate-700 bg-slate-800 text-primary focus:ring-primary focus:ring-offset-slate-950"
-                                            />
-                                            <span
-                                                class="text-xs text-slate-400 group-hover:text-slate-200 transition-colors"
-                                            >
-                                                Other
-                                            </span>
-                                        </label>
+                                                Select All
+                                            </button>
+                                        </div>
+                                        <div
+                                            class="grid grid-cols-2 gap-2 p-3 bg-slate-900/50 border border-slate-800 rounded-lg max-h-40 overflow-y-auto"
+                                            id="target-depts-container"
+                                        >
+                                            <label class="flex items-center gap-2 cursor-pointer group">
+                                                <input
+                                                    type="checkbox"
+                                                    value="Sales"
+                                                    class="dept-checkbox w-4 h-4 rounded border-slate-700 bg-slate-800 text-primary focus:ring-primary focus:ring-offset-slate-950"
+                                                />
+                                                <span
+                                                    class="text-xs text-slate-400 group-hover:text-slate-200 transition-colors"
+                                                >
+                                                    Sales
+                                                </span>
+                                            </label>
+                                            <label class="flex items-center gap-2 cursor-pointer group">
+                                                <input
+                                                    type="checkbox"
+                                                    value="PS"
+                                                    class="dept-checkbox w-4 h-4 rounded border-slate-700 bg-slate-800 text-primary focus:ring-primary focus:ring-offset-slate-950"
+                                                />
+                                                <span
+                                                    class="text-xs text-slate-400 group-hover:text-slate-200 transition-colors"
+                                                >
+                                                    PS
+                                                </span>
+                                            </label>
+                                            <label class="flex items-center gap-2 cursor-pointer group">
+                                                <input
+                                                    type="checkbox"
+                                                    value="Marketing"
+                                                    class="dept-checkbox w-4 h-4 rounded border-slate-700 bg-slate-800 text-primary focus:ring-primary focus:ring-offset-slate-950"
+                                                />
+                                                <span
+                                                    class="text-xs text-slate-400 group-hover:text-slate-200 transition-colors"
+                                                >
+                                                    Marketing
+                                                </span>
+                                            </label>
+                                            <label class="flex items-center gap-2 cursor-pointer group">
+                                                <input
+                                                    type="checkbox"
+                                                    value="R&D"
+                                                    class="dept-checkbox w-4 h-4 rounded border-slate-700 bg-slate-800 text-primary focus:ring-primary focus:ring-offset-slate-950"
+                                                />
+                                                <span
+                                                    class="text-xs text-slate-400 group-hover:text-slate-200 transition-colors"
+                                                >
+                                                    R&D
+                                                </span>
+                                            </label>
+                                            <label class="flex items-center gap-2 cursor-pointer group">
+                                                <input
+                                                    type="checkbox"
+                                                    value="Finance"
+                                                    class="dept-checkbox w-4 h-4 rounded border-slate-700 bg-slate-800 text-primary focus:ring-primary focus:ring-offset-slate-950"
+                                                />
+                                                <span
+                                                    class="text-xs text-slate-400 group-hover:text-slate-200 transition-colors"
+                                                >
+                                                    Finance
+                                                </span>
+                                            </label>
+                                            <label class="flex items-center gap-2 cursor-pointer group">
+                                                <input
+                                                    type="checkbox"
+                                                    value="Customer Care"
+                                                    class="dept-checkbox w-4 h-4 rounded border-slate-700 bg-slate-800 text-primary focus:ring-primary focus:ring-offset-slate-950"
+                                                />
+                                                <span
+                                                    class="text-xs text-slate-400 group-hover:text-slate-200 transition-colors"
+                                                >
+                                                    Customer Care
+                                                </span>
+                                            </label>
+                                            <label class="flex items-center gap-2 cursor-pointer group">
+                                                <input
+                                                    type="checkbox"
+                                                    value="IT & Security"
+                                                    class="dept-checkbox w-4 h-4 rounded border-slate-700 bg-slate-800 text-primary focus:ring-primary focus:ring-offset-slate-950"
+                                                />
+                                                <span
+                                                    class="text-xs text-slate-400 group-hover:text-slate-200 transition-colors"
+                                                >
+                                                    IT & Security
+                                                </span>
+                                            </label>
+                                            <label class="flex items-center gap-2 cursor-pointer group">
+                                                <input
+                                                    type="checkbox"
+                                                    value="HR"
+                                                    class="dept-checkbox w-4 h-4 rounded border-slate-700 bg-slate-800 text-primary focus:ring-primary focus:ring-offset-slate-950"
+                                                />
+                                                <span
+                                                    class="text-xs text-slate-400 group-hover:text-slate-200 transition-colors"
+                                                >
+                                                    HR
+                                                </span>
+                                            </label>
+                                            <label class="flex items-center gap-2 cursor-pointer group">
+                                                <input
+                                                    type="checkbox"
+                                                    value="Other"
+                                                    class="dept-checkbox w-4 h-4 rounded border-slate-700 bg-slate-800 text-primary focus:ring-primary focus:ring-offset-slate-950"
+                                                />
+                                                <span
+                                                    class="text-xs text-slate-400 group-hover:text-slate-200 transition-colors"
+                                                >
+                                                    Other
+                                                </span>
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
-
-                                <div class="pt-4 flex items-center justify-end gap-3">
+                                <!-- end scrollable area -->
+                                <div
+                                    class="px-8 py-5 shrink-0 border-t border-slate-800 flex items-center justify-end gap-3"
+                                >
                                     <button
                                         type="button"
                                         onclick="closeTrackSettings()"
@@ -1088,6 +1165,14 @@
                                 document.getElementById('setting-icon').value = t.icon || 'terminal';
                                 document.getElementById('setting-icon-preview').textContent = t.icon || 'terminal';
                                 document.getElementById('setting-status').value = t.status;
+                                const certChk = document.getElementById('setting-isCertifiable');
+                                certChk.checked = !!t.isCertifiable;
+                                document.getElementById('cert-fields').classList.toggle('hidden', !t.isCertifiable);
+                                applyCertToggleVisual('toggle-cert-track', 'toggle-cert-thumb', !!t.isCertifiable);
+                                document.getElementById('setting-certScoreMin').value =
+                                    t.certScoreMin != null ? t.certScoreMin : '';
+                                document.getElementById('setting-certExpiryMonths').value =
+                                    t.certExpiryMonths != null ? t.certExpiryMonths : '';
 
                                 // Populate Departments
                                 const depts = t.targetDepartments
@@ -1108,6 +1193,23 @@
                                 document.getElementById('settings-modal').classList.add('hidden');
                             };
 
+                            function applyCertToggleVisual(trackId, thumbId, checked) {
+                                const track = document.getElementById(trackId);
+                                const thumb = document.getElementById(thumbId);
+                                if (!track || !thumb) return;
+                                track.classList.toggle('bg-slate-600', !checked);
+                                track.classList.toggle('bg-emerald-500', checked);
+                                track.classList.toggle('border-slate-500/50', !checked);
+                                track.classList.toggle('border-emerald-400/40', checked);
+                                thumb.style.transform = checked ? 'translateX(16px)' : 'translateX(0)';
+                            }
+
+                            window.toggleCertFields = () => {
+                                const checked = document.getElementById('setting-isCertifiable').checked;
+                                document.getElementById('cert-fields').classList.toggle('hidden', !checked);
+                                applyCertToggleVisual('toggle-cert-track', 'toggle-cert-thumb', checked);
+                            };
+
                             const settingIconInput = document.getElementById('setting-icon');
                             if (settingIconInput) {
                                 settingIconInput.addEventListener('input', e => {
@@ -1126,12 +1228,17 @@
                                     .map(cb => cb.value)
                                     .join(',');
 
+                                const scoreMinRaw = document.getElementById('setting-certScoreMin').value;
+                                const expiryRaw = document.getElementById('setting-certExpiryMonths').value;
                                 const payload = {
                                     name: document.getElementById('setting-name').value,
                                     description: document.getElementById('setting-description').value,
                                     icon: document.getElementById('setting-icon').value,
                                     status: document.getElementById('setting-status').value,
-                                    targetDepartments: selectedDepts
+                                    targetDepartments: selectedDepts,
+                                    isCertifiable: document.getElementById('setting-isCertifiable').checked,
+                                    certScoreMin: scoreMinRaw !== '' ? parseInt(scoreMinRaw) : null,
+                                    certExpiryMonths: expiryRaw !== '' ? parseInt(expiryRaw) : null
                                 };
 
                                 try {

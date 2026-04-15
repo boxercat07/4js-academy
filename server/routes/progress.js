@@ -57,7 +57,7 @@ router.post('/complete', verifyToken, async (req, res) => {
             }
         });
 
-        // Milestone Detection Logic
+        // Milestone & Certificate Detection
         if (completed) {
             try {
                 const moduleWithTrack = await prisma.module.findUnique({
@@ -72,48 +72,30 @@ router.post('/complete', verifyToken, async (req, res) => {
                     if (totalModules > 0) {
                         const trackModuleIds = track.modules.map(m => m.id);
                         const completedInTrack = await prisma.enrollment.count({
-                            where: {
-                                userId: userId,
-                                completed: true,
-                                moduleId: { in: trackModuleIds }
-                            }
+                            where: { userId, completed: true, moduleId: { in: trackModuleIds } }
                         });
 
                         const progressPercent = Math.round((completedInTrack / totalModules) * 100);
 
-                        // Possible milestones: 50, 75, 100
+                        // Milestones: 50, 75, 100
                         const thresholds = [50, 75, 100];
                         for (const threshold of thresholds) {
                             if (progressPercent >= threshold) {
-                                // Check if already reached
                                 const existing = await prisma.userMilestone.findUnique({
                                     where: {
-                                        userId_trackId_milestone: {
-                                            userId,
-                                            trackId: track.id,
-                                            milestone: threshold
-                                        }
+                                        userId_trackId_milestone: { userId, trackId: track.id, milestone: threshold }
                                     }
                                 });
-
                                 if (!existing) {
-                                    // Mark as reached
                                     await prisma.userMilestone.create({
-                                        data: {
-                                            userId,
-                                            trackId: track.id,
-                                            milestone: threshold
-                                        }
+                                        data: { userId, trackId: track.id, milestone: threshold }
                                     });
-
-                                    // Create notification
                                     let title = 'Milestone Reached!';
                                     let message = `🚀 Major milestone reached: ${threshold}% of ${track.name} completed.`;
                                     if (threshold === 100) {
                                         title = 'Track Completed!';
                                         message = `🏅 Finished ${track.name} track. Great job!`;
                                     }
-
                                     await prisma.notification.create({
                                         data: {
                                             userId,
@@ -125,11 +107,69 @@ router.post('/complete', verifyToken, async (req, res) => {
                                 }
                             }
                         }
+
+                        // Certificate issuance
+                        if (track.isCertifiable && progressPercent >= 100) {
+                            // Check score threshold
+                            let meetsScore = true;
+                            if (track.certScoreMin != null) {
+                                const quizModuleIds = track.modules.filter(m => m.type === 'QUIZ').map(m => m.id);
+                                if (quizModuleIds.length > 0) {
+                                    const quizEnrollments = await prisma.enrollment.findMany({
+                                        where: {
+                                            userId,
+                                            moduleId: { in: quizModuleIds },
+                                            completed: true,
+                                            lastScore: { not: null }
+                                        },
+                                        select: { lastScore: true }
+                                    });
+                                    if (quizEnrollments.length === 0) {
+                                        meetsScore = false;
+                                    } else {
+                                        const avg =
+                                            quizEnrollments.reduce((s, e) => s + e.lastScore, 0) /
+                                            quizEnrollments.length;
+                                        meetsScore = avg >= track.certScoreMin;
+                                    }
+                                }
+                            }
+
+                            if (meetsScore) {
+                                const existing = await prisma.certificate.findUnique({
+                                    where: { userId_trackId: { userId, trackId: track.id } }
+                                });
+                                const isRenewal = existing && existing.status === 'EXPIRED';
+                                if (!existing || isRenewal) {
+                                    const code = 'CERT-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+                                    const expiresAt = track.certExpiryMonths
+                                        ? new Date(Date.now() + track.certExpiryMonths * 30 * 24 * 60 * 60 * 1000)
+                                        : null;
+                                    if (isRenewal) {
+                                        await prisma.certificate.update({
+                                            where: { id: existing.id },
+                                            data: { code, issuedAt: new Date(), expiresAt, status: 'ACTIVE' }
+                                        });
+                                    } else {
+                                        await prisma.certificate.create({
+                                            data: { code, userId, trackId: track.id, expiresAt, status: 'ACTIVE' }
+                                        });
+                                    }
+                                    await prisma.notification.create({
+                                        data: {
+                                            userId,
+                                            type: 'CERTIFICATION_EARNED',
+                                            title: isRenewal ? 'Certification Renewed!' : 'Certification Earned!',
+                                            message: `🏆 You've ${isRenewal ? 'renewed' : 'earned'} the "${track.name}" certification!`
+                                        }
+                                    });
+                                }
+                            }
+                        }
                     }
                 }
             } catch (err) {
-                console.error('Milestone detection error:', err);
-                // Don't fail the main request if milestone detection fails
+                console.error('Milestone/certificate detection error:', err);
             }
         }
 
@@ -189,7 +229,6 @@ router.get('/dashboard', verifyToken, async (req, res) => {
         });
 
         // 2. Identify milestones (50%, 75%, 100%)
-        // For simplicity, we just check current progress levels
         const milestones = [];
         trackProgress.forEach(tp => {
             if (tp.progress >= 100) {
@@ -200,6 +239,46 @@ router.get('/dashboard', verifyToken, async (req, res) => {
                 milestones.push({ type: 'MILESTONE', trackName: tp.name, value: 50 });
             }
         });
+
+        // 2b. Fetch certificates, check expiry, add to milestones, send expiry notifications
+        const now = new Date();
+        const thirtyDaysFromNow = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+        const userCerts = await prisma.certificate.findMany({
+            where: { userId },
+            include: { track: { select: { name: true, icon: true } } }
+        });
+        for (const cert of userCerts) {
+            // Auto-expire
+            if (cert.status === 'ACTIVE' && cert.expiresAt && cert.expiresAt < now) {
+                await prisma.certificate.update({ where: { id: cert.id }, data: { status: 'EXPIRED' } });
+                cert.status = 'EXPIRED';
+            }
+            // Expiry warning notification (once per cert)
+            if (cert.status === 'ACTIVE' && cert.expiresAt && cert.expiresAt <= thirtyDaysFromNow) {
+                const alreadyNotified = await prisma.notification.findFirst({
+                    where: { userId, type: 'CERT_EXPIRING', message: { contains: cert.code } }
+                });
+                if (!alreadyNotified) {
+                    await prisma.notification.create({
+                        data: {
+                            userId,
+                            type: 'CERT_EXPIRING',
+                            title: 'Certification Expiring Soon',
+                            message: `⏰ Your "${cert.track.name}" certification (${cert.code}) expires on ${cert.expiresAt.toLocaleDateString('en-GB')}.`
+                        }
+                    });
+                }
+            }
+            milestones.unshift({
+                type: 'CERTIFICATE',
+                trackName: cert.track.name,
+                trackIcon: cert.track.icon,
+                certStatus: cert.status,
+                certCode: cert.code,
+                certExpiresAt: cert.expiresAt,
+                value: null
+            });
+        }
 
         // 3. Identify pending quizzes (Started but quiz not completed)
         const pendingQuizzes = [];
@@ -276,11 +355,30 @@ router.get('/dashboard', verifyToken, async (req, res) => {
             }
         }
 
+        // Skill points: 10 pts per completed module + floor(lastScore / 10) bonus for quizzes
+        const skillPoints = user.enrollments.reduce((sum, e) => {
+            if (!e.completed) return sum;
+            let pts = 10;
+            if (e.module?.type === 'QUIZ' && e.lastScore != null) {
+                pts += Math.floor(e.lastScore / 10);
+            }
+            return sum + pts;
+        }, 0);
+
+        // Certifications: only ACTIVE (non-expired, non-revoked) certificates
+        const certifications = userCerts.filter(c => c.status === 'ACTIVE').length;
+        const expiredCertifications = userCerts.filter(c => c.status === 'EXPIRED').length;
+        const expiredCertTrackIds = userCerts.filter(c => c.status === 'EXPIRED').map(c => c.trackId);
+
         res.json({
             trackProgress,
             overallProgress,
-            milestones: milestones.slice(0, 3),
-            pendingQuizzes
+            milestones,
+            pendingQuizzes,
+            skillPoints,
+            certifications,
+            expiredCertifications,
+            expiredCertTrackIds
         });
     } catch (error) {
         console.error('Dashboard progress error:', error);

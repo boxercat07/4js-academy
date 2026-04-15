@@ -570,6 +570,7 @@
                                     </div>
                                 </th>
                                 <th class="p-4">Quiz Status</th>
+                                <th class="p-4">Certifications</th>
                                 <th class="p-4">Actions</th>
                             </tr>
                         </thead>
@@ -786,16 +787,46 @@
                                 </div>
                             </td>
                             <td class="p-4" id="quiz-cell-${emp.id}">${quizStatusText}</td>
+                            <td class="p-4">
+                                ${
+                                    emp.certCount > 0
+                                        ? emp.certs
+                                              .map(
+                                                  c => `
+                                        <div class="flex items-center gap-1.5 mb-1">
+                                            <span class="material-symbols-outlined text-emerald-400 text-[14px]">workspace_premium</span>
+                                            <span class="text-emerald-400 text-xs font-semibold">${sanitizeText(c.trackName)}</span>
+                                            ${c.expiresAt ? `<span class="text-slate-500 text-[10px]">· exp. ${new Date(c.expiresAt).toLocaleDateString('en-GB')}</span>` : ''}
+                                        </div>`
+                                              )
+                                              .join('')
+                                        : `<span class="text-slate-500 text-xs italic">—</span>`
+                                }
+                            </td>
                             <td class="p-4 relative">
                                 <button onclick="toggleActionMenu('${emp.id}')" class="p-1 rounded hover:bg-slate-700/50 text-slate-500 hover:text-white transition-colors">
                                     <span class="material-symbols-outlined text-[20px]">more_horiz</span>
                                 </button>
-                                
+
                                 <!-- Dropdown Menu -->
-                                <div id="action-menu-${emp.id}" class="hidden absolute right-4 top-10 w-48 bg-[#1e293b] border border-slate-700 rounded-lg shadow-xl z-50 overflow-hidden">
+                                <div id="action-menu-${emp.id}" class="hidden absolute right-4 top-10 w-52 bg-[#1e293b] border border-slate-700 rounded-lg shadow-xl z-50 overflow-hidden">
                                     <button onclick="openEditModal(${JSON.stringify(emp.id).replace(/"/g, '&quot;')}, ${JSON.stringify(emp.firstName || '').replace(/"/g, '&quot;')}, ${JSON.stringify(emp.lastName || '').replace(/"/g, '&quot;')}, ${JSON.stringify(emp.email).replace(/"/g, '&quot;')}, ${JSON.stringify(emp.tracks.map(t => t.id)).replace(/"/g, '&quot;')}, ${JSON.stringify(emp.role || 'LEARNER').replace(/"/g, '&quot;')}, ${JSON.stringify(emp.department || 'Other').replace(/"/g, '&quot;')})" class="w-full text-left px-4 py-2 text-sm text-slate-300 hover:bg-slate-700 hover:text-white flex items-center gap-2">
                                         <span class="material-symbols-outlined text-[16px]">edit</span> Edit & Assign Role
                                     </button>
+                                    ${
+                                        emp.certs && emp.certs.length > 0
+                                            ? `
+                                    <div class="h-px bg-slate-700/50 w-full"></div>
+                                    ${emp.certs
+                                        .map(
+                                            c => `
+                                    <button onclick="revokeCertificate('${c.id}', '${sanitizeText(c.trackName)}', '${emp.name}')" class="w-full text-left px-4 py-2 text-sm text-amber-400 hover:bg-amber-500/10 hover:text-amber-300 flex items-center gap-2">
+                                        <span class="material-symbols-outlined text-[16px]">remove_moderator</span> Revoke: ${sanitizeText(c.trackName)}
+                                    </button>`
+                                        )
+                                        .join('')}`
+                                            : ''
+                                    }
                                     <div class="h-px bg-slate-700/50 w-full"></div>
                                     <button onclick="deleteUser(${JSON.stringify(emp.id).replace(/"/g, '&quot;')}, ${JSON.stringify(emp.name).replace(/"/g, '&quot;')}, ${JSON.stringify(emp.role).replace(/"/g, '&quot;')})" class="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 flex items-center gap-2">
                                         <span class="material-symbols-outlined text-[16px]">delete</span> Delete Employee
@@ -1367,6 +1398,25 @@
                 } catch (err) {
                     console.error(err);
                     alert('Network error updating user');
+                }
+            }
+
+            async function revokeCertificate(certId, trackName, empName) {
+                if (!confirm(`Revoke the "${trackName}" certification for ${empName}? This will notify the learner.`))
+                    return;
+                try {
+                    const res = await fetch(`/api/admin/certificates/${certId}/revoke`, {
+                        method: 'PATCH',
+                        credentials: 'include'
+                    });
+                    if (!res.ok) {
+                        const err = await res.json();
+                        alert('Failed to revoke: ' + (err.error || 'Unknown error'));
+                        return;
+                    }
+                    await fetchEmployees();
+                } catch (e) {
+                    alert('Network error while revoking certificate.');
                 }
             }
 

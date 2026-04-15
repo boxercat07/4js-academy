@@ -23,23 +23,28 @@ model User {
   tracks        Track[]         @relation("TrackToUser")
   auditLogs     AuditLog[]
   ratings       Rating[]
+  certificates  Certificate[]
 }
 
 model Track {
-  id                String   @id @default(uuid())
-  name              String   @unique
-  slug              String?  @unique
+  id                String        @id @default(uuid())
+  name              String        @unique
+  slug              String?       @unique
   description       String?
   icon              String?
-  language          String   @default("EN")
+  language          String        @default("EN")
   targetDepartments String?
-  status            String   @default("DRAFT")
+  status            String        @default("DRAFT")
   curriculumDraft   String?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  isCertifiable     Boolean       @default(false)
+  certExpiryMonths  Int?
+  certScoreMin      Int?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
   modules           Module[]
-  users             User[]   @relation("TrackToUser")
+  users             User[]        @relation("TrackToUser")
   ratings           Rating[]
+  certificates      Certificate[]
 }
 
 model Module {
@@ -116,6 +121,23 @@ model AuditLog {
   @@index([action])
   @@index([createdAt])
   @@index([resourceType])
+}
+
+model Certificate {
+  id        String    @id @default(uuid())
+  code      String    @unique
+  userId    String
+  trackId   String
+  issuedAt  DateTime  @default(now())
+  expiresAt DateTime?
+  status    String    @default("ACTIVE") // ACTIVE | EXPIRED | REVOKED
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  track     Track     @relation(fields: [trackId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, trackId])
+  @@index([userId])
+  @@index([trackId])
+  @@index([code])
 }
 
 model Rating {

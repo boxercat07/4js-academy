@@ -22,8 +22,64 @@ function slugify(text) {
 // GET /api/tracks/public-stats - Public landing page stats (no auth)
 router.get('/public-stats', async (req, res) => {
     try {
-        const learnerCount = await prisma.user.count({ where: { role: 'LEARNER' } });
-        res.json({ learnerCount });
+        const [learnerCount, learners, publishedTracks, completedEnrollments] = await Promise.all([
+            prisma.user.count({ where: { role: 'LEARNER' } }),
+            prisma.user.findMany({ where: { role: 'LEARNER' }, select: { department: true } }),
+            prisma.track.findMany({
+                where: { status: 'PUBLISHED' },
+                select: {
+                    id: true,
+                    targetDepartments: true,
+                    modules: { where: { status: 'PUBLISHED' }, select: { id: true } }
+                }
+            }),
+            prisma.enrollment.findMany({
+                where: { completed: true },
+                select: {
+                    userId: true,
+                    moduleId: true,
+                    lastScore: true,
+                    module: { select: { type: true, trackId: true } }
+                }
+            })
+        ]);
+
+        // Dept coverage
+        const uniqueDepts = [...new Set(learners.map(u => u.department).filter(Boolean))];
+        const coveredDepts = new Set();
+        for (const track of publishedTracks) {
+            if (!track.targetDepartments) continue;
+            for (const dept of track.targetDepartments.split(',').map(d => d.trim())) {
+                if (uniqueDepts.includes(dept)) coveredDepts.add(dept);
+            }
+        }
+        const deptCoverage = uniqueDepts.length > 0 ? Math.round((coveredDepts.size / uniqueDepts.length) * 100) : 0;
+
+        // Skill points: 10 pts per completed module + floor(lastScore / 10) bonus for quizzes
+        const totalSkillPoints = completedEnrollments.reduce((sum, e) => {
+            let pts = 10;
+            if (e.module?.type === 'QUIZ' && e.lastScore != null) {
+                pts += Math.floor(e.lastScore / 10);
+            }
+            return sum + pts;
+        }, 0);
+
+        // Certifications: count (userId, trackId) pairs where user completed all published modules
+        let totalCertifications = 0;
+        for (const track of publishedTracks) {
+            if (track.modules.length === 0) continue;
+            const moduleIdSet = new Set(track.modules.map(m => m.id));
+            const userCompletionCounts = new Map();
+            for (const e of completedEnrollments) {
+                if (!moduleIdSet.has(e.moduleId)) continue;
+                userCompletionCounts.set(e.userId, (userCompletionCounts.get(e.userId) || 0) + 1);
+            }
+            for (const count of userCompletionCounts.values()) {
+                if (count === moduleIdSet.size) totalCertifications++;
+            }
+        }
+
+        res.json({ learnerCount, deptCoverage, totalSkillPoints, totalCertifications });
     } catch (error) {
         console.error('Public stats error:', error);
         res.status(500).json({ error: 'Failed to fetch stats' });
@@ -178,7 +234,18 @@ router.get('/:id', verifyToken, async (req, res) => {
 router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
     try {
         const { id } = req.params;
-        let { name, description, icon, targetDepartments, status, curriculumDraft, language } = req.body;
+        let {
+            name,
+            description,
+            icon,
+            targetDepartments,
+            status,
+            curriculumDraft,
+            language,
+            isCertifiable,
+            certExpiryMonths,
+            certScoreMin
+        } = req.body;
 
         // Sanitize and validate if provided
         if (name !== undefined) {
@@ -230,7 +297,16 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
                 language,
                 targetDepartments,
                 status,
-                curriculumDraft
+                curriculumDraft,
+                isCertifiable: isCertifiable !== undefined ? Boolean(isCertifiable) : undefined,
+                certExpiryMonths:
+                    certExpiryMonths !== undefined
+                        ? certExpiryMonths === null
+                            ? null
+                            : parseInt(certExpiryMonths)
+                        : undefined,
+                certScoreMin:
+                    certScoreMin !== undefined ? (certScoreMin === null ? null : parseInt(certScoreMin)) : undefined
             }).filter(([, v]) => v !== undefined)
         );
 
@@ -280,6 +356,140 @@ router.put('/:id', verifyToken, verifyAdmin, async (req, res) => {
                 }
             } catch (notifError) {
                 console.error('Error creating publication notifications (PUT):', notifError);
+            }
+        }
+
+        // Cert reconciliation: runs whenever cert settings are explicitly included in the payload
+        if (isCertifiable !== undefined) {
+            try {
+                if (!track.isCertifiable) {
+                    // Track no longer certifiable — revoke all ACTIVE certs
+                    const activeCerts = await prisma.certificate.findMany({
+                        where: { trackId: id, status: 'ACTIVE' }
+                    });
+                    for (const cert of activeCerts) {
+                        await prisma.certificate.update({ where: { id: cert.id }, data: { status: 'REVOKED' } });
+                        await prisma.notification.create({
+                            data: {
+                                userId: cert.userId,
+                                type: 'CERT_REVOKED',
+                                title: 'Certification Revoked',
+                                message: `Your "${track.name}" certification (${cert.code}) has been revoked because this track no longer awards certifications.`
+                            }
+                        });
+                    }
+                } else {
+                    // Re-evaluate every enrolled learner
+                    const publishedModules = await prisma.module.findMany({
+                        where: { trackId: id, status: 'PUBLISHED' }
+                    });
+                    const totalModules = publishedModules.length;
+                    if (totalModules > 0) {
+                        const moduleIds = publishedModules.map(m => m.id);
+                        const quizModuleIds = publishedModules.filter(m => m.type === 'QUIZ').map(m => m.id);
+                        const enrolledLearners = await prisma.user.findMany({
+                            where: { role: 'LEARNER', tracks: { some: { id } } },
+                            select: { id: true }
+                        });
+
+                        for (const learner of enrolledLearners) {
+                            const completedCount = await prisma.enrollment.count({
+                                where: { userId: learner.id, moduleId: { in: moduleIds }, completed: true }
+                            });
+                            const atFullCompletion = completedCount >= totalModules;
+
+                            let meetsScore = true;
+                            if (atFullCompletion && track.certScoreMin != null && quizModuleIds.length > 0) {
+                                const quizEnrollments = await prisma.enrollment.findMany({
+                                    where: { userId: learner.id, moduleId: { in: quizModuleIds }, completed: true },
+                                    select: { lastScore: true }
+                                });
+                                if (quizEnrollments.length === 0) {
+                                    meetsScore = false;
+                                } else {
+                                    const avg =
+                                        quizEnrollments.reduce((s, e) => s + e.lastScore, 0) / quizEnrollments.length;
+                                    meetsScore = avg >= track.certScoreMin;
+                                }
+                            }
+
+                            const existing = await prisma.certificate.findUnique({
+                                where: { userId_trackId: { userId: learner.id, trackId: id } }
+                            });
+
+                            if (atFullCompletion && meetsScore) {
+                                if (!existing) {
+                                    // New cert
+                                    const code = 'CERT-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+                                    const expiresAt = track.certExpiryMonths
+                                        ? new Date(Date.now() + track.certExpiryMonths * 30 * 24 * 60 * 60 * 1000)
+                                        : null;
+                                    await prisma.certificate.create({
+                                        data: { code, userId: learner.id, trackId: id, expiresAt, status: 'ACTIVE' }
+                                    });
+                                    await prisma.notification.create({
+                                        data: {
+                                            userId: learner.id,
+                                            type: 'CERT_EARNED',
+                                            title: 'Certification Awarded',
+                                            message: `Congratulations! You've been awarded the "${track.name}" certification.`
+                                        }
+                                    });
+                                } else if (existing.status === 'EXPIRED') {
+                                    // Renew expired cert
+                                    const code = 'CERT-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+                                    const expiresAt = track.certExpiryMonths
+                                        ? new Date(Date.now() + track.certExpiryMonths * 30 * 24 * 60 * 60 * 1000)
+                                        : null;
+                                    await prisma.certificate.update({
+                                        where: { id: existing.id },
+                                        data: { code, issuedAt: new Date(), expiresAt, status: 'ACTIVE' }
+                                    });
+                                    await prisma.notification.create({
+                                        data: {
+                                            userId: learner.id,
+                                            type: 'CERT_EARNED',
+                                            title: 'Certification Renewed',
+                                            message: `Your "${track.name}" certification has been renewed.`
+                                        }
+                                    });
+                                } else if (existing.status === 'ACTIVE' && certExpiryMonths !== undefined) {
+                                    // Update expiry date (computed from original issuedAt)
+                                    const expiresAt = track.certExpiryMonths
+                                        ? new Date(
+                                              existing.issuedAt.getTime() +
+                                                  track.certExpiryMonths * 30 * 24 * 60 * 60 * 1000
+                                          )
+                                        : null;
+                                    await prisma.certificate.update({
+                                        where: { id: existing.id },
+                                        data: { expiresAt }
+                                    });
+                                }
+                                // REVOKED: admin deliberately revoked — no action
+                            } else if (existing && existing.status === 'ACTIVE') {
+                                // Learner no longer qualifies — revoke
+                                await prisma.certificate.update({
+                                    where: { id: existing.id },
+                                    data: { status: 'REVOKED' }
+                                });
+                                const reason = !atFullCompletion
+                                    ? 'the track requirements have changed'
+                                    : 'you no longer meet the minimum score requirement';
+                                await prisma.notification.create({
+                                    data: {
+                                        userId: learner.id,
+                                        type: 'CERT_REVOKED',
+                                        title: 'Certification Revoked',
+                                        message: `Your "${track.name}" certification (${existing.code}) has been revoked because ${reason}.`
+                                    }
+                                });
+                            }
+                        }
+                    }
+                }
+            } catch (certErr) {
+                console.error('[TRACKS] Cert reconciliation error:', certErr);
             }
         }
 

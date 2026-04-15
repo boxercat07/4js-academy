@@ -39,6 +39,9 @@ router.get('/', verifyToken, verifyAdmin, async (req, res) => {
                 },
                 enrollments: {
                     include: { module: true }
+                },
+                certificates: {
+                    include: { track: { select: { name: true, icon: true } } }
                 }
             },
             orderBy: { createdAt: 'desc' }
@@ -82,6 +85,14 @@ router.get('/', verifyToken, verifyAdmin, async (req, res) => {
             const totalQuizTotal = trackProgressDetails.reduce((acc, t) => acc + t.quizTotal, 0);
             const totalQuizCompleted = trackProgressDetails.reduce((acc, t) => acc + t.quizCompleted, 0);
 
+            const now = new Date();
+            const activeCerts = emp.certificates.filter(
+                c => c.status === 'ACTIVE' && (!c.expiresAt || c.expiresAt > now)
+            );
+            const expiredCerts = emp.certificates.filter(
+                c => c.status === 'EXPIRED' || (c.status === 'ACTIVE' && c.expiresAt && c.expiresAt <= now)
+            );
+
             return {
                 id: emp.id,
                 name: `${emp.firstName} ${emp.lastName}`,
@@ -94,7 +105,16 @@ router.get('/', verifyToken, verifyAdmin, async (req, res) => {
                 progress: globalProgress,
                 quizCompleted: totalQuizCompleted,
                 quizTotal: totalQuizTotal,
-                status: globalProgress >= 100 ? 'CERTIFIED' : 'IN_PROGRESS'
+                status: globalProgress >= 100 ? 'CERTIFIED' : 'IN_PROGRESS',
+                certCount: activeCerts.length,
+                certs: activeCerts.map(c => ({
+                    id: c.id,
+                    code: c.code,
+                    trackName: c.track.name,
+                    trackIcon: c.track.icon,
+                    expiresAt: c.expiresAt
+                })),
+                expiredCertCount: expiredCerts.length
             };
         });
 
