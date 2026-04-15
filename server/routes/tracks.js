@@ -571,7 +571,7 @@ router.get('/:id/modules', verifyToken, async (req, res) => {
             include: {
                 modules: {
                     where: req.user.role === 'ADMIN' ? {} : { status: 'PUBLISHED' },
-                    orderBy: { order: 'asc' }
+                    orderBy: [{ order: 'asc' }, { createdAt: 'asc' }]
                 }
             }
         });
@@ -605,8 +605,6 @@ router.post('/:id/publish', verifyToken, verifyAdmin, async (req, res) => {
 
         // Preserve progress by upserting based on title + trackId
         const existingModules = await prisma.module.findMany({ where: { trackId: id } });
-        const existingTitles = existingModules.map(m => m.title);
-        const publishedTitles = [];
         // Track consumed IDs to handle duplicate titles correctly (each DB record matched at most once)
         const consumedIds = new Set();
 
@@ -616,7 +614,6 @@ router.post('/:id/publish', verifyToken, verifyAdmin, async (req, res) => {
             for (const item of items) {
                 orderIndex++;
                 const title = item.title || 'Untitled';
-                publishedTitles.push(title);
 
                 const type = (item.type || 'DOCUMENT').toUpperCase().replace(/-/g, '_');
                 const blobUrl = item['blob-url'] || item.blobUrl || '';
@@ -671,30 +668,15 @@ router.post('/:id/publish', verifyToken, verifyAdmin, async (req, res) => {
             }
         }
 
-        // Cleanup: remove modules that were deleted by admin
-        const titlesToDelete = existingTitles.filter(t => !publishedTitles.includes(t));
-        if (titlesToDelete.length > 0) {
-            // Fetch mediaUrls for orphaned modules before deletion
-            const modulesToCleanup = await prisma.module.findMany({
-                where: {
-                    trackId: id,
-                    title: { in: titlesToDelete }
-                },
-                select: { mediaUrl: true }
-            });
-
+        // Cleanup: delete every pre-existing module that wasn't matched during this publish
+        // (covers removed items AND stale duplicates left by consumedIds logic)
+        const unconsumed = existingModules.filter(m => !consumedIds.has(m.id));
+        if (unconsumed.length > 0) {
             await prisma.module.deleteMany({
-                where: {
-                    trackId: id,
-                    title: { in: titlesToDelete }
-                }
+                where: { id: { in: unconsumed.map(m => m.id) } }
             });
-
-            // Cleanup files
-            for (const mod of modulesToCleanup) {
-                if (mod.mediaUrl) {
-                    await deleteFileByUrl(mod.mediaUrl);
-                }
+            for (const mod of unconsumed) {
+                if (mod.mediaUrl) await deleteFileByUrl(mod.mediaUrl);
             }
         }
 
