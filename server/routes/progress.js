@@ -275,6 +275,7 @@ router.get('/dashboard', verifyToken, async (req, res) => {
                 trackIcon: cert.track.icon,
                 certStatus: cert.status,
                 certCode: cert.code,
+                certIssuedAt: cert.issuedAt,
                 certExpiresAt: cert.expiresAt,
                 value: null
             });

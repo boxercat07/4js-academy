@@ -214,6 +214,17 @@
                     </div>
                 </div>
 
+                <!-- Certifications Section -->
+                <div id="certifications-section" class="hidden mb-16">
+                    <h2 class="text-3xl font-extrabold text-white mb-6 text-left font-display flex items-center gap-3">
+                        <span class="material-symbols-outlined text-emerald-400">workspace_premium</span>
+                        My Certifications
+                    </h2>
+                    <div class="overflow-x-auto pb-2">
+                        <div id="certifications-grid"></div>
+                    </div>
+                </div>
+
                 <!-- Continue Learning Section -->
                 <div id="continue-section" class="hidden mb-16">
                     <h2 class="text-3xl font-extrabold text-white mb-6 text-left font-display flex items-center gap-3">
@@ -595,6 +606,7 @@
                     if (elRetake) elRetake.textContent = progressGlobal.expiredCertifications ?? '0';
 
                     renderMilestones();
+                    renderCertifications();
 
                     renderSections();
                 } catch (err) {
@@ -691,6 +703,116 @@
                     },
                     milestonesPerPage
                 );
+            }
+
+            function renderCertifications() {
+                const section = document.getElementById('certifications-section');
+                const grid = document.getElementById('certifications-grid');
+                const certs = (progressGlobal.milestones || []).filter(m => m.type === 'CERTIFICATE');
+
+                if (certs.length === 0) {
+                    section.classList.add('hidden');
+                    return;
+                }
+                section.classList.remove('hidden');
+
+                const containerEl = grid.closest('.max-w-6xl');
+                const containerWidth = containerEl ? containerEl.clientWidth : window.innerWidth - 48;
+                const gap = 20; // gap-5
+                const cols = window.innerWidth >= 1024 ? 3 : window.innerWidth >= 640 ? 2 : 1;
+                const cardWidth = Math.floor((containerWidth - gap * (cols - 1)) / cols);
+                grid.style.cssText = `display:grid; grid-template-rows: repeat(2, auto); grid-auto-flow: column; grid-auto-columns: ${cardWidth}px; gap: ${gap}px;`;
+
+                const now = Date.now();
+                grid.innerHTML = certs
+                    .map(m => {
+                        const isExpired = m.certStatus === 'EXPIRED';
+                        const isRevoked = m.certStatus === 'REVOKED';
+                        const isActive = m.certStatus === 'ACTIVE';
+
+                        const cardBorder = isActive
+                            ? 'border-emerald-500/20 bg-emerald-500/5'
+                            : isExpired
+                              ? 'border-orange-500/25 bg-orange-500/5'
+                              : 'border-red-500/20 bg-red-500/5';
+                        const iconBg = isActive
+                            ? 'bg-emerald-500/15 border-emerald-400/30'
+                            : isExpired
+                              ? 'bg-orange-500/10 border-orange-500/30'
+                              : 'bg-red-500/10 border-red-500/30';
+                        const iconColor = isActive
+                            ? 'text-emerald-400'
+                            : isExpired
+                              ? 'text-orange-400'
+                              : 'text-red-400';
+                        const badgeCls = isActive
+                            ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+                            : isExpired
+                              ? 'bg-orange-500/10 text-orange-400 border-orange-500/30'
+                              : 'bg-red-500/10 text-red-400 border-red-500/30';
+                        const badgeLabel = isActive ? 'Active' : isExpired ? 'Expired' : 'Revoked';
+
+                        const issuedDate = m.certIssuedAt
+                            ? new Date(m.certIssuedAt).toLocaleDateString('en-GB', {
+                                  day: '2-digit',
+                                  month: 'short',
+                                  year: 'numeric'
+                              })
+                            : '—';
+
+                        let validityBlock = '';
+                        if (isActive && m.certExpiresAt) {
+                            const issued = new Date(m.certIssuedAt).getTime();
+                            const expires = new Date(m.certExpiresAt).getTime();
+                            const pct = Math.max(0, Math.min(100, ((expires - now) / (expires - issued)) * 100));
+                            const expiresDate = new Date(m.certExpiresAt).toLocaleDateString('en-GB', {
+                                day: '2-digit',
+                                month: 'short',
+                                year: 'numeric'
+                            });
+                            const barColor = pct > 40 ? 'bg-emerald-500' : pct > 15 ? 'bg-amber-400' : 'bg-red-400';
+                            validityBlock = `
+                                <div>
+                                    <div class="flex justify-between text-[9px] font-bold uppercase tracking-widest text-slate-500 mb-1.5">
+                                        <span>Issued ${issuedDate}</span>
+                                        <span>Expires ${expiresDate}</span>
+                                    </div>
+                                    <div class="w-full bg-slate-800 rounded-full h-[3px] overflow-hidden">
+                                        <div class="${barColor} h-full rounded-full transition-all" style="width:${pct.toFixed(1)}%"></div>
+                                    </div>
+                                </div>`;
+                        } else if (isActive) {
+                            validityBlock = `
+                                <p class="text-[9px] font-bold uppercase tracking-widest text-slate-500">
+                                    Issued ${issuedDate} · <span class="text-emerald-400">No expiry</span>
+                                </p>`;
+                        } else {
+                            const dateLabel = m.certExpiresAt
+                                ? new Date(m.certExpiresAt).toLocaleDateString('en-GB', {
+                                      day: '2-digit',
+                                      month: 'short',
+                                      year: 'numeric'
+                                  })
+                                : issuedDate;
+                            validityBlock = `
+                                <p class="text-[9px] font-bold uppercase tracking-widest text-slate-500">
+                                    Issued ${issuedDate}${isExpired ? ` · <span class="text-orange-400">Expired ${dateLabel}</span>` : ''}
+                                </p>`;
+                        }
+
+                        return `
+                        <div class="glass-card p-4 flex flex-col gap-3 border ${cardBorder}">
+                            <div class="flex items-center justify-between gap-2">
+                                <div class="w-9 h-9 rounded-xl ${iconBg} border flex items-center justify-center shrink-0">
+                                    <span class="material-symbols-outlined text-lg ${iconColor}">workspace_premium</span>
+                                </div>
+                                <span class="text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded border ${badgeCls}">${badgeLabel}</span>
+                            </div>
+                            <h3 class="text-sm font-extrabold text-white uppercase tracking-wide leading-snug">${m.trackName}</h3>
+                            ${validityBlock}
+                        </div>`;
+                    })
+                    .join('');
             }
 
             function renderSections() {
