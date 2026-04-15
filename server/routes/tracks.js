@@ -694,12 +694,12 @@ router.post('/:id/publish', verifyToken, verifyAdmin, async (req, res) => {
             }
         }
 
-        // Update track status to PUBLISHED — persist curriculumDraft as source of truth for the editor
+        // Update track status to PUBLISHED — clear curriculumDraft so the badge shows "Published" (not "Unpublished Changes")
         const updatedTrack = await prisma.track.update({
             where: { id },
             data: {
                 status: 'PUBLISHED',
-                ...(curriculumDraft ? { curriculumDraft } : {})
+                curriculumDraft: null
             }
         });
 
