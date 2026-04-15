@@ -154,6 +154,19 @@
                         if (backButton) backButton.classList.add('hidden');
                     }
 
+                    // Fallback CONTENT_TYPE_CONFIG in case components.js cache is stale
+                    const CONTENT_TYPE_CONFIG = window.CONTENT_TYPE_CONFIG || {
+                        PAGE: { icon: 'description', color: 'indigo', label: 'Page' },
+                        PDF: { icon: 'picture_as_pdf', color: 'cyan', label: 'PDF Document' },
+                        VIDEO: { icon: 'play_circle', color: 'red', label: 'Video' },
+                        AUDIO: { icon: 'mic', color: 'purple', label: 'Audio' },
+                        IMAGE: { icon: 'image', color: 'emerald', label: 'Image' },
+                        SLIDES: { icon: 'present_to_all', color: 'amber', label: 'Slides' },
+                        QUIZ: { icon: 'quiz', color: 'teal', label: 'Quiz' },
+                        LINK: { icon: 'link', color: 'indigo', label: 'Link' },
+                        DEFAULT: { icon: 'draft', color: 'slate', label: 'Content Item' }
+                    };
+
                     let bizTrack = null;
 
                     try {
@@ -176,6 +189,7 @@
                             const userTrackId = sessionStorage.getItem('userTrackId');
                             bizTrack =
                                 tracks.find(t => t.id === userTrackId) ||
+                                tracks.find(t => t.id === previewTrackId) ||
                                 tracks.find(t => t.name.toUpperCase().includes('BUSINESS'));
                         }
 
@@ -328,8 +342,7 @@
                                 if (isCompleted) itemEl.setAttribute('completed', 'true');
 
                                 // Map icon and color based on type
-                                const config =
-                                    window.CONTENT_TYPE_CONFIG[item.type] || window.CONTENT_TYPE_CONFIG.DEFAULT;
+                                const config = CONTENT_TYPE_CONFIG[item.type] || CONTENT_TYPE_CONFIG.DEFAULT;
                                 itemEl.setAttribute('icon', config.icon);
                                 itemEl.setAttribute('color', config.color);
 
